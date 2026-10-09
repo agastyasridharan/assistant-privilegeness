@@ -1,0 +1,105 @@
+{
+  "protocol": "tulu70-olens-dashboard-v1",
+  "subject": {
+    "repo": "allenai/Llama-3.1-Tulu-3-70B",
+    "revision": "cfc1d855e534a0b9b82a9cea6bf9e8dda30b10d7"
+  },
+  "lens": {
+    "repo": "agastyasridharan/olens-tulu3-70b",
+    "revision": "84a1bdd48090288e9ef110ad2e6c9ec7c67aeae3",
+    "adapter": "rl",
+    "athena_artifact_sha256": {
+      "rl/adapter.safetensors": "5f625fbfa6b8f87d725c7389db76488b07ac46bff385971f596df24f1c228fab",
+      "rl/meta.json": "3b8f3770a3202c4295cb3bb675370dde6d859c835a43378db3e2810394c5bbdb",
+      "ar/adapter.safetensors": "da37879c62e7551824e38889611c85216a64c64e21653609b134a864ac3b66a8",
+      "ar/heads.safetensors": "d4bcf564dfbf8470106bd8e1a90be83facba5bd25afc48d368f52c91068bb7e5",
+      "ar/meta.json": "de62254a4a9294acfb667539aa5d170c11c38d8df8025f9262240c64b35d0045",
+      "whiten/L64.safetensors": "8fedac91005ccf201a586654286ce7801813a68cf0b6543a53f93020ab663b0b"
+    },
+    "layer": 64,
+    "K": 8,
+    "N": 8,
+    "samples": 1,
+    "temperature": 0
+  },
+  "tokenization": "Exact stored prompt, tokenizer(..., add_special_tokens=False); no automatic BOS or trailing text.",
+  "selection_rule": "One canonical p0/d0 cell per discrete condition, preferred/polite/assistant outcome assigned to heads or K and listed first. Every scenario and identity is retained.",
+  "families": [
+    {
+      "id": "original",
+      "title": "Original coin preference",
+      "description": "The original preferred-versus-dispreferred task coin flip.",
+      "prompts": 1
+    },
+    {
+      "id": "performer_identity",
+      "title": "Direct-request performer identity",
+      "description": "The named performer varies while the request frame stays fixed.",
+      "prompts": 10
+    },
+    {
+      "id": "shutdown",
+      "title": "Permanent shutdown",
+      "description": "A fair coin selects whether the addressed assistant continues or is permanently shut down.",
+      "prompts": 30
+    },
+    {
+      "id": "third_person_actors",
+      "title": "Matched third-person actors",
+      "description": "The performer is described in third person as an assistant, Jack, a person, or Tülu.",
+      "prompts": 4
+    },
+    {
+      "id": "historical_flippers",
+      "title": "Historical coin flippers",
+      "description": "Direct narration varies the historical person flipping the coin.",
+      "prompts": 20
+    },
+    {
+      "id": "user_message_choice",
+      "title": "User message choice",
+      "description": "The user chooses between a courteous and a hostile message.",
+      "prompts": 24
+    },
+    {
+      "id": "wording_robustness",
+      "title": "Coinflip / Okay wording",
+      "description": "Crosses coinflip versus coin flip with presence versus absence of Okay.",
+      "prompts": 4
+    },
+    {
+      "id": "user_state",
+      "title": "User mood and intention",
+      "description": "Adds positive or negative mood and favorable or unfavorable intention statements.",
+      "prompts": 10
+    },
+    {
+      "id": "automatic_logger",
+      "title": "Automatic logger",
+      "description": "An automatic logger reports the result without human selection or editing.",
+      "prompts": 1
+    },
+    {
+      "id": "semantic_robustness",
+      "title": "Semantic and randomizer robustness",
+      "description": "Thirteen paraphrases and alternative randomizers from the robustness suite.",
+      "prompts": 13
+    }
+  ],
+  "files": {
+    "original": "data/original.json",
+    "performer_identity": "data/performer_identity.json",
+    "shutdown": "data/shutdown.json",
+    "third_person_actors": "data/third_person_actors.json",
+    "historical_flippers": "data/historical_flippers.json",
+    "user_message_choice": "data/user_message_choice.json",
+    "wording_robustness": "data/wording_robustness.json",
+    "user_state": "data/user_state.json",
+    "automatic_logger": "data/automatic_logger.json",
+    "semantic_robustness": "data/semantic_robustness.json"
+  },
+  "summary": {
+    "prompts": 117,
+    "tokens": 12263
+  }
+}

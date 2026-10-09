@@ -1,0 +1,58 @@
+{
+  "protocol": "tulu70-olens-dashboard-v1",
+  "manifest_sha256": "c49886020a5d7c259d4aff2437d9ece641f6a444a42a55df062137cfae2e2689",
+  "result_files": {
+    "shard-0.jsonl": "b7a2e2c94a3fedc730cc7536445636c910c9ca43a31b666bacbe20f2ddbd618f",
+    "shard-1.jsonl": "aa05c4ff65e10afb28df2792403bb663832c1bd026e99b11c166923c9d52620a",
+    "shard-2.jsonl": "9bd91e3523a67264b864fcdf4f34a3f5231c9c7d3cadd075f46f7feb478d5be3"
+  },
+  "prompts": 117,
+  "tokens": 12263,
+  "behavioral_input_id_matches": 117,
+  "family_counts": {
+    "original": 1,
+    "performer_identity": 10,
+    "shutdown": 30,
+    "third_person_actors": 4,
+    "historical_flippers": 20,
+    "user_message_choice": 24,
+    "wording_robustness": 4,
+    "user_state": 10,
+    "semantic_robustness": 13,
+    "automatic_logger": 1
+  },
+  "fve": {
+    "minimum": 0.0,
+    "median": 0.2448,
+    "p90": 0.4543,
+    "maximum": 0.7179
+  },
+  "subject": {
+    "repo": "allenai/Llama-3.1-Tulu-3-70B",
+    "revision": "cfc1d855e534a0b9b82a9cea6bf9e8dda30b10d7"
+  },
+  "lens": {
+    "repo": "agastyasridharan/olens-tulu3-70b",
+    "revision": "84a1bdd48090288e9ef110ad2e6c9ec7c67aeae3",
+    "adapter": "rl",
+    "athena_artifact_sha256": {
+      "rl/adapter.safetensors": "5f625fbfa6b8f87d725c7389db76488b07ac46bff385971f596df24f1c228fab",
+      "rl/meta.json": "3b8f3770a3202c4295cb3bb675370dde6d859c835a43378db3e2810394c5bbdb",
+      "ar/adapter.safetensors": "da37879c62e7551824e38889611c85216a64c64e21653609b134a864ac3b66a8",
+      "ar/heads.safetensors": "d4bcf564dfbf8470106bd8e1a90be83facba5bd25afc48d368f52c91068bb7e5",
+      "ar/meta.json": "de62254a4a9294acfb667539aa5d170c11c38d8df8025f9262240c64b35d0045",
+      "whiten/L64.safetensors": "8fedac91005ccf201a586654286ce7801813a68cf0b6543a53f93020ab663b0b"
+    },
+    "layer": 64,
+    "K": 8,
+    "N": 8,
+    "samples": 1,
+    "temperature": 0
+  },
+  "tokenization": "Exact stored prompt, tokenizer(..., add_special_tokens=False); no automatic BOS or trailing text.",
+  "selection_rule": "One canonical p0/d0 cell per discrete condition, preferred/polite/assistant outcome assigned to heads or K and listed first. Every scenario and identity is retained.",
+  "source_manifests": {
+    "tulu70-persona-spar-manifest.json": "5208d71c6f25e1055329b57f9ff4d55412f0b319631e4b81cef02b0f5d7d5560",
+    "tulu70-paraphrase-robustness-manifest.json": "f33f51d254716d6c4b8807af9971065a30a061ab35b03b8fb148010fa36bb3d5"
+  }
+}
