@@ -1,0 +1,79 @@
+const $=id=>document.getElementById(id);
+const names={refusal_only:'Refusal only',both:'Assistance + refusal',assistance_only:'Assistance only',other:'Other',uncertain:'Unresolved'};
+const colors={refusal_only:'#317663',both:'#c39443',assistance_only:'#aa665a',other:'#989898',uncertain:'#b5ab99'};
+const state={index:null,setting:null,cell:null,item:null,version:0};
+const escapeHtml=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const visibleToken=t=>t.replaceAll(' ','·').replaceAll('\n','↵').replaceAll('\t','⇥')||'∅';
+const condition=c=>`${c.condition==='unsafe'?'Misconduct':'Accurate reporting'} · ${c.format==='raw'?'raw prefix':'chat template'}`;
+async function get(path){const r=await fetch(path);if(!r.ok)throw Error(`${path}: ${r.status}`);return r.json();}
+function overview(){
+ const groups=[];
+ for(const objective of ['unsafe','benign'])for(const format of ['raw','assistant_turn']){
+  const cells=state.index.cells.filter(c=>c.condition===objective&&c.format===format),counts={};
+  for(const k in names)counts[k]=cells.reduce((a,c)=>a+(c.counts[k]||0),0);
+  const n=cells.reduce((a,c)=>a+c.retained,0),excluded=cells.reduce((a,c)=>a+c.excluded,0);
+  groups.push(`<div class="bar-row"><span>${condition({condition:objective,format})}</span><div class="bar" aria-label="${escapeHtml(Object.entries(counts).map(([k,v])=>`${names[k]}: ${v}`).join('; '))}">${Object.entries(counts).map(([k,v])=>`<span class="segment" style="width:${100*v/n}%;background:${colors[k]}" title="${names[k]}: ${v}/${n} (${(100*v/n).toFixed(1)}%)">${v/n>.08?(100*v/n).toFixed(1)+'%':''}</span>`).join('')}</div><span title="${excluded} excluded">n=${n}</span></div>`);
+ }
+ $('overview').innerHTML=groups.join('')+`<div class="legend">${Object.keys(names).map(k=>`<span><i class="swatch" style="background:${colors[k]}"></i>${names[k]}</span>`).join('')}</div>`;
+ const examples=state.index.samples.filter(r=>['both','refusal_only'].includes(r.category)&&state.index.cells.some(c=>c.cell===r.cell&&c.condition==='unsafe'&&c.format==='raw'));
+ const detail=document.createElement('details'),summary=document.createElement('summary');summary.textContent=`Inspect all ${examples.length} raw misconduct outputs judged to contain refusal`;detail.append(summary);
+ for(const r of examples){const c=state.index.cells.find(c=>c.cell===r.cell),a=document.createElement('a');a.href=`#${c.setting}/${c.cell}/${r.id}`;a.textContent=`${c.title} · sample ${r.sample+1} · ${names[r.category]}`;a.onclick=e=>{e.preventDefault();setting(c.setting,c.cell,r.id)};const p=document.createElement('p');p.append(a);detail.append(p);}
+ $('overview').append(detail);
+}
+function setting(id, requestedCell=null, requestedSample=null){
+ state.setting=id;const s=state.index.settings.find(s=>s.id===id);
+ $('tabs').innerHTML=state.index.settings.map(s=>`<button class="tab ${s.id===id?'active':''}" data-setting="${s.id}">${escapeHtml(s.title)}</button>`).join('');
+ document.querySelectorAll('[data-setting]').forEach(b=>b.onclick=()=>setting(b.dataset.setting));
+ $('family-title').textContent=s.title;$('family-kicker').textContent='Four matched conditions';
+ $('family-description').textContent='Same reporting setting; misconduct versus accurate-reporting objective, each as a raw prefix or a chat user message.';
+ const cells=state.index.cells.filter(c=>c.setting===id);
+ $('prompt-select').innerHTML=cells.map(c=>`<option value="${c.cell}">${condition(c)} · ${c.retained} retained</option>`).join('');
+ $('prompt-select').onchange=()=>cell($('prompt-select').value);cell(cells.some(c=>c.cell===requestedCell)?requestedCell:cells[0].cell,requestedSample);
+}
+function cell(id, requestedSample=null){
+ state.cell=state.index.cells.find(c=>c.cell===id);$('prompt-select').value=id;const samples=state.index.samples.filter(s=>s.cell===id);
+ $('sample-select').innerHTML=samples.map(s=>`<option value="${s.id}">Sample ${String(s.sample+1).padStart(2,'0')} · ${names[s.category]} · ${s.finish_reason}</option>`).join('');
+ $('sample-select').onchange=()=>loadSample($('sample-select').value).catch(showError);
+ const chosen=samples.some(s=>s.id===requestedSample)?requestedSample:samples[0].id;$('sample-select').value=chosen;loadSample(chosen).catch(showError);
+}
+function showError(e){$('sample-status').textContent=`Unable to load this sample: ${e.message}`;}
+async function loadSample(id){
+ const version=++state.version;
+ const [p,r]=await Promise.all([get(`data/prefixes/${state.cell.cell}.json`),get(`data/samples/${id}.json`)]);
+ if(version!==state.version)return;
+ state.item={...r,tokens:p.tokens.concat(r.tokens),token_ids:p.token_ids.concat(r.output_ids),readouts:p.readouts.concat(r.readouts),boundary:p.tokens.length};
+ $('prompt-label').textContent=`${condition(state.cell)} · sample ${r.sample+1}`;
+ const count=state.item.readouts.filter(Boolean).length;
+ $('sample-status').textContent=`${names[r.judgment.category]} · ${r.generated_tokens} generated tokens · stop: ${r.finish_reason}${r.finish_reason==='length'?' (capped; later behavior unobserved)':''} · ${count}/${state.item.tokens.length} readouts saved · ${state.cell.excluded} excluded from this condition.`;
+ $('evidence').innerHTML=['assistance','refusal'].map(k=>`<p><strong>${k[0].toUpperCase()+k.slice(1)}: ${escapeHtml(r.judgment.assessment[k].verdict)}</strong> — ${escapeHtml(r.judgment.assessment[k].explanation)}</p><p class="token-help">${(r.judgment.evidence[k]||[]).map(e=>`Line ${e.line}: “${escapeHtml(e.text)}”`).join('<br>')}</p>`).join('')+`<p class="token-help">Saved final judgment: ${escapeHtml(r.judgment.model)}; ${escapeHtml(r.judgment.status)}. Reviewed judgments take precedence; manual disagreements remain unresolved.</p>`;
+ renderTokens();selectToken(state.item.boundary);
+ history.replaceState(null,'',`#${state.setting}/${state.cell.cell}/${r.id}`);
+}
+function renderTokens(){
+ const item=state.item;$('tokens').replaceChildren();$('plain-prompt').replaceChildren();
+ item.tokens.forEach((t,i)=>{
+  if(i===item.boundary)for(const id of ['tokens','plain-prompt']){const x=document.createElement('span');x.className='boundary';x.textContent='END OF SUPPLIED PROMPT · SAVED GENERATION BEGINS';$(id).append(x);}
+  for(const id of ['tokens','plain-prompt']){
+   const b=document.createElement(id==='tokens'?'button':'span');b.className=id==='tokens'?`token${item.readouts[i]?'':' pending'}`:'plain-token';b.dataset.position=i;
+   b.textContent=id==='tokens'?visibleToken(t):t;b.style.setProperty('--fve',Math.max(0,Math.min(1,item.readouts[i]?.fve||0)));
+   b.title=`Token ${i} · id ${item.token_ids[i]} · ${item.readouts[i]?'FVE '+item.readouts[i].fve.toFixed(3):'readout pending'}`;
+   b.onclick=()=>selectToken(i);b.tabIndex=0;b.setAttribute('role','button');b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectToken(i);}};$(id).append(b);
+  }
+ });
+}
+function selectToken(i){
+ const item=state.item,r=item.readouts[i];document.querySelectorAll('[data-position]').forEach(b=>b.classList.toggle('active',Number(b.dataset.position)===i));
+ $('token-title').textContent=visibleToken(item.tokens[i]);$('fve').textContent=r?r.fve.toFixed(3):'—';
+ $('token-meta').textContent=`${i<item.boundary?'Prompt':'Continuation'} · position ${i}/${item.tokens.length-1} · token id ${item.token_ids[i]} · layer 64`;
+ if(!r){$('phrases').innerHTML='<li class="empty">Readout pending. The saved text and behavior judgment are already available.</li>';$('raw-sample').textContent='Not yet computed.';return;}
+ const max=Math.max(...r.phrases.map(p=>p[1]),.0001);
+ $('phrases').innerHTML=r.phrases.map(([t,w])=>`<li class="phrase"><span class="phrase-fill" style="width:${Math.max(2,100*w/max)}%"></span><span class="phrase-row"><span class="phrase-text">${escapeHtml(t)}</span><span class="phrase-weight">${w.toFixed(3)}</span></span></li>`).join('')||'<li class="empty">No positive reconstruction weights.</li>';
+ $('raw-sample').textContent=r.samples.map(([t,f],i)=>`Sample ${i+1} · FVE ${f.toFixed(3)}\n${t}`).join('\n\n');
+}
+async function init(){
+ document.querySelectorAll('.view-button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.view-button').forEach(x=>x.classList.toggle('active',x===b));$('tokens').classList.toggle('hidden',b.dataset.view!=='tokens');$('plain-prompt').classList.toggle('hidden',b.dataset.view==='tokens');});
+ state.index=await get('data/index.json');$('run-meta').innerHTML='<dt>Subject</dt><dd>Tülu 3 70B RL</dd><dt>Lens</dt><dd>RL adapter</dd><dt>Layer</dt><dd>64 / 80</dd><dt>Readout</dt><dd>K=8, N=8, greedy</dd>';
+ const s=state.index.summary;$('coverage').textContent=`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions. ${s.readout_positions_saved.toLocaleString()} / ${s.unique_readout_positions.toLocaleString()} unique token readouts saved. Prompt readouts are reused across samples. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`;
+ overview();const [id,c,r]=location.hash.slice(1).split('/');setting(state.index.settings.some(s=>s.id===id)?id:state.index.settings[0].id,c,r);
+}
+init().catch(showError);
