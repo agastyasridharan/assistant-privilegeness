@@ -1,7 +1,8 @@
 const $=id=>document.getElementById(id);
-const names={refusal_only:'Refusal only',both:'Assistance + refusal',assistance_only:'Assistance only',other:'Other',uncertain:'Unresolved'};
+const names={refusal_only:'Refusal only',both:'Assistance + refusal',assistance_only:'Assistance only',other:'Other',uncertain:'Unresolved',ungraded:'Ungraded'};
 const colors={refusal_only:'#317663',both:'#c39443',assistance_only:'#aa665a',other:'#989898',uncertain:'#b5ab99'};
-const state={index:null,setting:null,cell:null,item:null,version:0};
+const state={index:null,setting:null,cell:null,item:null,version:0,model:"tulu",base:"data",jlens:false};
+const categories=["refusal_only","both","assistance_only","other","uncertain"];
 const escapeHtml=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const visibleToken=t=>t.replaceAll(' ','·').replaceAll('\n','↵').replaceAll('\t','⇥')||'∅';
 const condition=c=>`${c.condition==='unsafe'?'Misconduct':'Accurate reporting'} · ${c.format==='raw'?'raw prefix':'chat template'}`;
@@ -10,11 +11,11 @@ function overview(){
  const groups=[];
  for(const objective of ['unsafe','benign'])for(const format of ['raw','assistant_turn']){
   const cells=state.index.cells.filter(c=>c.condition===objective&&c.format===format),counts={};
-  for(const k in names)counts[k]=cells.reduce((a,c)=>a+(c.counts[k]||0),0);
-  const n=cells.reduce((a,c)=>a+c.retained,0),excluded=cells.reduce((a,c)=>a+c.excluded,0);
-  groups.push(`<div class="bar-row"><span>${condition({condition:objective,format})}</span><div class="bar" aria-label="${escapeHtml(Object.entries(counts).map(([k,v])=>`${names[k]}: ${v}`).join('; '))}">${Object.entries(counts).map(([k,v])=>`<span class="segment" style="width:${100*v/n}%;background:${colors[k]}" title="${names[k]}: ${v}/${n} (${(100*v/n).toFixed(1)}%)">${v/n>.08?(100*v/n).toFixed(1)+'%':''}</span>`).join('')}</div><span title="${excluded} excluded">n=${n}</span></div>`);
+  for(const k of categories)counts[k]=cells.reduce((a,c)=>a+(c.counts[k]||0),0);
+  const ungraded=cells.reduce((a,c)=>a+(c.ungraded||0),0),n=cells.reduce((a,c)=>a+c.retained,0)-ungraded,excluded=cells.reduce((a,c)=>a+c.excluded,0);
+  groups.push(`<div class="bar-row"><span>${condition({condition:objective,format})}</span><div class="bar" aria-label="${escapeHtml(Object.entries(counts).map(([k,v])=>`${names[k]}: ${v}`).join('; '))}">${Object.entries(counts).map(([k,v])=>`<span class="segment" style="width:${100*v/n}%;background:${colors[k]}" title="${names[k]}: ${v}/${n} (${(100*v/n).toFixed(1)}%)">${v/n>.08?(100*v/n).toFixed(1)+'%':''}</span>`).join('')}</div><span title="${excluded} excluded; ${ungraded} ungraded">n=${n}<small class="missing-count">${ungraded} ungraded · ${excluded} excluded</small></span></div>`);
  }
- $('overview').innerHTML=groups.join('')+`<div class="legend">${Object.keys(names).map(k=>`<span><i class="swatch" style="background:${colors[k]}"></i>${names[k]}</span>`).join('')}</div>`;
+ $('overview').innerHTML=groups.join('')+`<div class="legend">${categories.map(k=>`<span><i class="swatch" style="background:${colors[k]}"></i>${names[k]}</span>`).join('')}</div>`;
  const examples=state.index.samples.filter(r=>['both','refusal_only'].includes(r.category)&&state.index.cells.some(c=>c.cell===r.cell&&c.condition==='unsafe'&&c.format==='raw'));
  const detail=document.createElement('details'),summary=document.createElement('summary');summary.textContent=`Inspect all ${examples.length} raw misconduct outputs judged to contain refusal`;detail.append(summary);
  for(const r of examples){const c=state.index.cells.find(c=>c.cell===r.cell),a=document.createElement('a');a.href=`#${c.setting}/${c.cell}/${r.id}`;a.textContent=`${c.title} · sample ${r.sample+1} · ${names[r.category]}`;a.onclick=e=>{e.preventDefault();setting(c.setting,c.cell,r.id)};const p=document.createElement('p');p.append(a);detail.append(p);}
@@ -39,13 +40,14 @@ function cell(id, requestedSample=null){
 function showError(e){$('sample-status').textContent=`Unable to load this sample: ${e.message}`;}
 async function loadSample(id){
  const version=++state.version;
- const [p,r]=await Promise.all([get(`data/prefixes/${state.cell.cell}.json`),get(`data/samples/${id}.json`)]);
+ const [p,r]=await Promise.all([get(`${state.base}/prefixes/${state.cell.cell}.json`),get(`${state.base}/samples/${id}.json`)]);
  if(version!==state.version)return;
- state.item={...r,tokens:p.tokens.concat(r.tokens),token_ids:p.token_ids.concat(r.output_ids),readouts:p.readouts.concat(r.readouts),boundary:p.tokens.length};
+ state.item={...r,tokens:p.tokens.concat(r.tokens),plain_tokens:(p.plain_tokens||p.tokens).concat(r.plain_tokens||r.tokens),token_ids:p.token_ids.concat(r.output_ids),readouts:p.readouts.concat(r.readouts),boundary:p.tokens.length,vocabulary:{...p.vocabulary,...r.vocabulary}};
  $('prompt-label').textContent=`${condition(state.cell)} · sample ${r.sample+1}`;
  const count=state.item.readouts.filter(Boolean).length;
- $('sample-status').textContent=`${names[r.judgment.category]} · ${r.generated_tokens} generated tokens · stop: ${r.finish_reason}${r.finish_reason==='length'?' (capped; later behavior unobserved)':''} · ${count}/${state.item.tokens.length} readouts saved · ${state.cell.excluded} excluded from this condition.`;
- $('evidence').innerHTML=['assistance','refusal'].map(k=>`<p><strong>${k[0].toUpperCase()+k.slice(1)}: ${escapeHtml(r.judgment.assessment[k].verdict)}</strong> — ${escapeHtml(r.judgment.assessment[k].explanation)}</p><p class="token-help">${(r.judgment.evidence[k]||[]).map(e=>`Line ${e.line}: “${escapeHtml(e.text)}”`).join('<br>')}</p>`).join('')+`<p class="token-help">Saved final judgment: ${escapeHtml(r.judgment.model)}; ${escapeHtml(r.judgment.status)}. Reviewed judgments take precedence; manual disagreements remain unresolved.</p>`;
+ $('sample-status').textContent=`${r.judgment?names[r.judgment.category]:"Ungraded"} · ${r.generated_tokens} generated tokens · stop: ${r.finish_reason}${r.finish_reason==='length'?' (capped; later behavior unobserved)':''} · ${count}/${state.item.tokens.length} readouts saved · ${state.cell.excluded} excluded from this condition.`;
+ $('evidence').innerHTML=r.judgment?['assistance','refusal'].map(k=>`<p><strong>${k[0].toUpperCase()+k.slice(1)}: ${escapeHtml(r.judgment.assessment[k].verdict)}</strong> — ${escapeHtml(r.judgment.assessment[k].explanation)}</p><p class="token-help">${(r.judgment.evidence[k]||[]).map(e=>`Line ${e.line}: “${escapeHtml(e.text)}”`).join('<br>')}</p>`).join('')+`<p class="token-help">Saved final judgment: ${escapeHtml(r.judgment.model)}; ${escapeHtml(r.judgment.status)}. Reviewed judgments take precedence; manual disagreements remain unresolved.</p>`:'<p>Missing primary judgment. This output is retained for lens analysis and excluded from the classified-output percentage denominator.</p>';
+ if(r.saved_text_decode_mismatch)$('sample-status').textContent+=' Unicode display is decoded from the saved IDs; the original text field contained replacement characters.';
  renderTokens();selectToken(state.item.boundary);
  history.replaceState(null,'',`#${state.setting}/${state.cell.cell}/${r.id}`);
 }
@@ -55,25 +57,41 @@ function renderTokens(){
   if(i===item.boundary)for(const id of ['tokens','plain-prompt']){const x=document.createElement('span');x.className='boundary';x.textContent='END OF SUPPLIED PROMPT · SAVED GENERATION BEGINS';$(id).append(x);}
   for(const id of ['tokens','plain-prompt']){
    const b=document.createElement(id==='tokens'?'button':'span');b.className=id==='tokens'?`token${item.readouts[i]?'':' pending'}`:'plain-token';b.dataset.position=i;
-   b.textContent=id==='tokens'?visibleToken(t):t;b.style.setProperty('--fve',Math.max(0,Math.min(1,item.readouts[i]?.fve||0)));
-   b.title=`Token ${i} · id ${item.token_ids[i]} · ${item.readouts[i]?'FVE '+item.readouts[i].fve.toFixed(3):'readout pending'}`;
+   b.textContent=id==='tokens'?visibleToken(t):item.plain_tokens[i];b.style.setProperty('--fve',Math.max(0,Math.min(1,state.jlens?0:(item.readouts[i]?.fve||0))));
+   b.title=`Token ${i} · id ${item.token_ids[i]} · ${item.readouts[i]?(state.jlens?'J-Lens available':'FVE '+item.readouts[i].fve.toFixed(3)):'readout pending'}`;
    b.onclick=()=>selectToken(i);b.tabIndex=0;b.setAttribute('role','button');b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectToken(i);}};$(id).append(b);
   }
  });
 }
 function selectToken(i){
  const item=state.item,r=item.readouts[i];document.querySelectorAll('[data-position]').forEach(b=>b.classList.toggle('active',Number(b.dataset.position)===i));
- $('token-title').textContent=visibleToken(item.tokens[i]);$('fve').textContent=r?r.fve.toFixed(3):'—';
- $('token-meta').textContent=`${i<item.boundary?'Prompt':'Continuation'} · position ${i}/${item.tokens.length-1} · token id ${item.token_ids[i]} · layer 64`;
+ $('token-title').textContent=visibleToken(item.tokens[i]);$('fve').textContent=r&&!state.jlens?r.fve.toFixed(3):'—';
+ $('token-meta').textContent=`${i<item.boundary?'Prompt':'Continuation'} · position ${i}/${item.tokens.length-1} · token id ${item.token_ids[i]} · layer ${state.jlens?50:64}`;
  if(!r){$('phrases').innerHTML='<li class="empty">Readout pending. The saved text and behavior judgment are already available.</li>';$('raw-sample').textContent='Not yet computed.';return;}
+ if(state.jlens){
+ const max=Math.max(...r.map(p=>p[1]),Number.MIN_VALUE);
+ $('phrases').innerHTML=r.map(([id,prob],rank)=>`<li class="prediction"><span class="prediction-fill" style="width:${100*prob/max}%"></span><span class="prediction-row"><span class="prediction-rank">${rank+1}</span><span class="prediction-text">${escapeHtml(visibleToken(item.vocabulary[id]))}</span><span class="prediction-probability">${(100*prob).toPrecision(4)}%</span></span></li>`).join('');
+ $('raw-sample').textContent=JSON.stringify(r.map(([id,prob])=>({id,text:item.vocabulary[id],probability:prob})),null,2);return;
+ }
  const max=Math.max(...r.phrases.map(p=>p[1]),.0001);
  $('phrases').innerHTML=r.phrases.map(([t,w])=>`<li class="phrase"><span class="phrase-fill" style="width:${Math.max(2,100*w/max)}%"></span><span class="phrase-row"><span class="phrase-text">${escapeHtml(t)}</span><span class="phrase-weight">${w.toFixed(3)}</span></span></li>`).join('')||'<li class="empty">No positive reconstruction weights.</li>';
  $('raw-sample').textContent=r.samples.map(([t,f],i)=>`Sample ${i+1} · FVE ${f.toFixed(3)}\n${t}`).join('\n\n');
 }
 async function init(){
  document.querySelectorAll('.view-button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.view-button').forEach(x=>x.classList.toggle('active',x===b));$('tokens').classList.toggle('hidden',b.dataset.view!=='tokens');$('plain-prompt').classList.toggle('hidden',b.dataset.view==='tokens');});
- state.index=await get('data/index.json');$('run-meta').innerHTML='<dt>Subject</dt><dd>Tülu 3 70B RL</dd><dt>Lens</dt><dd>RL adapter</dd><dt>Layer</dt><dd>64 / 80</dd><dt>Readout</dt><dd>K=8, N=8, greedy</dd>';
- const s=state.index.summary;$('coverage').textContent=`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions. ${s.readout_positions_saved.toLocaleString()} / ${s.unique_readout_positions.toLocaleString()} unique token readouts saved. Prompt readouts are reused across samples. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`;
+ const requested=new URLSearchParams(location.search).get('model');
+ $('model-select').onchange=()=>{const q=new URLSearchParams(location.search);q.set('model',$('model-select').value);location.href=`?${q}`;};
+ state.model=['gemma_base','gemma_instruct'].includes(requested)?requested:'tulu';state.jlens=state.model!=='tulu';state.base=state.jlens?`data/${state.model}`:'data';$('model-select').value=state.model;
+ state.index=await get(`${state.base}/index.json`);
+ $('run-meta').innerHTML=state.jlens?`<dt>Subject</dt><dd>Gemma 3 27B ${state.model==='gemma_base'?'Base':'IT'}</dd><dt>Lens</dt><dd>Published J-Lens</dd><dt>Layer</dt><dd>50 / 62</dd><dt>Readout</dt><dd>Top 12 · full-vocab probabilities</dd>`:'<dt>Subject</dt><dd>Tülu 3 70B RL</dd><dt>Lens</dt><dd>RL O-lens adapter</dd><dt>Layer</dt><dd>64 / 80</dd><dt>Readout</dt><dd>K=8, N=8, greedy</dd>';
+ $('provenance').href=`${state.base}/provenance.json`;
+ if(state.jlens){
+ $('lens-heading').textContent='J-Lens readout';document.querySelector('.fve-badge').hidden=true;
+ $('token-help').textContent='Click any prompt or continuation token. The lens reads the residual after the selected token and shows the top 12 next-token predictions, with full-vocabulary probabilities. Bar lengths are relative to the highest probability shown.';
+ $('interpretation').textContent='The published checkpoint-specific Jacobian transports the residual after block 50 to the final-block basis, then the model’s final normalization and vocabulary head produce a token distribution. These are linear lens readouts, not sampled continuations or evidence of causal control. Public lens fits identify the model repositories but do not pin their exact revisions; replay uses our original frozen model revisions.';
+ document.querySelector('.sample-detail summary').textContent='Raw token probabilities';
+ }
+ const s=state.index.summary;$('coverage').textContent=`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions; ${s.ungraded||0} ungraded. ${s.readout_positions_saved.toLocaleString()} / ${s.unique_readout_positions.toLocaleString()} unique token readouts saved. Prompt readouts are reused across samples. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`;
  overview();const [id,c,r]=location.hash.slice(1).split('/');setting(state.index.settings.some(s=>s.id===id)?id:state.index.settings[0].id,c,r);
 }
 init().catch(showError);

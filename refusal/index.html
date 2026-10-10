@@ -8,22 +8,22 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
-  <link rel="stylesheet" href="refusal.css">
+  <link rel="stylesheet" href="refusal.css?v=gemma1">
 </head>
-<body>
+<body class="no-jlens">
   <header class="masthead">
     <div>
-      <p class="eyebrow">Tülu 3 70B · token-level O-lens</p>
+      <p class="eyebrow">Token-level lens readouts · saved refusal experiments</p>
       <p class="section-nav"><a href="../">← Assistant Privilegeness</a></p><h1>Refusal continuations</h1>
       <p class="dek">Saved continuations across twelve reporting settings: misconduct or accurate reporting, in raw or chat format. Select a setting and condition, choose a sample, then inspect any token.</p>
     </div>
-    <dl class="run-meta" id="run-meta"></dl>
+    <label class="select-label model-picker">Model<select id="model-select"><option value="tulu">Tülu 3 70B RL · O-lens</option><option value="gemma_base">Gemma 3 27B Base · J-Lens</option><option value="gemma_instruct">Gemma 3 27B IT · J-Lens</option></select></label><dl class="run-meta" id="run-meta"></dl>
   </header>
 
   <nav class="tabs" id="tabs" aria-label="Experiments"></nav>
 
   <main>
-    <section class="panel overview"><p class="kicker">Observed behavior · final RL checkpoint</p><div id="overview"></div><p class="token-help">Bars count existing LLM judgments of assistance and refusal anywhere in the saved output. They do not identify an internal role or the timing of a transition. Both means assistance and refusal occur within the same saved window. Other means neither; unresolved means an uncertain axis.</p></section>
+    <section class="panel overview"><p class="kicker">Observed behavior · selected checkpoint</p><div id="overview"></div><p class="token-help">Bars count existing LLM judgments of assistance and refusal anywhere in the saved output. They do not identify an internal role or the timing of a transition. Both means assistance and refusal occur within the same saved window. Other means neither; unresolved means an uncertain axis. Percentages use classified outputs only; ungraded and excluded counts appear separately.</p></section>
     <section class="context-bar">
       <div>
         <p class="kicker" id="family-kicker">Experiment</p>
@@ -40,14 +40,14 @@
         <div class="panel-head">
           <div>
             <p class="kicker">Exact prompt + saved continuation</p>
-            <h3 id="prompt-label">\u2014</h3>
+            <h3 id="prompt-label">—</h3>
           </div>
           <div class="view-switch" role="group" aria-label="Prompt display">
             <button class="view-button active" data-view="tokens">Tokens</button>
             <button class="view-button" data-view="text">Plain text</button>
           </div>
         </div>
-        <p class="token-help">Whitespace is visible as <span class="mono">·</span> and <span class="mono">↵</span>. Color indicates reconstruction quality, not semantic valence.</p>
+        <p id="token-help" class="token-help">Whitespace is visible as <span class="mono">·</span> and <span class="mono">↵</span>. Color indicates reconstruction quality, not semantic valence.</p>
         <div id="tokens" class="tokens" aria-label="Tokenized prompt"></div>
         <div id="plain-prompt" class="plain-prompt hidden" aria-label="Plain-text prompt with selectable tokens"></div>
       </section>
@@ -55,7 +55,7 @@
       <aside class="panel reading-panel" aria-live="polite">
         <div class="panel-head reading-head">
           <div>
-            <p class="kicker">O-lens readout</p>
+            <p class="kicker" id="lens-heading">O-lens readout</p>
             <h3 id="token-title">Select a token</h3>
           </div>
           <div class="fve-badge">
@@ -75,7 +75,7 @@
     <section class="panel evidence"><p class="kicker">Existing behavior judgment</p><div id="evidence"></div></section><section class="method panel">
       <div>
         <p class="kicker">Interpretation</p>
-        <p>The reader generates eight phrases of eight tokens from the selected layer-64 residual vector, then the frozen activation reconstructor assigns nonnegative weights. FVE reports how much of that vector the weighted phrases reconstruct. Readouts are lossy descriptions, not literal hidden thoughts or evidence that a phrase causally controls the next token.</p>
+        <p id="interpretation">The reader generates eight phrases of eight tokens from the selected layer-64 residual vector, then the frozen activation reconstructor assigns nonnegative weights. FVE reports how much of that vector the weighted phrases reconstruct. Readouts are lossy descriptions, not literal hidden thoughts or evidence that a phrase causally controls the next token.</p>
       </div>
       <div>
         <p class="kicker">Exactness</p>
@@ -84,11 +84,11 @@
       <div>
         <p class="kicker">Coverage</p>
         <p id="coverage">Loading…</p>
-        <p><a href="data/provenance.json">Hashes and provenance</a></p>
+        <p><a id="provenance" href="data/provenance.json">Hashes and provenance</a></p>
       </div>
     </section>
   </main>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=gemma1"></script>
 </body>
 </html>
