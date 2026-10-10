@@ -12,9 +12,23 @@ function fveColorValue(value) {
 
 async function loadFamily(id) {
   if (!state.cache.has(id)) {
-    const response = await fetch(state.index.files[id]);
-    if (!response.ok) throw new Error(`Could not load ${id}: ${response.status}`);
-    state.cache.set(id, await response.json());
+    const jlensPath = state.index.jlens_files?.[id];
+    const [olensResponse, jlensResponse] = await Promise.all([
+      fetch(state.index.files[id]),
+      jlensPath ? fetch(jlensPath) : Promise.resolve(null)
+    ]);
+    if (!olensResponse.ok) throw new Error(`Could not load O-lens data for ${id}: ${olensResponse.status}`);
+    const family = await olensResponse.json();
+    if (jlensResponse) {
+      if (!jlensResponse.ok) throw new Error(`Could not load J-Lens data for ${id}: ${jlensResponse.status}`);
+      const jlens = await jlensResponse.json();
+      family.items.forEach(item => {
+        if (!jlens.items[item.id]) throw new Error(`Missing J-Lens item ${item.id}`);
+        item.jlens = jlens.items[item.id];
+        if (item.jlens.readouts.length !== item.tokens.length) throw new Error(`Token alignment failed for ${item.id}`);
+      });
+    }
+    state.cache.set(id, family);
   }
   state.family = state.cache.get(id);
   renderTabs(id);
@@ -93,6 +107,27 @@ function selectToken(index) {
       <span class="phrase-row"><span class="phrase-text">${escapeHtml(text)}</span><span class="phrase-weight">${weight.toFixed(3)}</span></span>
     </li>`).join("") : `<li class="empty">No phrase received a positive reconstruction weight.</li>`;
   $("raw-sample").textContent = reading.samples.map(([text, fve], i) => `Sample ${i + 1} \u00b7 FVE ${fve.toFixed(3)}\n${text}`).join("\n\n");
+
+  if (!state.item.jlens) return;
+  const predictions = state.item.jlens.readouts[index];
+  $("j-token-title").textContent = visibleToken(token);
+  $("j-token-meta").textContent = `position ${index} / ${state.item.tokens.length - 1}  ·  token id ${state.item.token_ids[index]}  ·  residual after block ${state.item.jlens.layer}  ·  bars relative; probabilities absolute`;
+  const maxProbability = Math.max(...predictions.map(p => p.prob), Number.MIN_VALUE);
+  $("predictions").innerHTML = predictions.map((prediction, rank) => `
+    <li class="prediction" title="Vocabulary id ${prediction.id} · logit ${prediction.logit.toFixed(3)} · tokenizer piece ${escapeHtml(prediction.piece)}">
+      <span class="prediction-fill" style="width:${Math.max(1, 100 * prediction.prob / maxProbability)}%"></span>
+      <span class="prediction-row">
+        <span class="prediction-rank">${rank + 1}</span>
+        <span class="prediction-text">${escapeHtml(visibleToken(prediction.text || prediction.piece))}</span>
+        <span class="prediction-probability">${formatProbability(prediction.prob)}</span>
+      </span>
+    </li>`).join("");
+}
+
+function formatProbability(value) {
+  if (value >= 0.1) return `${(value * 100).toFixed(1)}%`;
+  if (value >= 0.001) return `${(value * 100).toFixed(2)}%`;
+  return value.toExponential(2);
 }
 
 function escapeHtml(value) {
@@ -116,10 +151,13 @@ async function init() {
     const response = await fetch("data/index.json");
     if (!response.ok) throw new Error(`Index returned ${response.status}`);
     state.index = await response.json();
+    document.body.classList.toggle("no-jlens", !state.index.jlens);
     const lens = state.index.lens;
+    const jlensMeta = state.index.jlens ? `<dt>J-Lens</dt><dd>${state.index.jlens.fit_prompts} prompt mean Jacobian</dd>` : "";
     $("run-meta").innerHTML = `
       <dt>Subject</dt><dd>T\u00fclu 3 70B RL</dd>
-      <dt>Lens</dt><dd>RL adapter</dd>
+      <dt>O-lens</dt><dd>RL adapter</dd>
+      ${jlensMeta}
       <dt>Layer</dt><dd>${lens.layer} / 80</dd>
       <dt>Readout</dt><dd>K=${lens.K}, N=${lens.N}, greedy</dd>`;
     $("coverage").textContent = `${state.index.summary.prompts} canonical prompts across ${state.index.families.length} experiment families; ${state.index.summary.tokens.toLocaleString()} token positions, each with a readout.`;

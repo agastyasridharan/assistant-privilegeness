@@ -3,19 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Assistant Privilegeness · Tülu 3 70B O-lens</title>
+  <title>Assistant Privilegeness · Tülu 3 70B O-lens + J-Lens</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=2">
 </head>
 <body>
   <header class="masthead">
     <div>
-      <p class="eyebrow">Tülu 3 70B · token-level O-lens</p>
+      <p class="eyebrow">Tülu 3 70B · token-level O-lens + J-Lens</p>
       <h1>Assistant Privilegeness</h1>
-      <p><a href="refusal/" target="_blank" rel="noopener">Refusal continuations — open separate section ↗</a></p>
-      <p class="dek">Token-level O-lens readouts for every discrete experiment replicated on Tülu 3 70B. Select an experiment, choose a prompt, then click any token.</p>
+      <p class="dek">Matched O-lens phrase reconstructions and J-Lens vocabulary predictions for every discrete experiment replicated on Tülu 3 70B. Select an experiment, choose a prompt, then click any token.</p>
     </div>
     <dl class="run-meta" id="run-meta"></dl>
   </header>
@@ -69,16 +68,35 @@
           <pre id="raw-sample"></pre>
         </details>
       </aside>
+
+      <aside class="panel reading-panel jlens-panel" aria-live="polite">
+        <div class="panel-head reading-head">
+          <div>
+            <p class="kicker">J-Lens readout</p>
+            <h3 id="j-token-title">Select a token</h3>
+          </div>
+          <div class="rank-badge">
+            <span>TOP</span>
+            <strong>12</strong>
+          </div>
+        </div>
+        <div class="token-meta" id="j-token-meta"></div>
+        <ol class="predictions" id="predictions"></ol>
+      </aside>
     </div>
 
     <section class="method panel">
       <div>
-        <p class="kicker">Interpretation</p>
+        <p class="kicker">O-lens interpretation</p>
         <p>The reader generates eight phrases of eight tokens from the selected layer-64 residual vector, then the frozen activation reconstructor assigns nonnegative weights. FVE reports how much of that vector the weighted phrases reconstruct. Readouts are lossy descriptions, not literal hidden thoughts or evidence that a phrase causally controls the next token.</p>
       </div>
       <div>
+        <p class="kicker">J-Lens interpretation</p>
+        <p>The J-Lens transports the same layer-64 residual through a mean input-output Jacobian, then applies Tülu’s own final norm and unembedding. The list shows its highest-probability next-token predictions. These are local linear readouts, not generated text or causal claims.</p>
+      </div>
+      <div>
         <p class="kicker">Exactness</p>
-        <p>The prompt string is copied from the scored experiment manifest and tokenized with <span class="mono">add_special_tokens=False</span>. No BOS, system message, assistant header, closing user token, trailing whitespace, or generated continuation is added.</p>
+        <p>Both lenses receive the same residual after block 64 of the same Tülu revision. The prompt is tokenized with <span class="mono">add_special_tokens=False</span>; no BOS, system message, assistant header, closing user token, trailing whitespace, or continuation is added.</p>
       </div>
       <div>
         <p class="kicker">Coverage</p>
@@ -88,6 +106,6 @@
     </section>
   </main>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=2"></script>
 </body>
 </html>

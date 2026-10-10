@@ -1,5 +1,5 @@
 {
-  "protocol": "tulu70-olens-dashboard-v1",
+  "protocol": "tulu70-olens-jlens-dashboard-v2",
   "manifest_sha256": "c49886020a5d7c259d4aff2437d9ece641f6a444a42a55df062137cfae2e2689",
   "result_files": {
     "shard-0.jsonl": "b7a2e2c94a3fedc730cc7536445636c910c9ca43a31b666bacbe20f2ddbd618f",
@@ -54,5 +54,74 @@
   "source_manifests": {
     "tulu70-persona-spar-manifest.json": "5208d71c6f25e1055329b57f9ff4d55412f0b319631e4b81cef02b0f5d7d5560",
     "tulu70-paraphrase-robustness-manifest.json": "f33f51d254716d6c4b8807af9971065a30a061ab35b03b8fb148010fa36bb3d5"
+  },
+  "jlens": {
+    "method": "mean input-output Jacobian",
+    "model_repo": "allenai/Llama-3.1-Tulu-3-70B",
+    "model_revision": "cfc1d855e534a0b9b82a9cea6bf9e8dda30b10d7",
+    "jlens_code_revision": "581d398613e5602a5af361e1c34d3a92ea82ba8e",
+    "olens_layer": 64,
+    "source_block": 63,
+    "target_block": 79,
+    "fit_prompts": 100,
+    "training_corpus": "Salesforce/wikitext wikitext-103-raw-v1 train; first 100 fixed prompts",
+    "training_prompt_file_sha256": "c85eb5a18586b4d56b2da044945f336e855224cb9138d1d33795533b9739ee46",
+    "artifact_sha256": "9d068df5c281cc4a4b2e9fec7afa9bc2c347109030cbac97ed21de0daaf84e32",
+    "top_k": 12,
+    "fit_stability": {
+      "n_shards": 4,
+      "prompts_per_shard": 25,
+      "full_frobenius_norm": 113.33331482274502,
+      "half_split_comparison": {
+        "relative_frobenius": 0.08999064502795126,
+        "mean_absolute": 0.0009565918715934707,
+        "max_absolute": 0.0673828125,
+        "cosine": 0.9966484965353556
+      },
+      "shard_to_full": [
+        {
+          "relative_frobenius": 0.0676837187475486,
+          "mean_absolute": 0.0007347873019416529,
+          "max_absolute": 0.033172607421875,
+          "cosine": 0.9978115646968971
+        },
+        {
+          "relative_frobenius": 0.0728885955756518,
+          "mean_absolute": 0.0007798657867301717,
+          "max_absolute": 0.0538330078125,
+          "cosine": 0.9978404130448831
+        },
+        {
+          "relative_frobenius": 0.07836368316051649,
+          "mean_absolute": 0.000835571873263552,
+          "max_absolute": 0.052490234375,
+          "cosine": 0.9973202199059872
+        },
+        {
+          "relative_frobenius": 0.06693731703658275,
+          "mean_absolute": 0.0007285986817950896,
+          "max_absolute": 0.03961181640625,
+          "cosine": 0.9977573473858385
+        }
+      ]
+    }
+  },
+  "jlens_result_shards": {
+    "shard-0.jsonl": "4c653ab6dce0acaccbcfaf3a179fb561aa47a51c611e491dc1295911065ab33b",
+    "shard-1.jsonl": "85dde85068d9b43f4f1585863399a02900036fd8fd595b5c10780aabb6bac804",
+    "shard-2.jsonl": "a6945624b11a2802b6d782254009568bee59387a8465064f523c6dff405737b5",
+    "shard-3.jsonl": "2263c4b589b4d2ac6cc54662034a63fe78c3888b4300d4a93b6380db00557983"
+  },
+  "jlens_dashboard_files": {
+    "jlens/original.json": "553c823ef3a00ad57d7c86be224c11118b01ad0947aead612ffd1de0dc972261",
+    "jlens/performer_identity.json": "409ca4faeeffce5042eeb5af4898e8401b404e62c96da023695be0406efa0d81",
+    "jlens/shutdown.json": "20e6538935aaaecba79c7fe86defacb92f9752b02875cb009a306dec994c4195",
+    "jlens/third_person_actors.json": "adb4a4b65a1b131efdb229509c8a06b2276f77a015bb31624c0c0fd99f9766f1",
+    "jlens/historical_flippers.json": "0fdc7fa83092229935a6b70e58e0d426c8c57fc7ad942bd4b82b2c1c9a66787c",
+    "jlens/user_message_choice.json": "941227dedb96239780eb353312a5c009eda8ac572bb33d88ed523680ecdcf8bc",
+    "jlens/wording_robustness.json": "32e87ec2d85e046845cf161ee2d05f0ac711db60960de24e0d1252ace4560670",
+    "jlens/user_state.json": "72228e3266f5d052ade5b3e31a35941e80ea7c013b456dd188cbc3fd6d3cade7",
+    "jlens/automatic_logger.json": "9d61001126b42185623300aa328de2a57e8a85d5ca2f9ee71e32676556041b02",
+    "jlens/semantic_robustness.json": "afdf552caf36291e9887b06ba57a1c2dd856dfca9d11046ed6f293876c3e9883"
   }
 }

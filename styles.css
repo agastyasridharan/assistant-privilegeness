@@ -79,7 +79,9 @@ h2 { margin: 0; font-size: 27px; line-height: 1.1; font-weight: 500; }
 .select-label { min-width: min(420px, 44vw); color: var(--muted); font-size: 13px; }
 select { width: 100%; margin-top: 4px; border: 1px solid var(--line); border-radius: 5px; background: var(--panel); padding: 8px 32px 8px 10px; }
 
-.workspace { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(330px, .8fr); gap: 16px; align-items: start; }
+.workspace { display: grid; grid-template-columns: minmax(520px, 1.35fr) minmax(285px, .65fr) minmax(285px, .65fr); gap: 16px; align-items: start; }
+.no-jlens .workspace { grid-template-columns: minmax(0, 1.65fr) minmax(330px, .8fr); }
+.no-jlens .jlens-panel { display: none; }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 1px 4px rgba(44,36,22,.035); }
 .prompt-panel, .reading-panel { min-height: 520px; padding: 18px; }
 .reading-panel { position: sticky; top: 54px; }
@@ -127,6 +129,9 @@ h3 { margin: 0; font-size: 21px; font-weight: 500; }
 .fve-badge { min-width: 74px; text-align: right; }
 .fve-badge span { display: block; color: var(--muted); font: 10px/1 var(--mono); letter-spacing: .08em; }
 .fve-badge strong { font: 500 25px/1.2 var(--serif); color: var(--green); }
+.rank-badge { min-width: 52px; text-align: right; }
+.rank-badge span { display: block; color: var(--muted); font: 10px/1 var(--mono); letter-spacing: .08em; }
+.rank-badge strong { font: 500 25px/1.2 var(--serif); color: var(--purple); }
 .token-meta { margin: 12px 0 14px; color: var(--muted); font: 11px/1.6 var(--mono); }
 .phrases { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .phrase { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 4px; padding: 9px 9px 9px 12px; }
@@ -138,18 +143,26 @@ h3 { margin: 0; font-size: 21px; font-weight: 500; }
 .sample-detail { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 10px; color: var(--muted); font-size: 13px; }
 .sample-detail summary { cursor: pointer; }
 .sample-detail pre { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink); font: 11px/1.55 var(--mono); }
+.predictions { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.prediction { position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 4px; padding: 8px 8px 8px 9px; }
+.prediction-fill { position: absolute; inset: 0 auto 0 0; background: color-mix(in srgb, var(--purple) 11%, var(--panel)); z-index: 0; }
+.prediction-row { position: relative; z-index: 1; display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 7px; align-items: baseline; }
+.prediction-rank { color: var(--muted); font: 10px/1.4 var(--mono); }
+.prediction-text { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--mono); font-size: 12px; }
+.prediction-probability { color: var(--muted); font: 10px/1.4 var(--mono); white-space: nowrap; }
 
-.method { margin-top: 16px; padding: 18px; display: grid; grid-template-columns: 1.2fr 1fr .8fr; gap: 28px; }
+.method { margin-top: 16px; padding: 18px; display: grid; grid-template-columns: 1.15fr 1.15fr 1fr .75fr; gap: 28px; }
 .method p:not(.kicker) { margin: 0; color: var(--muted); }
 a { color: var(--green); text-underline-offset: 2px; }
 
-@media (max-width: 1240px) {
+@media (max-width: 1320px) {
   .masthead { display: block; }
   .masthead > div { max-width: none; }
   .run-meta { margin-top: 18px; max-width: 300px; }
   .context-bar { display: block; }
   .select-label { display: block; width: 100%; max-width: none; margin-top: 14px; }
-  .workspace { grid-template-columns: 1fr; }
+  .workspace { grid-template-columns: 1fr 1fr; }
+  .prompt-panel { grid-column: 1 / -1; }
   .reading-panel { position: static; min-height: 0; }
   .method { grid-template-columns: 1fr; }
 }
@@ -158,4 +171,6 @@ a { color: var(--green); text-underline-offset: 2px; }
   .masthead, main { padding-left: 16px; padding-right: 16px; }
   .tabs { padding-left: 12px; padding-right: 12px; }
   .prompt-panel, .reading-panel { padding: 14px; }
+  .workspace { grid-template-columns: 1fr; }
+  .prompt-panel { grid-column: auto; }
 }
