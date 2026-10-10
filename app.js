@@ -63,7 +63,7 @@ function renderTokens() {
   const node = $("tokens");
   const plain = $("plain-prompt");
   node.innerHTML = "";
-  plain.innerHTML = "";
+  if (plain) plain.innerHTML = "";
   state.item.tokens.forEach((token, i) => {
     const button = document.createElement("button");
     button.className = `token${token.startsWith("<|") ? " special" : ""}`;
@@ -87,7 +87,7 @@ function renderTokens() {
         selectToken(i);
       }
     };
-    plain.appendChild(textToken);
+    if (plain) plain.appendChild(textToken);
   });
 }
 
@@ -109,11 +109,17 @@ function selectToken(index) {
   $("raw-sample").textContent = reading.samples.map(([text, fve], i) => `Sample ${i + 1} \u00b7 FVE ${fve.toFixed(3)}\n${text}`).join("\n\n");
 
   if (!state.item.jlens) return;
+  const jTitle = $("j-token-title");
+  const jMeta = $("j-token-meta");
+  const predictionList = $("predictions");
+  // A browser may briefly combine a cached pre-J-Lens HTML shell with this
+  // newer script. Keep the O-lens usable until the refreshed shell arrives.
+  if (!jTitle || !jMeta || !predictionList) return;
   const predictions = state.item.jlens.readouts[index];
-  $("j-token-title").textContent = visibleToken(token);
-  $("j-token-meta").textContent = `position ${index} / ${state.item.tokens.length - 1}  ·  token id ${state.item.token_ids[index]}  ·  residual after block ${state.item.jlens.layer}  ·  bars relative; probabilities absolute`;
+  jTitle.textContent = visibleToken(token);
+  jMeta.textContent = `position ${index} / ${state.item.tokens.length - 1}  ·  token id ${state.item.token_ids[index]}  ·  residual after block ${state.item.jlens.layer}  ·  bars relative; probabilities absolute`;
   const maxProbability = Math.max(...predictions.map(p => p.prob), Number.MIN_VALUE);
-  $("predictions").innerHTML = predictions.map((prediction, rank) => `
+  predictionList.innerHTML = predictions.map((prediction, rank) => `
     <li class="prediction" title="Vocabulary id ${prediction.id} · logit ${prediction.logit.toFixed(3)} · tokenizer piece ${escapeHtml(prediction.piece)}">
       <span class="prediction-fill" style="width:${Math.max(1, 100 * prediction.prob / maxProbability)}%"></span>
       <span class="prediction-row">
@@ -140,7 +146,8 @@ function wireViews() {
       document.querySelectorAll(".view-button").forEach(b => b.classList.toggle("active", b === button));
       const tokenView = button.dataset.view === "tokens";
       $("tokens").classList.toggle("hidden", !tokenView);
-      $("plain-prompt").classList.toggle("hidden", tokenView);
+      const plain = $("plain-prompt");
+      if (plain) plain.classList.toggle("hidden", tokenView);
     };
   });
 }
