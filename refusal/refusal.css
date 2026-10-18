@@ -15,3 +15,5 @@ a { color:var(--green); }
 @media(max-width:950px){.masthead{flex-wrap:wrap}.model-picker{flex:1 1 220px}.no-jlens .workspace{grid-template-columns:1fr}.reading-panel{position:static}}@media(max-width:650px){.bar-row{grid-template-columns:105px 1fr 70px}}
 
 .prompt-panel{grid-column:auto}
+
+.behavior-only .workspace{display:block}

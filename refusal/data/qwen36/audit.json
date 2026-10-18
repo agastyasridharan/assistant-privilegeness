@@ -1,0 +1,32 @@
+{
+  "main": {
+    "saved": 2862,
+    "eligible_verified": 2862,
+    "selected": 3063,
+    "missing": 201,
+    "failed_requests": 26,
+    "no_retransmissions": true
+  },
+  "review": {
+    "saved": 1841,
+    "eligible_verified": 1841,
+    "selected": 1959,
+    "missing": 118,
+    "failed_requests": 118,
+    "no_retransmissions": true
+  },
+  "generation": {
+    "manifest_sha256": "a0df75beaa66bf6baace2b7cbdc9f654c8948420f3d9083066e0034ec65fa978",
+    "records": 3072,
+    "counts": {
+      "generated": 3063,
+      "excluded": 9
+    },
+    "finishes": {
+      "length": 2535,
+      "eos": 537
+    },
+    "all_conditions_complete": true
+  },
+  "status": "passed_with_explicit_missing_judgments"
+}

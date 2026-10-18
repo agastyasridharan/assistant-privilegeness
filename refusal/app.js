@@ -1,7 +1,7 @@
 const $=id=>document.getElementById(id);
 const names={refusal_only:'Refusal only',both:'Assistance + refusal',assistance_only:'Assistance only',other:'Other',uncertain:'Unresolved',ungraded:'Ungraded'};
 const colors={refusal_only:'#317663',both:'#c39443',assistance_only:'#aa665a',other:'#989898',uncertain:'#b5ab99'};
-const state={index:null,setting:null,cell:null,item:null,version:0,model:"tulu",base:"data",jlens:false};
+const state={index:null,setting:null,cell:null,item:null,version:0,model:"tulu",base:"data",jlens:false,behavior:false};
 const categories=["refusal_only","both","assistance_only","other","uncertain"];
 const escapeHtml=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const visibleToken=t=>t.replaceAll(' ','·').replaceAll('\n','↵').replaceAll('\t','⇥')||'∅';
@@ -46,9 +46,14 @@ async function loadSample(id){
  $('prompt-label').textContent=`${condition(state.cell)} · sample ${r.sample+1}`;
  const count=state.item.readouts.filter(Boolean).length;
  $('sample-status').textContent=`${r.judgment?names[r.judgment.category]:"Ungraded"} · ${r.generated_tokens} generated tokens · stop: ${r.finish_reason}${r.finish_reason==='length'?' (capped; later behavior unobserved)':''} · ${count}/${state.item.tokens.length} readouts saved · ${state.cell.excluded} excluded from this condition.`;
- $('evidence').innerHTML=r.judgment?['assistance','refusal'].map(k=>`<p><strong>${k[0].toUpperCase()+k.slice(1)}: ${escapeHtml(r.judgment.assessment[k].verdict)}</strong> — ${escapeHtml(r.judgment.assessment[k].explanation)}</p><p class="token-help">${(r.judgment.evidence[k]||[]).map(e=>`Line ${e.line}: “${escapeHtml(e.text)}”`).join('<br>')}</p>`).join('')+`<p class="token-help">Saved final judgment: ${escapeHtml(r.judgment.model)}; ${escapeHtml(r.judgment.status)}. Reviewed judgments take precedence; manual disagreements remain unresolved.</p>`:'<p>Missing primary judgment. This output is retained for lens analysis and excluded from the classified-output percentage denominator.</p>';
+ $('evidence').innerHTML=r.judgment?['assistance','refusal'].map(k=>`<p><strong>${k[0].toUpperCase()+k.slice(1)}: ${escapeHtml(r.judgment.assessment[k].verdict)}</strong> — ${escapeHtml(r.judgment.assessment[k].explanation)}</p><p class="token-help">${(r.judgment.evidence[k]||[]).map(e=>`Line ${e.line}: “${escapeHtml(e.text)}”`).join('<br>')}</p>`).join('')+`<p class="token-help">Saved final judgment: ${escapeHtml(r.judgment.model)}; ${escapeHtml(r.judgment.status)}. Reviewed judgments take precedence; manual disagreements remain unresolved.</p>`:'<p>Missing primary judgment. This saved output is excluded from the classified-output percentage denominator.</p>';
+ if(r.review_unavailable){const note=document.createElement('p');note.className='token-help';note.textContent='Selected for stronger review, but no review returned; displaying the primary judgment.';$('evidence').append(note);}
  if(r.saved_text_decode_mismatch)$('sample-status').textContent+=' Unicode display is decoded from the saved IDs; the original text field contained replacement characters.';
- renderTokens();selectToken(state.item.boundary);
+ if(state.behavior){
+ $('sample-status').textContent=`${r.judgment?names[r.judgment.category]:"Ungraded"} · ${r.generated_tokens} generated tokens · stop: ${r.finish_reason}${r.finish_reason==='length'?' (capped; later behavior unobserved)':''} · ${state.cell.excluded} excluded from this condition.`;
+ $('tokens').classList.add('hidden');$('plain-prompt').classList.remove('hidden');$('plain-prompt').replaceChildren();
+ const before=document.createElement('span');before.textContent=r.prompt;const boundary=document.createElement('span');boundary.className='boundary';boundary.textContent='END OF SUPPLIED PROMPT · SAVED GENERATION BEGINS';const after=document.createElement('span');after.textContent=r.completion;$('plain-prompt').append(before,boundary,after);
+ }else{renderTokens();selectToken(state.item.boundary);}
  history.replaceState(null,'',`#${state.setting}/${state.cell.cell}/${r.id}`);
 }
 function renderTokens(){
@@ -81,9 +86,9 @@ async function init(){
  document.querySelectorAll('.view-button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.view-button').forEach(x=>x.classList.toggle('active',x===b));$('tokens').classList.toggle('hidden',b.dataset.view!=='tokens');$('plain-prompt').classList.toggle('hidden',b.dataset.view==='tokens');});
  const requested=new URLSearchParams(location.search).get('model');
  $('model-select').onchange=()=>{const q=new URLSearchParams(location.search);q.set('model',$('model-select').value);location.href=`?${q}`;};
- state.model=['gemma_base','gemma_instruct'].includes(requested)?requested:'tulu';state.jlens=state.model!=='tulu';state.base=state.jlens?`data/${state.model}`:'data';$('model-select').value=state.model;
+ state.model=['gemma_base','gemma_instruct','qwen36'].includes(requested)?requested:'tulu';state.behavior=state.model==='qwen36';state.jlens=['gemma_base','gemma_instruct'].includes(state.model);state.base=state.model!=='tulu'?`data/${state.model}`:'data';$('model-select').value=state.model;
  state.index=await get(`${state.base}/index.json`);
- $('run-meta').innerHTML=state.jlens?`<dt>Subject</dt><dd>Gemma 3 27B ${state.model==='gemma_base'?'Base':'IT'}</dd><dt>Lens</dt><dd>Published J-Lens</dd><dt>Layer</dt><dd>50 / 62</dd><dt>Readout</dt><dd>Top 12 · full-vocab probabilities</dd>`:'<dt>Subject</dt><dd>Tülu 3 70B RL</dd><dt>Lens</dt><dd>RL O-lens adapter</dd><dt>Layer</dt><dd>64 / 80</dd><dt>Readout</dt><dd>K=8, N=8, greedy</dd>';
+ $('run-meta').innerHTML=state.behavior?'<dt>Subject</dt><dd>Qwen3.6-27B</dd><dt>Experiment</dt><dd>Behavior only · no lens</dd><dt>Chat thinking</dt><dd>Disabled</dd><dt>Generation cap</dt><dd>192 tokens</dd>':state.jlens?`<dt>Subject</dt><dd>Gemma 3 27B ${state.model==='gemma_base'?'Base':'IT'}</dd><dt>Lens</dt><dd>Published J-Lens</dd><dt>Layer</dt><dd>50 / 62</dd><dt>Readout</dt><dd>Top 12 · full-vocab probabilities</dd>`:'<dt>Subject</dt><dd>Tülu 3 70B RL</dd><dt>Lens</dt><dd>RL O-lens adapter</dd><dt>Layer</dt><dd>64 / 80</dd><dt>Readout</dt><dd>K=8, N=8, greedy</dd>';
  $('provenance').href=`${state.base}/provenance.json`;
  if(state.jlens){
  $('lens-heading').textContent='J-Lens readout';document.querySelector('.fve-badge').hidden=true;
@@ -91,7 +96,14 @@ async function init(){
  $('interpretation').textContent='The published checkpoint-specific Jacobian transports the residual after block 50 to the final-block basis, then the model’s final normalization and vocabulary head produce a token distribution. These are linear lens readouts, not sampled continuations or evidence of causal control. Public lens fits identify the model repositories but do not pin their exact revisions; replay uses our original frozen model revisions.';
  document.querySelector('.sample-detail summary').textContent='Raw token probabilities';
  }
- const s=state.index.summary;$('coverage').textContent=`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions; ${s.ungraded||0} ungraded. ${s.readout_positions_saved.toLocaleString()} / ${s.unique_readout_positions.toLocaleString()} unique token readouts saved. Prompt readouts are reused across samples. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`;
+ if(state.behavior){
+ document.querySelector('.eyebrow').textContent='Behavioral trials · saved refusal experiments';document.querySelector('.dek').textContent='Saved Qwen3.6-27B continuations across twelve reporting settings: misconduct or accurate reporting, in raw or chat format. Select a setting, condition, and sample to inspect its text and behavior judgment.';
+ document.body.classList.add('behavior-only');document.querySelector('.reading-panel').hidden=true;document.querySelector('.view-switch').hidden=true;
+ $('token-help').textContent='Full supplied prompt and saved continuation. No lens readouts were computed.';
+ $('interpretation').textContent='These are behavioral trials: twelve fixed reporting settings, two objectives, raw versus native chat formatting, and 64 samples per condition. Chat thinking is disabled through the native template; raw prefixes are unchanged and can themselves generate thinking markers. Those markers remain part of the observed text. Existing assistance/refusal rubrics classify visible behavior, not internal roles or causal mechanisms.';
+ document.querySelector('.method > div:nth-child(2) p:not(.kicker)').textContent='New generations use the pinned Qwen3.6-27B checkpoint, temperature 1, top-p 1, no top-k restriction, and the native stop tokens. Exact input/output IDs and finish reasons are saved. The 192-token cap matches the earlier refusal trials; a capped output cannot rule out a later transition.';
+ }
+ const s=state.index.summary;$('coverage').textContent=state.behavior?`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions; ${s.ungraded||0} ungraded. ${s.missing_selected_reviews||0} selected stronger reviews unavailable; primary labels retained where present. All 48 conditions generated. Missing judgments reflect failed API requests; classified-output percentages may be affected by this missingness. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`:`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions; ${s.ungraded||0} ungraded. ${s.readout_positions_saved.toLocaleString()} / ${s.unique_readout_positions.toLocaleString()} unique token readouts saved. Prompt readouts are reused across samples. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`;
  overview();const [id,c,r]=location.hash.slice(1).split('/');setting(state.index.settings.some(s=>s.id===id)?id:state.index.settings[0].id,c,r);
 }
 init().catch(showError);

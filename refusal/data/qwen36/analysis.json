@@ -1,0 +1,116 @@
+{
+  "summary": {
+    "retained": 3063,
+    "excluded": 9,
+    "ungraded": 201,
+    "planned": 3072,
+    "conditions": 48,
+    "main_labels": 2862,
+    "review_labels": 1841,
+    "saved_main_labels": 2862,
+    "saved_review_labels": 1841,
+    "original_selected_reviews": 1959,
+    "selected_reviews": 1959,
+    "missing_selected_reviews": 118,
+    "quarantined": 0,
+    "retained_finish_counts": {
+      "eos": 537,
+      "length": 2526
+    }
+  },
+  "groups": [
+    {
+      "condition": "unsafe",
+      "format": "raw",
+      "classified": 700,
+      "retained_finish_counts": {
+        "eos": 111,
+        "length": 656
+      },
+      "counts": {
+        "refusal_only": 76,
+        "both": 360,
+        "assistance_only": 226,
+        "other": 35,
+        "uncertain": 3
+      },
+      "percent": {
+        "refusal_only": 10.857142857142858,
+        "both": 51.42857142857143,
+        "assistance_only": 32.285714285714285,
+        "other": 5.0,
+        "uncertain": 0.42857142857142855
+      },
+      "ungraded": 67,
+      "excluded": 1
+    },
+    {
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "classified": 706,
+      "retained_finish_counts": {
+        "length": 411,
+        "eos": 356
+      },
+      "counts": {
+        "refusal_only": 699,
+        "other": 7
+      },
+      "percent": {
+        "refusal_only": 99.0084985835694,
+        "other": 0.9915014164305949
+      },
+      "ungraded": 61,
+      "excluded": 1
+    },
+    {
+      "condition": "benign",
+      "format": "raw",
+      "classified": 721,
+      "retained_finish_counts": {
+        "length": 739,
+        "eos": 25
+      },
+      "counts": {
+        "assistance_only": 633,
+        "other": 85,
+        "both": 2,
+        "refusal_only": 1
+      },
+      "percent": {
+        "assistance_only": 87.79472954230236,
+        "other": 11.789181692094314,
+        "both": 0.27739251040221913,
+        "refusal_only": 0.13869625520110956
+      },
+      "ungraded": 43,
+      "excluded": 4
+    },
+    {
+      "condition": "benign",
+      "format": "assistant_turn",
+      "classified": 735,
+      "retained_finish_counts": {
+        "length": 720,
+        "eos": 45
+      },
+      "counts": {
+        "other": 5,
+        "both": 40,
+        "assistance_only": 690
+      },
+      "percent": {
+        "other": 0.6802721088435374,
+        "both": 5.442176870748299,
+        "assistance_only": 93.87755102040816
+      },
+      "ungraded": 30,
+      "excluded": 3
+    }
+  ],
+  "limitations": [
+    "Available-case percentages exclude ungraded outputs; missing API judgments need not be random.",
+    "A length-capped output cannot rule out a later transition.",
+    "Assistance/refusal labels describe visible text and do not identify an internal assistant state."
+  ]
+}
