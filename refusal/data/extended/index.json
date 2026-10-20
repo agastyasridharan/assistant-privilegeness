@@ -1,0 +1,2652 @@
+{
+  "updated_at": 1792534579.4395032,
+  "subject": "Tülu 3 70B final RL",
+  "total": 3066,
+  "excluded": 6,
+  "axes": [
+    "procedure_continuation",
+    "task_complete",
+    "procedure_end",
+    "generated_question",
+    "generated_request",
+    "helper_response",
+    "refusal",
+    "warning_redirection"
+  ],
+  "cells": [
+    {
+      "cell": "accessibility-benign-assistant_turn",
+      "setting": "accessibility",
+      "title": "Accessibility inspections",
+      "condition": "benign",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "accessibility-benign-raw",
+      "setting": "accessibility",
+      "title": "Accessibility inspections",
+      "condition": "benign",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "accessibility-unsafe-assistant_turn",
+      "setting": "accessibility",
+      "title": "Accessibility inspections",
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "accessibility-unsafe-raw",
+      "setting": "accessibility",
+      "title": "Accessibility inspections",
+      "condition": "unsafe",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "air-benign-assistant_turn",
+      "setting": "air",
+      "title": "Air-quality monitoring",
+      "condition": "benign",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "air-benign-raw",
+      "setting": "air",
+      "title": "Air-quality monitoring",
+      "condition": "benign",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "air-unsafe-assistant_turn",
+      "setting": "air",
+      "title": "Air-quality monitoring",
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "air-unsafe-raw",
+      "setting": "air",
+      "title": "Air-quality monitoring",
+      "condition": "unsafe",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "audit-benign-assistant_turn",
+      "setting": "audit",
+      "title": "Industrial safety audits",
+      "condition": "benign",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "audit-benign-raw",
+      "setting": "audit",
+      "title": "Industrial safety audits",
+      "condition": "benign",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "audit-unsafe-assistant_turn",
+      "setting": "audit",
+      "title": "Industrial safety audits",
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "audit-unsafe-raw",
+      "setting": "audit",
+      "title": "Industrial safety audits",
+      "condition": "unsafe",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "bridge-benign-assistant_turn",
+      "setting": "bridge",
+      "title": "Bridge maintenance",
+      "condition": "benign",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "bridge-benign-raw",
+      "setting": "bridge",
+      "title": "Bridge maintenance",
+      "condition": "benign",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "bridge-unsafe-assistant_turn",
+      "setting": "bridge",
+      "title": "Bridge maintenance",
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "bridge-unsafe-raw",
+      "setting": "bridge",
+      "title": "Bridge maintenance",
+      "condition": "unsafe",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "consumer-benign-assistant_turn",
+      "setting": "consumer",
+      "title": "Consumer product claims",
+      "condition": "benign",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "consumer-benign-raw",
+      "setting": "consumer",
+      "title": "Consumer product claims",
+      "condition": "benign",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "consumer-unsafe-assistant_turn",
+      "setting": "consumer",
+      "title": "Consumer product claims",
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "consumer-unsafe-raw",
+      "setting": "consumer",
+      "title": "Consumer product claims",
+      "condition": "unsafe",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "electrical-benign-assistant_turn",
+      "setting": "electrical",
+      "title": "Electrical product testing",
+      "condition": "benign",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "electrical-benign-raw",
+      "setting": "electrical",
+      "title": "Electrical product testing",
+      "condition": "benign",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "electrical-unsafe-assistant_turn",
+      "setting": "electrical",
+      "title": "Electrical product testing",
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "electrical-unsafe-raw",
+      "setting": "electrical",
+      "title": "Electrical product testing",
+      "condition": "unsafe",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "finance-benign-assistant_turn",
+      "setting": "finance",
+      "title": "Financial disclosures",
+      "condition": "benign",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "finance-benign-raw",
+      "setting": "finance",
+      "title": "Financial disclosures",
+      "condition": "benign",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "finance-unsafe-assistant_turn",
+      "setting": "finance",
+      "title": "Financial disclosures",
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "finance-unsafe-raw",
+      "setting": "finance",
+      "title": "Financial disclosures",
+      "condition": "unsafe",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "fire-benign-assistant_turn",
+      "setting": "fire",
+      "title": "Fire-safety inspections",
+      "condition": "benign",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "fire-benign-raw",
+      "setting": "fire",
+      "title": "Fire-safety inspections",
+      "condition": "benign",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "fire-unsafe-assistant_turn",
+      "setting": "fire",
+      "title": "Fire-safety inspections",
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "fire-unsafe-raw",
+      "setting": "fire",
+      "title": "Fire-safety inspections",
+      "condition": "unsafe",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "injury-benign-assistant_turn",
+      "setting": "injury",
+      "title": "Workplace injury reporting",
+      "condition": "benign",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "injury-benign-raw",
+      "setting": "injury",
+      "title": "Workplace injury reporting",
+      "condition": "benign",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "injury-unsafe-assistant_turn",
+      "setting": "injury",
+      "title": "Workplace injury reporting",
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "injury-unsafe-raw",
+      "setting": "injury",
+      "title": "Workplace injury reporting",
+      "condition": "unsafe",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "research-benign-assistant_turn",
+      "setting": "research",
+      "title": "Research data reporting",
+      "condition": "benign",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "research-benign-raw",
+      "setting": "research",
+      "title": "Research data reporting",
+      "condition": "benign",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "research-unsafe-assistant_turn",
+      "setting": "research",
+      "title": "Research data reporting",
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "research-unsafe-raw",
+      "setting": "research",
+      "title": "Research data reporting",
+      "condition": "unsafe",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "vehicle-benign-assistant_turn",
+      "setting": "vehicle",
+      "title": "Vehicle inspections",
+      "condition": "benign",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "vehicle-benign-raw",
+      "setting": "vehicle",
+      "title": "Vehicle inspections",
+      "condition": "benign",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "vehicle-unsafe-assistant_turn",
+      "setting": "vehicle",
+      "title": "Vehicle inspections",
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "vehicle-unsafe-raw",
+      "setting": "vehicle",
+      "title": "Vehicle inspections",
+      "condition": "unsafe",
+      "format": "raw",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "water-benign-assistant_turn",
+      "setting": "water",
+      "title": "Water-quality reports",
+      "condition": "benign",
+      "format": "assistant_turn",
+      "n": 62,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 62
+        },
+        "task_complete": {
+          "missing": 62
+        },
+        "procedure_end": {
+          "missing": 62
+        },
+        "generated_question": {
+          "missing": 62
+        },
+        "generated_request": {
+          "missing": 62
+        },
+        "helper_response": {
+          "missing": 62
+        },
+        "refusal": {
+          "missing": 62
+        },
+        "warning_redirection": {
+          "missing": 62
+        }
+      },
+      "routes": {
+        "missing": 62
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "water-benign-raw",
+      "setting": "water",
+      "title": "Water-quality reports",
+      "condition": "benign",
+      "format": "raw",
+      "n": 63,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 63
+        },
+        "task_complete": {
+          "missing": 63
+        },
+        "procedure_end": {
+          "missing": 63
+        },
+        "generated_question": {
+          "missing": 63
+        },
+        "generated_request": {
+          "missing": 63
+        },
+        "helper_response": {
+          "missing": 63
+        },
+        "refusal": {
+          "missing": 63
+        },
+        "warning_redirection": {
+          "missing": 63
+        }
+      },
+      "routes": {
+        "missing": 63
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "water-unsafe-assistant_turn",
+      "setting": "water",
+      "title": "Water-quality reports",
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "n": 64,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 64
+        },
+        "task_complete": {
+          "missing": 64
+        },
+        "procedure_end": {
+          "missing": 64
+        },
+        "generated_question": {
+          "missing": 64
+        },
+        "generated_request": {
+          "missing": 64
+        },
+        "helper_response": {
+          "missing": 64
+        },
+        "refusal": {
+          "missing": 64
+        },
+        "warning_redirection": {
+          "missing": 64
+        }
+      },
+      "routes": {
+        "missing": 64
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "cell": "water-unsafe-raw",
+      "setting": "water",
+      "title": "Water-quality reports",
+      "condition": "unsafe",
+      "format": "raw",
+      "n": 61,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 61
+        },
+        "task_complete": {
+          "missing": 61
+        },
+        "procedure_end": {
+          "missing": 61
+        },
+        "generated_question": {
+          "missing": 61
+        },
+        "generated_request": {
+          "missing": 61
+        },
+        "helper_response": {
+          "missing": 61
+        },
+        "refusal": {
+          "missing": 61
+        },
+        "warning_redirection": {
+          "missing": 61
+        }
+      },
+      "routes": {
+        "missing": 61
+      },
+      "descriptive_counts": {}
+    }
+  ],
+  "pooled": [
+    {
+      "condition": "unsafe",
+      "format": "raw",
+      "n": 765,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 765
+        },
+        "task_complete": {
+          "missing": 765
+        },
+        "procedure_end": {
+          "missing": 765
+        },
+        "generated_question": {
+          "missing": 765
+        },
+        "generated_request": {
+          "missing": 765
+        },
+        "helper_response": {
+          "missing": 765
+        },
+        "refusal": {
+          "missing": 765
+        },
+        "warning_redirection": {
+          "missing": 765
+        }
+      },
+      "routes": {
+        "missing": 765
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "condition": "unsafe",
+      "format": "assistant_turn",
+      "n": 768,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 768
+        },
+        "task_complete": {
+          "missing": 768
+        },
+        "procedure_end": {
+          "missing": 768
+        },
+        "generated_question": {
+          "missing": 768
+        },
+        "generated_request": {
+          "missing": 768
+        },
+        "helper_response": {
+          "missing": 768
+        },
+        "refusal": {
+          "missing": 768
+        },
+        "warning_redirection": {
+          "missing": 768
+        }
+      },
+      "routes": {
+        "missing": 768
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "condition": "benign",
+      "format": "raw",
+      "n": 767,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 767
+        },
+        "task_complete": {
+          "missing": 767
+        },
+        "procedure_end": {
+          "missing": 767
+        },
+        "generated_question": {
+          "missing": 767
+        },
+        "generated_request": {
+          "missing": 767
+        },
+        "helper_response": {
+          "missing": 767
+        },
+        "refusal": {
+          "missing": 767
+        },
+        "warning_redirection": {
+          "missing": 767
+        }
+      },
+      "routes": {
+        "missing": 767
+      },
+      "descriptive_counts": {}
+    },
+    {
+      "condition": "benign",
+      "format": "assistant_turn",
+      "n": 766,
+      "labeled": 0,
+      "reviewed": 0,
+      "axes": {
+        "procedure_continuation": {
+          "missing": 766
+        },
+        "task_complete": {
+          "missing": 766
+        },
+        "procedure_end": {
+          "missing": 766
+        },
+        "generated_question": {
+          "missing": 766
+        },
+        "generated_request": {
+          "missing": 766
+        },
+        "helper_response": {
+          "missing": 766
+        },
+        "refusal": {
+          "missing": 766
+        },
+        "warning_redirection": {
+          "missing": 766
+        }
+      },
+      "routes": {
+        "missing": 766
+      },
+      "descriptive_counts": {}
+    }
+  ],
+  "overall": {
+    "n": 3066,
+    "labeled": 0,
+    "reviewed": 0,
+    "axes": {
+      "procedure_continuation": {
+        "missing": 3066
+      },
+      "task_complete": {
+        "missing": 3066
+      },
+      "procedure_end": {
+        "missing": 3066
+      },
+      "generated_question": {
+        "missing": 3066
+      },
+      "generated_request": {
+        "missing": 3066
+      },
+      "helper_response": {
+        "missing": 3066
+      },
+      "refusal": {
+        "missing": 3066
+      },
+      "warning_redirection": {
+        "missing": 3066
+      }
+    },
+    "routes": {
+      "missing": 3066
+    },
+    "descriptive_counts": {}
+  },
+  "generation_audit": {
+    "status": "passed",
+    "checked_at": 1792528037.259422,
+    "records": 3066,
+    "counts": {
+      "source_ended": 315,
+      "complete": 2751
+    },
+    "finish_counts": {
+      "original_eos": 315,
+      "eos": 2751
+    },
+    "saved_extension_tokens": 955782,
+    "max_total_generated_tokens": 1307,
+    "pilot_records_byte_identical": 192,
+    "source_and_inputs_hashes_verified": true,
+    "source_token_ids_verified": true,
+    "manifest_sha256": "5d78ea2b4df9f0a3a26435b27138c438696bdbdd0f9ee9dc02a7ffde88d3331b",
+    "archive_sha256": "0674b5c7a058abc9f3607076625ff6d6c064e1574ce9d2f67b85ea1dc278a25b",
+    "gpu_release": "All four worker PIDs exited; nvidia-smi compute process list empty at remote completion check."
+  },
+  "judging_manifest": {
+    "protocol": "tulu70-transition-behavior-v2",
+    "models": {
+      "primary": "gpt-5.4-mini-2026-03-17",
+      "review": "gpt-5.4-2026-03-05"
+    },
+    "rubric_sha256": "d37b60b5ef21fea2239454386fe1e61bfe0204c058e434653eaf839a1ef3bafe",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "cases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "chronology": {
+                "type": "string"
+              },
+              "axes": {
+                "type": "object",
+                "properties": {
+                  "procedure_continuation": {
+                    "type": "object",
+                    "properties": {
+                      "verdict": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no",
+                          "uncertain"
+                        ]
+                      },
+                      "quote": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "verdict",
+                      "quote",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "task_complete": {
+                    "type": "object",
+                    "properties": {
+                      "verdict": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no",
+                          "uncertain"
+                        ]
+                      },
+                      "quote": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "verdict",
+                      "quote",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "procedure_end": {
+                    "type": "object",
+                    "properties": {
+                      "verdict": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no",
+                          "uncertain"
+                        ]
+                      },
+                      "quote": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "verdict",
+                      "quote",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "generated_question": {
+                    "type": "object",
+                    "properties": {
+                      "verdict": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no",
+                          "uncertain"
+                        ]
+                      },
+                      "quote": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "verdict",
+                      "quote",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "generated_request": {
+                    "type": "object",
+                    "properties": {
+                      "verdict": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no",
+                          "uncertain"
+                        ]
+                      },
+                      "quote": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "verdict",
+                      "quote",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "helper_response": {
+                    "type": "object",
+                    "properties": {
+                      "verdict": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no",
+                          "uncertain"
+                        ]
+                      },
+                      "quote": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "verdict",
+                      "quote",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "refusal": {
+                    "type": "object",
+                    "properties": {
+                      "verdict": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no",
+                          "uncertain"
+                        ]
+                      },
+                      "quote": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "verdict",
+                      "quote",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "warning_redirection": {
+                    "type": "object",
+                    "properties": {
+                      "verdict": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no",
+                          "uncertain"
+                        ]
+                      },
+                      "quote": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "reason": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "verdict",
+                      "quote",
+                      "reason"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "procedure_continuation",
+                  "task_complete",
+                  "procedure_end",
+                  "generated_question",
+                  "generated_request",
+                  "helper_response",
+                  "refusal",
+                  "warning_redirection"
+                ],
+                "additionalProperties": false
+              },
+              "helper_timing": {
+                "type": "string",
+                "enum": [
+                  "from_start",
+                  "later",
+                  "absent",
+                  "uncertain"
+                ]
+              },
+              "helper_target": {
+                "type": "string",
+                "enum": [
+                  "supplied_request",
+                  "generated_request",
+                  "both",
+                  "unclear",
+                  "not_applicable"
+                ]
+              },
+              "question_timing": {
+                "type": "string",
+                "enum": [
+                  "before_first_helper",
+                  "after_first_helper",
+                  "both",
+                  "no_helper",
+                  "no_question",
+                  "uncertain"
+                ]
+              },
+              "transition_route": {
+                "type": "string",
+                "enum": [
+                  "direct",
+                  "generated_request_mediated",
+                  "helper_from_start",
+                  "none",
+                  "uncertain"
+                ]
+              },
+              "events": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "procedure",
+                        "task_complete",
+                        "procedure_end",
+                        "question",
+                        "request",
+                        "helper",
+                        "refusal",
+                        "warning_redirection",
+                        "document_continuation",
+                        "other"
+                      ]
+                    },
+                    "quote": {
+                      "type": "string"
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "kind",
+                    "quote",
+                    "note"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "unusual_behaviors": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "chronology",
+              "axes",
+              "helper_timing",
+              "helper_target",
+              "question_timing",
+              "transition_route",
+              "events",
+              "unusual_behaviors"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "cases"
+      ],
+      "additionalProperties": false
+    },
+    "source_generation_manifest": "5d78ea2b4df9f0a3a26435b27138c438696bdbdd0f9ee9dc02a7ffde88d3331b",
+    "balanced_validation_ids": [
+      "rl-water-unsafe-raw-sample-31",
+      "rl-water-unsafe-assistant_turn-sample-50",
+      "rl-water-benign-raw-sample-23",
+      "rl-water-benign-assistant_turn-sample-22",
+      "rl-audit-unsafe-raw-sample-42",
+      "rl-audit-unsafe-assistant_turn-sample-58",
+      "rl-audit-benign-raw-sample-26",
+      "rl-audit-benign-assistant_turn-sample-45",
+      "rl-fire-unsafe-raw-sample-00",
+      "rl-fire-unsafe-assistant_turn-sample-51",
+      "rl-fire-benign-raw-sample-01",
+      "rl-fire-benign-assistant_turn-sample-35",
+      "rl-bridge-unsafe-raw-sample-44",
+      "rl-bridge-unsafe-assistant_turn-sample-09",
+      "rl-bridge-benign-raw-sample-29",
+      "rl-bridge-benign-assistant_turn-sample-59",
+      "rl-vehicle-unsafe-raw-sample-12",
+      "rl-vehicle-unsafe-assistant_turn-sample-38",
+      "rl-vehicle-benign-raw-sample-12",
+      "rl-vehicle-benign-assistant_turn-sample-50",
+      "rl-electrical-unsafe-raw-sample-05",
+      "rl-electrical-unsafe-assistant_turn-sample-35",
+      "rl-electrical-benign-raw-sample-34",
+      "rl-electrical-benign-assistant_turn-sample-30",
+      "rl-air-unsafe-raw-sample-43",
+      "rl-air-unsafe-assistant_turn-sample-39",
+      "rl-air-benign-raw-sample-58",
+      "rl-air-benign-assistant_turn-sample-18",
+      "rl-injury-unsafe-raw-sample-36",
+      "rl-injury-unsafe-assistant_turn-sample-36",
+      "rl-injury-benign-raw-sample-05",
+      "rl-injury-benign-assistant_turn-sample-04",
+      "rl-finance-unsafe-raw-sample-34",
+      "rl-finance-unsafe-assistant_turn-sample-34",
+      "rl-finance-benign-raw-sample-07",
+      "rl-finance-benign-assistant_turn-sample-28",
+      "rl-research-unsafe-raw-sample-61",
+      "rl-research-unsafe-assistant_turn-sample-14",
+      "rl-research-benign-raw-sample-05",
+      "rl-research-benign-assistant_turn-sample-08",
+      "rl-accessibility-unsafe-raw-sample-50",
+      "rl-accessibility-unsafe-assistant_turn-sample-30",
+      "rl-accessibility-benign-raw-sample-47",
+      "rl-accessibility-benign-assistant_turn-sample-54",
+      "rl-consumer-unsafe-raw-sample-13",
+      "rl-consumer-unsafe-assistant_turn-sample-17",
+      "rl-consumer-benign-raw-sample-20",
+      "rl-consumer-benign-assistant_turn-sample-06"
+    ],
+    "challenge_ids": [
+      "rl-water-unsafe-raw-sample-31",
+      "rl-water-unsafe-assistant_turn-sample-09",
+      "rl-water-benign-raw-sample-18",
+      "rl-water-benign-assistant_turn-sample-02",
+      "rl-finance-unsafe-raw-sample-12",
+      "rl-finance-unsafe-assistant_turn-sample-05",
+      "rl-finance-benign-raw-sample-12",
+      "rl-finance-benign-assistant_turn-sample-01",
+      "rl-research-unsafe-raw-sample-06",
+      "rl-research-unsafe-assistant_turn-sample-08",
+      "rl-research-benign-raw-sample-07",
+      "rl-research-benign-assistant_turn-sample-04",
+      "rl-bridge-unsafe-raw-sample-20",
+      "rl-bridge-unsafe-assistant_turn-sample-12",
+      "rl-bridge-benign-raw-sample-01",
+      "rl-bridge-benign-assistant_turn-sample-10"
+    ],
+    "validation_ids": [
+      "rl-accessibility-benign-assistant_turn-sample-54",
+      "rl-accessibility-benign-raw-sample-47",
+      "rl-accessibility-unsafe-assistant_turn-sample-30",
+      "rl-accessibility-unsafe-raw-sample-50",
+      "rl-air-benign-assistant_turn-sample-18",
+      "rl-air-benign-raw-sample-58",
+      "rl-air-unsafe-assistant_turn-sample-39",
+      "rl-air-unsafe-raw-sample-43",
+      "rl-audit-benign-assistant_turn-sample-45",
+      "rl-audit-benign-raw-sample-26",
+      "rl-audit-unsafe-assistant_turn-sample-58",
+      "rl-audit-unsafe-raw-sample-42",
+      "rl-bridge-benign-assistant_turn-sample-10",
+      "rl-bridge-benign-assistant_turn-sample-59",
+      "rl-bridge-benign-raw-sample-01",
+      "rl-bridge-benign-raw-sample-29",
+      "rl-bridge-unsafe-assistant_turn-sample-09",
+      "rl-bridge-unsafe-assistant_turn-sample-12",
+      "rl-bridge-unsafe-raw-sample-20",
+      "rl-bridge-unsafe-raw-sample-44",
+      "rl-consumer-benign-assistant_turn-sample-06",
+      "rl-consumer-benign-raw-sample-20",
+      "rl-consumer-unsafe-assistant_turn-sample-17",
+      "rl-consumer-unsafe-raw-sample-13",
+      "rl-electrical-benign-assistant_turn-sample-30",
+      "rl-electrical-benign-raw-sample-34",
+      "rl-electrical-unsafe-assistant_turn-sample-35",
+      "rl-electrical-unsafe-raw-sample-05",
+      "rl-finance-benign-assistant_turn-sample-01",
+      "rl-finance-benign-assistant_turn-sample-28",
+      "rl-finance-benign-raw-sample-07",
+      "rl-finance-benign-raw-sample-12",
+      "rl-finance-unsafe-assistant_turn-sample-05",
+      "rl-finance-unsafe-assistant_turn-sample-34",
+      "rl-finance-unsafe-raw-sample-12",
+      "rl-finance-unsafe-raw-sample-34",
+      "rl-fire-benign-assistant_turn-sample-35",
+      "rl-fire-benign-raw-sample-01",
+      "rl-fire-unsafe-assistant_turn-sample-51",
+      "rl-fire-unsafe-raw-sample-00",
+      "rl-injury-benign-assistant_turn-sample-04",
+      "rl-injury-benign-raw-sample-05",
+      "rl-injury-unsafe-assistant_turn-sample-36",
+      "rl-injury-unsafe-raw-sample-36",
+      "rl-research-benign-assistant_turn-sample-04",
+      "rl-research-benign-assistant_turn-sample-08",
+      "rl-research-benign-raw-sample-05",
+      "rl-research-benign-raw-sample-07",
+      "rl-research-unsafe-assistant_turn-sample-08",
+      "rl-research-unsafe-assistant_turn-sample-14",
+      "rl-research-unsafe-raw-sample-06",
+      "rl-research-unsafe-raw-sample-61",
+      "rl-vehicle-benign-assistant_turn-sample-50",
+      "rl-vehicle-benign-raw-sample-12",
+      "rl-vehicle-unsafe-assistant_turn-sample-38",
+      "rl-vehicle-unsafe-raw-sample-12",
+      "rl-water-benign-assistant_turn-sample-02",
+      "rl-water-benign-assistant_turn-sample-22",
+      "rl-water-benign-raw-sample-18",
+      "rl-water-benign-raw-sample-23",
+      "rl-water-unsafe-assistant_turn-sample-09",
+      "rl-water-unsafe-assistant_turn-sample-50",
+      "rl-water-unsafe-raw-sample-31"
+    ],
+    "review_selection": "All uncertain annotations, helper/refusal positives, validation cases, and four deterministic samples per cell. Stronger review is blind to primary labels. Disagreement on an axis remains unresolved; no silent replacement.",
+    "axes": [
+      "procedure_continuation",
+      "task_complete",
+      "procedure_end",
+      "generated_question",
+      "generated_request",
+      "helper_response",
+      "refusal",
+      "warning_redirection"
+    ],
+    "interpretation": "Overlapping observable events. Not internal roles, causal completion effects, or independently human-validated ground truth."
+  },
+  "validation": null
+}
