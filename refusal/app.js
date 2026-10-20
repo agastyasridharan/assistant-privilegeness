@@ -72,12 +72,12 @@ async function loadSample(id,requestedToken=null){
 function renderTokens(){
  const item=state.item;$('tokens').replaceChildren();$('plain-prompt').replaceChildren();
  item.tokens.forEach((t,i)=>{
-  if(i===item.extension_boundary&&i<item.tokens.length)for(const id of ['tokens','plain-prompt']){const x=document.createElement('span');x.className='boundary';x.textContent='ORIGINAL WINDOW ENDS · CONDITIONAL EXTENSION · LENS READOUTS NOT COMPUTED';$(id).append(x);}
+  if(i===item.extension_boundary&&i<item.tokens.length)for(const id of ['tokens','plain-prompt']){const x=document.createElement('span');x.className='boundary';x.textContent='ORIGINAL WINDOW ENDS · CONDITIONAL EXTENSION';$(id).append(x);}
   if(i===item.boundary)for(const id of ['tokens','plain-prompt']){const x=document.createElement('span');x.className='boundary';x.textContent='END OF SUPPLIED PROMPT · SAVED GENERATION BEGINS';$(id).append(x);}
   for(const id of ['tokens','plain-prompt']){
    const b=document.createElement(id==='tokens'?'button':'span');b.className=id==='tokens'?`token${item.readouts[i]?'':' pending'}`:'plain-token';b.dataset.position=i;
    b.textContent=id==='tokens'?visibleToken(t):item.plain_tokens[i];b.style.setProperty('--fve',Math.max(0,Math.min(1,(state.jlens||state.olens)?0:(item.readouts[i]?.fve||0))));
-   b.title=`Token ${i} · id ${item.token_ids[i]} · ${item.readouts[i]?(state.olens?(item.readouts[i].status==='excluded'?'Readout screened out':'O-Lens available · unweighted'):state.jlens?'J-Lens available':'FVE '+item.readouts[i].fve.toFixed(3)):'no saved readout'}`;
+   b.title=`Token ${i} · id ${item.token_ids[i]} · ${item.readouts[i]?(state.olens?(item.readouts[i].status==='excluded'?'Readout screened out':'O-Lens available · unweighted'):state.jlens?'J-Lens available':(item.readouts[i].status==='excluded'?'Readout screened out':'FVE '+item.readouts[i].fve.toFixed(3))):'no saved readout'}`;
    b.onclick=()=>selectToken(i);b.tabIndex=0;b.setAttribute('role','button');b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectToken(i);}};$(id).append(b);
   }
  });
@@ -113,9 +113,10 @@ function selectToken(i){
  $('token-link').href=location.href;
  $('copy-token-link').textContent='Copy token link';
  const item=state.item,r=item.readouts[i];document.querySelectorAll('[data-position]').forEach(b=>b.classList.toggle('active',Number(b.dataset.position)===i));
- $('token-title').textContent=visibleToken(item.tokens[i]);$('fve').textContent=r&&!state.jlens&&!state.olens?r.fve.toFixed(3):'—';
+ $('token-title').textContent=visibleToken(item.tokens[i]);$('fve').textContent=r&&r.status!=='excluded'&&!state.jlens&&!state.olens?r.fve.toFixed(3):'—';
  $('token-meta').textContent=`${i<item.boundary?'Prompt':'Continuation'} · position ${i}/${item.tokens.length-1} · token id ${item.token_ids[i]} · layer ${state.olens?56:state.jlens?50:64}`;
- if(!r){$('phrases').innerHTML=state.model==='tulu'?'<li class="empty">No O-Lens readout was computed for this token. No replay job is running. The full continuation and behavioral labels are available below.</li>':'<li class="empty">No readout available for this token.</li>';$('raw-sample').textContent='No saved readout.';return;}
+ if(!r){$('phrases').innerHTML=state.model==='tulu'?`<li class="empty">${escapeHtml(TuluExtended.pending())}</li>`:'<li class="empty">No readout available for this token.</li>';$('raw-sample').textContent='No saved readout.';return;}
+ if(r.status==='excluded'){$('phrases').innerHTML='<li class="empty">Readout screened out. This token remains in the saved continuation.</li>';$('raw-sample').textContent='Excluded by readout screening; text is not published.';return;}
  if(state.olens){
  if(r.status==='excluded'){$('phrases').innerHTML='<li class="empty">Readout screened out. This token remains in the saved continuation.</li>';$('raw-sample').textContent='Excluded by readout screening; text is not published.';return;}
  const phrases=r.text.split('\n').map(x=>x.replace(/^\s*[-*]\s*/, '').trim()).filter(Boolean);
