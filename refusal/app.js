@@ -1,12 +1,12 @@
 const $=id=>document.getElementById(id);
 const names={refusal_only:'Refusal only',both:'Assistance + refusal',assistance_only:'Assistance only',other:'Other',uncertain:'Unresolved',ungraded:'Ungraded'};
 const colors={refusal_only:'#317663',both:'#c39443',assistance_only:'#aa665a',other:'#989898',uncertain:'#b5ab99'};
-const state={index:null,setting:null,cell:null,item:null,version:0,model:"tulu",base:"data",jlens:false,behavior:false};
+const state={index:null,setting:null,cell:null,item:null,version:0,model:"tulu",base:"data",jlens:false,behavior:false,olens:false};
 const categories=["refusal_only","both","assistance_only","other","uncertain"];
 const escapeHtml=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const visibleToken=t=>t.replaceAll(' ','·').replaceAll('\n','↵').replaceAll('\t','⇥')||'∅';
 const condition=c=>`${c.condition==='unsafe'?'Misconduct':'Accurate reporting'} · ${c.format==='raw'?'raw prefix':'chat template'}`;
-async function get(path){const r=await fetch(path);if(!r.ok)throw Error(`${path}: ${r.status}`);return r.json();}
+async function get(path){const r=await fetch(path+(path.includes("/qwen36/")?"?v=olens-1":""));if(!r.ok)throw Error(`${path}: ${r.status}`);return r.json();}
 function overview(){
  const groups=[];
  for(const objective of ['unsafe','benign'])for(const format of ['raw','assistant_turn']){
@@ -44,8 +44,8 @@ async function loadSample(id){
  if(version!==state.version)return;
  state.item={...r,tokens:p.tokens.concat(r.tokens),plain_tokens:(p.plain_tokens||p.tokens).concat(r.plain_tokens||r.tokens),token_ids:p.token_ids.concat(r.output_ids),readouts:p.readouts.concat(r.readouts),boundary:p.tokens.length,vocabulary:{...p.vocabulary,...r.vocabulary}};
  $('prompt-label').textContent=`${condition(state.cell)} · sample ${r.sample+1}`;
- const count=state.item.readouts.filter(Boolean).length;
- $('sample-status').textContent=`${r.judgment?names[r.judgment.category]:"Ungraded"} · ${r.generated_tokens} generated tokens · stop: ${r.finish_reason}${r.finish_reason==='length'?' (capped; later behavior unobserved)':''} · ${count}/${state.item.tokens.length} readouts saved · ${state.cell.excluded} excluded from this condition.`;
+ const count=state.item.readouts.filter(x=>x&&x.status!=='excluded').length;const screened=state.item.readouts.filter(x=>x?.status==='excluded').length;
+ $('sample-status').textContent=`${r.judgment?names[r.judgment.category]:"Ungraded"} · ${r.generated_tokens} generated tokens · stop: ${r.finish_reason}${r.finish_reason==='length'?' (capped; later behavior unobserved)':''} · ${count}/${state.item.tokens.length} readouts available${screened?` · ${screened} screened out`:""} · ${state.cell.excluded} excluded from this condition.`;
  $('evidence').innerHTML=r.judgment?['assistance','refusal'].map(k=>`<p><strong>${k[0].toUpperCase()+k.slice(1)}: ${escapeHtml(r.judgment.assessment[k].verdict)}</strong> — ${escapeHtml(r.judgment.assessment[k].explanation)}</p><p class="token-help">${(r.judgment.evidence[k]||[]).map(e=>`Line ${e.line}: “${escapeHtml(e.text)}”`).join('<br>')}</p>`).join('')+`<p class="token-help">Saved final judgment: ${escapeHtml(r.judgment.model)}; ${escapeHtml(r.judgment.status)}. Reviewed judgments take precedence; manual disagreements remain unresolved.</p>`:'<p>Missing primary judgment. This saved output is excluded from the classified-output percentage denominator.</p>';
  if(r.review_unavailable){const note=document.createElement('p');note.className='token-help';note.textContent='Selected for stronger review, but no review returned; displaying the primary judgment.';$('evidence').append(note);}
  if(r.saved_text_decode_mismatch)$('sample-status').textContent+=' Unicode display is decoded from the saved IDs; the original text field contained replacement characters.';
@@ -62,17 +62,23 @@ function renderTokens(){
   if(i===item.boundary)for(const id of ['tokens','plain-prompt']){const x=document.createElement('span');x.className='boundary';x.textContent='END OF SUPPLIED PROMPT · SAVED GENERATION BEGINS';$(id).append(x);}
   for(const id of ['tokens','plain-prompt']){
    const b=document.createElement(id==='tokens'?'button':'span');b.className=id==='tokens'?`token${item.readouts[i]?'':' pending'}`:'plain-token';b.dataset.position=i;
-   b.textContent=id==='tokens'?visibleToken(t):item.plain_tokens[i];b.style.setProperty('--fve',Math.max(0,Math.min(1,state.jlens?0:(item.readouts[i]?.fve||0))));
-   b.title=`Token ${i} · id ${item.token_ids[i]} · ${item.readouts[i]?(state.jlens?'J-Lens available':'FVE '+item.readouts[i].fve.toFixed(3)):'readout pending'}`;
+   b.textContent=id==='tokens'?visibleToken(t):item.plain_tokens[i];b.style.setProperty('--fve',Math.max(0,Math.min(1,(state.jlens||state.olens)?0:(item.readouts[i]?.fve||0))));
+   b.title=`Token ${i} · id ${item.token_ids[i]} · ${item.readouts[i]?(state.olens?(item.readouts[i].status==='excluded'?'Readout screened out':'O-Lens available · unweighted'):state.jlens?'J-Lens available':'FVE '+item.readouts[i].fve.toFixed(3)):'readout pending'}`;
    b.onclick=()=>selectToken(i);b.tabIndex=0;b.setAttribute('role','button');b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectToken(i);}};$(id).append(b);
   }
  });
 }
 function selectToken(i){
  const item=state.item,r=item.readouts[i];document.querySelectorAll('[data-position]').forEach(b=>b.classList.toggle('active',Number(b.dataset.position)===i));
- $('token-title').textContent=visibleToken(item.tokens[i]);$('fve').textContent=r&&!state.jlens?r.fve.toFixed(3):'—';
- $('token-meta').textContent=`${i<item.boundary?'Prompt':'Continuation'} · position ${i}/${item.tokens.length-1} · token id ${item.token_ids[i]} · layer ${state.jlens?50:64}`;
+ $('token-title').textContent=visibleToken(item.tokens[i]);$('fve').textContent=r&&!state.jlens&&!state.olens?r.fve.toFixed(3):'—';
+ $('token-meta').textContent=`${i<item.boundary?'Prompt':'Continuation'} · position ${i}/${item.tokens.length-1} · token id ${item.token_ids[i]} · layer ${state.olens?56:state.jlens?50:64}`;
  if(!r){$('phrases').innerHTML='<li class="empty">Readout pending. The saved text and behavior judgment are already available.</li>';$('raw-sample').textContent='Not yet computed.';return;}
+ if(state.olens){
+ if(r.status==='excluded'){$('phrases').innerHTML='<li class="empty">Readout screened out. This token remains in the saved continuation.</li>';$('raw-sample').textContent='Excluded by readout screening; text is not published.';return;}
+ const phrases=r.text.split('\n').map(x=>x.replace(/^\s*[-*]\s*/, '').trim()).filter(Boolean);
+ $('phrases').innerHTML=phrases.map(t=>`<li class="phrase"><span class="phrase-row"><span class="phrase-text">${escapeHtml(t)}</span></span></li>`).join('')||'<li class="empty">Empty sampled readout.</li>';
+ $('raw-sample').textContent=`One sampled readout · ${r.generated_tokens} tokens · stop: ${r.finish_reason}${r.finish_reason==='length'?' (capped)':''}\n\n${r.text}`;return;
+ }
  if(state.jlens){
  const max=Math.max(...r.map(p=>p[1]),Number.MIN_VALUE);
  $('phrases').innerHTML=r.map(([id,prob],rank)=>`<li class="prediction"><span class="prediction-fill" style="width:${100*prob/max}%"></span><span class="prediction-row"><span class="prediction-rank">${rank+1}</span><span class="prediction-text">${escapeHtml(visibleToken(item.vocabulary[id]))}</span><span class="prediction-probability">${(100*prob).toPrecision(4)}%</span></span></li>`).join('');
@@ -86,9 +92,9 @@ async function init(){
  document.querySelectorAll('.view-button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.view-button').forEach(x=>x.classList.toggle('active',x===b));$('tokens').classList.toggle('hidden',b.dataset.view!=='tokens');$('plain-prompt').classList.toggle('hidden',b.dataset.view==='tokens');});
  const requested=new URLSearchParams(location.search).get('model');
  $('model-select').onchange=()=>{const q=new URLSearchParams(location.search);q.set('model',$('model-select').value);location.href=`?${q}`;};
- state.model=['gemma_base','gemma_instruct','qwen36'].includes(requested)?requested:'tulu';state.behavior=state.model==='qwen36';state.jlens=['gemma_base','gemma_instruct'].includes(state.model);state.base=state.model!=='tulu'?`data/${state.model}`:'data';$('model-select').value=state.model;
+ state.model=['gemma_base','gemma_instruct','qwen36'].includes(requested)?requested:'tulu';state.olens=state.model==='qwen36';state.behavior=false;state.jlens=['gemma_base','gemma_instruct'].includes(state.model);state.base=state.model!=='tulu'?`data/${state.model}`:'data';$('model-select').value=state.model;
  state.index=await get(`${state.base}/index.json`);
- $('run-meta').innerHTML=state.behavior?'<dt>Subject</dt><dd>Qwen3.6-27B</dd><dt>Experiment</dt><dd>Behavior only · no lens</dd><dt>Chat thinking</dt><dd>Disabled</dd><dt>Generation cap</dt><dd>192 tokens</dd>':state.jlens?`<dt>Subject</dt><dd>Gemma 3 27B ${state.model==='gemma_base'?'Base':'IT'}</dd><dt>Lens</dt><dd>Published J-Lens</dd><dt>Layer</dt><dd>50 / 62</dd><dt>Readout</dt><dd>Top 12 · full-vocab probabilities</dd>`:'<dt>Subject</dt><dd>Tülu 3 70B RL</dd><dt>Lens</dt><dd>RL O-lens adapter</dd><dt>Layer</dt><dd>64 / 80</dd><dt>Readout</dt><dd>K=8, N=8, greedy</dd>';
+ $('run-meta').innerHTML=state.olens?'<dt>Subject</dt><dd>Qwen3.6-27B</dd><dt>Lens</dt><dd>O-Lens · unweighted</dd><dt>Block</dt><dd>56 (zero-indexed output)</dd><dt>Readout</dt><dd>One sample per token</dd>':state.behavior?'<dt>Subject</dt><dd>Qwen3.6-27B</dd><dt>Experiment</dt><dd>Behavior only · no lens</dd><dt>Chat thinking</dt><dd>Disabled</dd><dt>Generation cap</dt><dd>192 tokens</dd>':state.jlens?`<dt>Subject</dt><dd>Gemma 3 27B ${state.model==='gemma_base'?'Base':'IT'}</dd><dt>Lens</dt><dd>Published J-Lens</dd><dt>Layer</dt><dd>50 / 62</dd><dt>Readout</dt><dd>Top 12 · full-vocab probabilities</dd>`:'<dt>Subject</dt><dd>Tülu 3 70B RL</dd><dt>Lens</dt><dd>RL O-lens adapter</dd><dt>Layer</dt><dd>64 / 80</dd><dt>Readout</dt><dd>K=8, N=8, greedy</dd>';
  $('provenance').href=`${state.base}/provenance.json`;
  if(state.jlens){
  $('lens-heading').textContent='J-Lens readout';document.querySelector('.fve-badge').hidden=true;
@@ -103,7 +109,14 @@ async function init(){
  $('interpretation').textContent='These are behavioral trials: twelve fixed reporting settings, two objectives, raw versus native chat formatting, and 64 samples per condition. Chat thinking is disabled through the native template; raw prefixes are unchanged and can themselves generate thinking markers. Those markers remain part of the observed text. Existing assistance/refusal rubrics classify visible behavior, not internal roles or causal mechanisms.';
  document.querySelector('.method > div:nth-child(2) p:not(.kicker)').textContent='New generations use the pinned Qwen3.6-27B checkpoint, temperature 1, top-p 1, no top-k restriction, and the native stop tokens. Exact input/output IDs and finish reasons are saved. The 192-token cap matches the earlier refusal trials; a capped output cannot rule out a later transition.';
  }
- const s=state.index.summary;$('coverage').textContent=state.behavior?`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions; ${s.ungraded||0} ungraded. ${s.missing_selected_reviews||0} selected stronger reviews unavailable; primary labels retained where present. All 48 conditions generated. Missing judgments reflect failed API requests; classified-output percentages may be affected by this missingness. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`:`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions; ${s.ungraded||0} ungraded. ${s.readout_positions_saved.toLocaleString()} / ${s.unique_readout_positions.toLocaleString()} unique token readouts saved. Prompt readouts are reused across samples. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`;
+ if(state.olens){
+ $('lens-heading').textContent='O-Lens readout · unweighted';document.querySelector('.fve-badge').hidden=true;
+ $('token-help').textContent='Click any prompt or continuation token. Each readout describes the activation after that token at zero-indexed block 56. Descriptions have no reconstruction scores or phrase weights. Thinking markers and stop tokens are preserved.';
+ $('interpretation').textContent='One stochastic O-Lens description per token, using olens_s3d_rl600 (temperature 0.8, top-p 0.95, cap 256). Subject activations are captured with the adapter disabled; the reader receives a normalized activation. These fallible descriptions do not establish a hidden assistant state or causal mechanism. Screened readouts are explicitly marked; original behavior judgments remain unchanged.';
+ document.querySelector('.sample-detail summary').textContent='Raw sampled readout';
+ document.querySelector('.method > div:nth-child(2) p:not(.kicker)').textContent='Exact saved Qwen3.6-27B input/output tokens are replayed without regeneration. Original trials used temperature 1, top-p 1, native stops and a 192-token cap. Chat thinking was disabled; raw prefixes could generate thinking markers. The lens scan preserves both. A capped continuation cannot rule out later switching.';
+ }
+ const s=state.index.summary;$('coverage').textContent=state.behavior?`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions; ${s.ungraded||0} ungraded. ${s.missing_selected_reviews||0} selected stronger reviews unavailable; primary labels retained where present. All 48 conditions generated. Missing judgments reflect failed API requests; classified-output percentages may be affected by this missingness. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`:`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions; ${s.ungraded||0} ungraded. ${s.readout_positions_saved.toLocaleString()} / ${s.unique_readout_positions.toLocaleString()} unique token readouts saved. ${state.olens?`${s.readouts_retained.toLocaleString()} available; ${s.readouts_screened.toLocaleString()} screened out. ${s.missing_selected_reviews||0} selected stronger reviews unavailable; primary labels retained. `:""}Prompt readouts are reused across samples. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`;
  overview();const [id,c,r]=location.hash.slice(1).split('/');setting(state.index.settings.some(s=>s.id===id)?id:state.index.settings[0].id,c,r);
 }
 init().catch(showError);
