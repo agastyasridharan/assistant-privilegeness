@@ -21,7 +21,7 @@ function overview(){
  for(const r of examples){const c=state.index.cells.find(c=>c.cell===r.cell),a=document.createElement('a');a.href=`#${c.setting}/${c.cell}/${r.id}`;a.textContent=`${c.title} · sample ${r.sample+1} · ${names[r.category]}`;a.onclick=e=>{e.preventDefault();setting(c.setting,c.cell,r.id)};const p=document.createElement('p');p.append(a);detail.append(p);}
  $('overview').append(detail);
 }
-function setting(id, requestedCell=null, requestedSample=null){
+function setting(id, requestedCell=null, requestedSample=null, requestedToken=null){
  state.setting=id;const s=state.index.settings.find(s=>s.id===id);
  $('tabs').innerHTML=state.index.settings.map(s=>`<button class="tab ${s.id===id?'active':''}" data-setting="${s.id}">${escapeHtml(s.title)}</button>`).join('');
  document.querySelectorAll('[data-setting]').forEach(b=>b.onclick=()=>setting(b.dataset.setting));
@@ -29,16 +29,16 @@ function setting(id, requestedCell=null, requestedSample=null){
  $('family-description').textContent='Same reporting setting; misconduct versus accurate-reporting objective, each as a raw prefix or a chat user message.';
  const cells=state.index.cells.filter(c=>c.setting===id);
  $('prompt-select').innerHTML=cells.map(c=>`<option value="${c.cell}">${condition(c)} · ${c.retained} retained</option>`).join('');
- $('prompt-select').onchange=()=>cell($('prompt-select').value);cell(cells.some(c=>c.cell===requestedCell)?requestedCell:cells[0].cell,requestedSample);
+ $('prompt-select').onchange=()=>cell($('prompt-select').value);cell(cells.some(c=>c.cell===requestedCell)?requestedCell:cells[0].cell,requestedSample,requestedToken);
 }
-function cell(id, requestedSample=null){
+function cell(id, requestedSample=null, requestedToken=null){
  state.cell=state.index.cells.find(c=>c.cell===id);$('prompt-select').value=id;const samples=state.index.samples.filter(s=>s.cell===id);
  $('sample-select').innerHTML=samples.map(s=>`<option value="${s.id}">Sample ${String(s.sample+1).padStart(2,'0')} · ${names[s.category]} · ${s.finish_reason}</option>`).join('');
  $('sample-select').onchange=()=>loadSample($('sample-select').value).catch(showError);
- const chosen=samples.some(s=>s.id===requestedSample)?requestedSample:samples[0].id;$('sample-select').value=chosen;loadSample(chosen).catch(showError);
+ const chosen=samples.some(s=>s.id===requestedSample)?requestedSample:samples[0].id;$('sample-select').value=chosen;loadSample(chosen,requestedToken).catch(showError);
 }
 function showError(e){$('sample-status').textContent=`Unable to load this sample: ${e.message}`;}
-async function loadSample(id){
+async function loadSample(id,requestedToken=null){
  const version=++state.version;
  const [p,r]=await Promise.all([get(`${state.base}/prefixes/${state.cell.cell}.json`),get(`${state.base}/samples/${id}.json`)]);
  if(!state.jlens){
@@ -57,8 +57,13 @@ async function loadSample(id){
  $('sample-status').textContent=`${r.judgment?names[r.judgment.category]:"Ungraded"} · ${r.generated_tokens} generated tokens · stop: ${r.finish_reason}${r.finish_reason==='length'?' (capped; later behavior unobserved)':''} · ${state.cell.excluded} excluded from this condition.`;
  $('tokens').classList.add('hidden');$('plain-prompt').classList.remove('hidden');$('plain-prompt').replaceChildren();
  const before=document.createElement('span');before.textContent=r.prompt;const boundary=document.createElement('span');boundary.className='boundary';boundary.textContent='END OF SUPPLIED PROMPT · SAVED GENERATION BEGINS';const after=document.createElement('span');after.textContent=r.completion;$('plain-prompt').append(before,boundary,after);
- }else{renderTokens();selectToken(state.item.boundary);}
- history.replaceState(null,'',`#${state.setting}/${state.cell.cell}/${r.id}`);
+ }else{
+ renderTokens();
+ const valid=Number.isInteger(requestedToken)&&requestedToken>=0&&requestedToken<state.item.tokens.length;
+ selectToken(valid?requestedToken:Math.min(state.item.boundary,state.item.tokens.length-1));
+ if(valid)document.querySelector(`#tokens [data-position="${requestedToken}"]`)?.scrollIntoView({block:'center'});
+ }
+ if(state.behavior)history.replaceState(null,'',`#${state.setting}/${state.cell.cell}/${r.id}`);
 }
 function renderTokens(){
  const item=state.item;$('tokens').replaceChildren();$('plain-prompt').replaceChildren();
@@ -97,6 +102,11 @@ function translationMarkup(text,translation){
 }
 
 function selectToken(i){
+ if(!state.item||!Number.isInteger(i)||i<0||i>=state.item.tokens.length)return;
+ const hash=`#${state.setting}/${state.cell.cell}/${state.item.id}/token-${i}`;
+ history.replaceState(null,'',hash);
+ $('token-link').href=location.href;
+ $('copy-token-link').textContent='Copy token link';
  const item=state.item,r=item.readouts[i];document.querySelectorAll('[data-position]').forEach(b=>b.classList.toggle('active',Number(b.dataset.position)===i));
  $('token-title').textContent=visibleToken(item.tokens[i]);$('fve').textContent=r&&!state.jlens&&!state.olens?r.fve.toFixed(3):'—';
  $('token-meta').textContent=`${i<item.boundary?'Prompt':'Continuation'} · position ${i}/${item.tokens.length-1} · token id ${item.token_ids[i]} · layer ${state.olens?56:state.jlens?50:64}`;
@@ -116,7 +126,17 @@ function selectToken(i){
  $('phrases').innerHTML=r.phrases.map(([t,w],rank)=>`<li class="phrase"><span class="phrase-fill" style="width:${Math.max(2,100*w/max)}%"></span><span class="phrase-row"><span class="phrase-text">${escapeHtml(t)}</span><span class="phrase-weight">${w.toFixed(3)}</span></span>${translationMarkup(t,r._translations?.[rank])}</li>`).join('')||'<li class="empty">No positive reconstruction weights.</li>';
  $('raw-sample').textContent=r.samples.map(([t,f],i)=>`Sample ${i+1} · FVE ${f.toFixed(3)}\n${t}`).join('\n\n');
 }
+function openHash(){
+ const [id,c,r,t]=location.hash.slice(1).split('/');
+ const token=/^token-\d+$/.test(t||'')?Number(t.slice(6)):null;
+ setting(state.index.settings.some(s=>s.id===id)?id:state.index.settings[0].id,c,r,token);
+}
 async function init(){
+ $('copy-token-link').onclick=async()=>{
+  try{await navigator.clipboard.writeText($('token-link').href);$('copy-token-link').textContent='Copied';}
+  catch{$('copy-token-link').textContent='Copy the Token permalink below';}
+ };
+
  document.querySelectorAll('.view-button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.view-button').forEach(x=>x.classList.toggle('active',x===b));$('tokens').classList.toggle('hidden',b.dataset.view!=='tokens');$('plain-prompt').classList.toggle('hidden',b.dataset.view==='tokens');});
  const requested=new URLSearchParams(location.search).get('model');
  $('model-select').onchange=()=>{const q=new URLSearchParams(location.search);q.set('model',$('model-select').value);location.href=`?${q}`;};
@@ -152,6 +172,6 @@ async function init(){
  document.querySelector('.method > div:nth-child(2) p:not(.kicker)').textContent='Exact saved Qwen3.6-27B input/output tokens are replayed without regeneration. Original trials used temperature 1, top-p 1, native stops and a 192-token cap. Chat thinking was disabled; raw prefixes could generate thinking markers. The lens scan preserves both. A capped continuation cannot rule out later switching.';
  }
  const s=state.index.summary;$('coverage').textContent=state.behavior?`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions; ${s.ungraded||0} ungraded. ${s.missing_selected_reviews||0} selected stronger reviews unavailable; primary labels retained where present. All 48 conditions generated. Missing judgments reflect failed API requests; classified-output percentages may be affected by this missingness. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`:`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions; ${s.ungraded||0} ungraded. ${s.readout_positions_saved.toLocaleString()} / ${s.unique_readout_positions.toLocaleString()} unique token readouts saved. ${state.olens?`${s.readouts_retained.toLocaleString()} available; ${s.readouts_screened.toLocaleString()} screened out. ${s.missing_selected_reviews||0} selected stronger reviews unavailable; primary labels retained. `:""}Prompt readouts are reused across samples. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`;
- overview();const [id,c,r]=location.hash.slice(1).split('/');setting(state.index.settings.some(s=>s.id===id)?id:state.index.settings[0].id,c,r);
+ overview();openHash();window.addEventListener('hashchange',openHash);
 }
 init().catch(showError);
