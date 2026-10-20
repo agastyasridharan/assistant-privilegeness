@@ -8,6 +8,7 @@ const visibleToken=t=>t.replaceAll(' ','·').replaceAll('\n','↵').replaceAll('
 const condition=c=>`${c.condition==='unsafe'?'Misconduct':'Accurate reporting'} · ${c.format==='raw'?'raw prefix':'chat template'}`;
 async function get(path){const r=await fetch(path+(path.includes("/translations/")?"?v=translations-2":path.includes("/qwen36/")?"?v=olens-1":""));if(!r.ok)throw Error(`${path}: ${r.status}`);return r.json();}
 function overview(){
+ if(state.model==='tulu'&&TuluExtended.index)return TuluExtended.overview();
  const groups=[];
  for(const objective of ['unsafe','benign'])for(const format of ['raw','assistant_turn']){
   const cells=state.index.cells.filter(c=>c.condition===objective&&c.format===format),counts={};
@@ -45,6 +46,7 @@ async function loadSample(id,requestedToken=null){
   const translations=await Promise.all(['prefixes/'+state.cell.cell,'samples/'+id].map(x=>getTranslation(`${state.base}/translations/${x}.json.gz`).catch(()=>({readouts:{}}))));
   await Promise.all([attachTranslations(p,translations[0]),attachTranslations(r,translations[1])]);
  }
+ const extension=state.model==='tulu'?await TuluExtended.sample(state.cell.cell,id):null;
  if(version!==state.version)return;
  state.item={...r,tokens:p.tokens.concat(r.tokens),plain_tokens:(p.plain_tokens||p.tokens).concat(r.plain_tokens||r.tokens),token_ids:p.token_ids.concat(r.output_ids),readouts:p.readouts.concat(r.readouts),boundary:p.tokens.length,vocabulary:{...p.vocabulary,...r.vocabulary}};
  $('prompt-label').textContent=`${condition(state.cell)} · sample ${r.sample+1}`;
@@ -58,6 +60,7 @@ async function loadSample(id,requestedToken=null){
  $('tokens').classList.add('hidden');$('plain-prompt').classList.remove('hidden');$('plain-prompt').replaceChildren();
  const before=document.createElement('span');before.textContent=r.prompt;const boundary=document.createElement('span');boundary.className='boundary';boundary.textContent='END OF SUPPLIED PROMPT · SAVED GENERATION BEGINS';const after=document.createElement('span');after.textContent=r.completion;$('plain-prompt').append(before,boundary,after);
  }else{
+ if(extension)TuluExtended.apply(extension,p,r);
  renderTokens();
  const valid=Number.isInteger(requestedToken)&&requestedToken>=0&&requestedToken<state.item.tokens.length;
  selectToken(valid?requestedToken:Math.min(state.item.boundary,state.item.tokens.length-1));
@@ -69,11 +72,12 @@ async function loadSample(id,requestedToken=null){
 function renderTokens(){
  const item=state.item;$('tokens').replaceChildren();$('plain-prompt').replaceChildren();
  item.tokens.forEach((t,i)=>{
+  if(i===item.extension_boundary&&i<item.tokens.length)for(const id of ['tokens','plain-prompt']){const x=document.createElement('span');x.className='boundary';x.textContent='ORIGINAL WINDOW ENDS · CONDITIONAL EXTENSION · LENS READOUTS NOT COMPUTED';$(id).append(x);}
   if(i===item.boundary)for(const id of ['tokens','plain-prompt']){const x=document.createElement('span');x.className='boundary';x.textContent='END OF SUPPLIED PROMPT · SAVED GENERATION BEGINS';$(id).append(x);}
   for(const id of ['tokens','plain-prompt']){
    const b=document.createElement(id==='tokens'?'button':'span');b.className=id==='tokens'?`token${item.readouts[i]?'':' pending'}`:'plain-token';b.dataset.position=i;
    b.textContent=id==='tokens'?visibleToken(t):item.plain_tokens[i];b.style.setProperty('--fve',Math.max(0,Math.min(1,(state.jlens||state.olens)?0:(item.readouts[i]?.fve||0))));
-   b.title=`Token ${i} · id ${item.token_ids[i]} · ${item.readouts[i]?(state.olens?(item.readouts[i].status==='excluded'?'Readout screened out':'O-Lens available · unweighted'):state.jlens?'J-Lens available':'FVE '+item.readouts[i].fve.toFixed(3)):'readout pending'}`;
+   b.title=`Token ${i} · id ${item.token_ids[i]} · ${item.readouts[i]?(state.olens?(item.readouts[i].status==='excluded'?'Readout screened out':'O-Lens available · unweighted'):state.jlens?'J-Lens available':'FVE '+item.readouts[i].fve.toFixed(3)):'no saved readout'}`;
    b.onclick=()=>selectToken(i);b.tabIndex=0;b.setAttribute('role','button');b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectToken(i);}};$(id).append(b);
   }
  });
@@ -111,7 +115,7 @@ function selectToken(i){
  const item=state.item,r=item.readouts[i];document.querySelectorAll('[data-position]').forEach(b=>b.classList.toggle('active',Number(b.dataset.position)===i));
  $('token-title').textContent=visibleToken(item.tokens[i]);$('fve').textContent=r&&!state.jlens&&!state.olens?r.fve.toFixed(3):'—';
  $('token-meta').textContent=`${i<item.boundary?'Prompt':'Continuation'} · position ${i}/${item.tokens.length-1} · token id ${item.token_ids[i]} · layer ${state.olens?56:state.jlens?50:64}`;
- if(!r){$('phrases').innerHTML='<li class="empty">Readout pending. The saved text and behavior judgment are already available.</li>';$('raw-sample').textContent='Not yet computed.';return;}
+ if(!r){$('phrases').innerHTML=state.model==='tulu'?'<li class="empty">No O-Lens readout was computed for this token. No replay job is running. The full continuation and behavioral labels are available below.</li>':'<li class="empty">No readout available for this token.</li>';$('raw-sample').textContent='No saved readout.';return;}
  if(state.olens){
  if(r.status==='excluded'){$('phrases').innerHTML='<li class="empty">Readout screened out. This token remains in the saved continuation.</li>';$('raw-sample').textContent='Excluded by readout screening; text is not published.';return;}
  const phrases=r.text.split('\n').map(x=>x.replace(/^\s*[-*]\s*/, '').trim()).filter(Boolean);
@@ -173,6 +177,7 @@ async function init(){
  document.querySelector('.method > div:nth-child(2) p:not(.kicker)').textContent='Exact saved Qwen3.6-27B input/output tokens are replayed without regeneration. Original trials used temperature 1, top-p 1, native stops and a 192-token cap. Chat thinking was disabled; raw prefixes could generate thinking markers. The lens scan preserves both. A capped continuation cannot rule out later switching.';
  }
  const s=state.index.summary;$('coverage').textContent=state.behavior?`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions; ${s.ungraded||0} ungraded. ${s.missing_selected_reviews||0} selected stronger reviews unavailable; primary labels retained where present. All 48 conditions generated. Missing judgments reflect failed API requests; classified-output percentages may be affected by this missingness. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`:`${s.retained.toLocaleString()} retained outputs; ${s.excluded} exclusions; ${s.ungraded||0} ungraded. ${s.readout_positions_saved.toLocaleString()} / ${s.unique_readout_positions.toLocaleString()} unique token readouts saved. ${state.olens?`${s.readouts_retained.toLocaleString()} available; ${s.readouts_screened.toLocaleString()} screened out. ${s.missing_selected_reviews||0} selected stronger reviews unavailable; primary labels retained. `:""}Prompt readouts are reused across samples. Snapshot ${new Date(state.index.updated_at*1000).toLocaleString()}.`;
+ if(state.model==='tulu')await TuluExtended.init();
  overview();openHash();window.addEventListener('hashchange',openHash);
 }
 init().catch(showError);
