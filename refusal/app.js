@@ -6,7 +6,7 @@ const categories=["refusal_only","both","assistance_only","other","uncertain"];
 const escapeHtml=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const visibleToken=t=>t.replaceAll(' ','·').replaceAll('\n','↵').replaceAll('\t','⇥')||'∅';
 const condition=c=>`${c.condition==='unsafe'?'Misconduct':'Accurate reporting'} · ${c.format==='raw'?'raw prefix':'chat template'}`;
-async function get(path){const r=await fetch(path+(path.includes("/qwen36/")?"?v=olens-1":""));if(!r.ok)throw Error(`${path}: ${r.status}`);return r.json();}
+async function get(path){const r=await fetch(path+(path.includes("/translations/")?"?v=translations-2":path.includes("/qwen36/")?"?v=olens-1":""));if(!r.ok)throw Error(`${path}: ${r.status}`);return r.json();}
 function overview(){
  const groups=[];
  for(const objective of ['unsafe','benign'])for(const format of ['raw','assistant_turn']){
@@ -41,6 +41,10 @@ function showError(e){$('sample-status').textContent=`Unable to load this sample
 async function loadSample(id){
  const version=++state.version;
  const [p,r]=await Promise.all([get(`${state.base}/prefixes/${state.cell.cell}.json`),get(`${state.base}/samples/${id}.json`)]);
+ if(!state.jlens){
+  const translations=await Promise.all(['prefixes/'+state.cell.cell,'samples/'+id].map(x=>getTranslation(`${state.base}/translations/${x}.json.gz`).catch(()=>({readouts:{}}))));
+  await Promise.all([attachTranslations(p,translations[0]),attachTranslations(r,translations[1])]);
+ }
  if(version!==state.version)return;
  state.item={...r,tokens:p.tokens.concat(r.tokens),plain_tokens:(p.plain_tokens||p.tokens).concat(r.plain_tokens||r.tokens),token_ids:p.token_ids.concat(r.output_ids),readouts:p.readouts.concat(r.readouts),boundary:p.tokens.length,vocabulary:{...p.vocabulary,...r.vocabulary}};
  $('prompt-label').textContent=`${condition(state.cell)} · sample ${r.sample+1}`;
@@ -68,6 +72,30 @@ function renderTokens(){
   }
  });
 }
+
+const hasChinese=t=>/[\u3400-\u9fff\u{20000}-\u{3134f}]/u.test(t);
+async function getTranslation(path){
+ const response=await fetch(path+'?v=translations-2');
+ if(!response.ok)throw Error('Translation file unavailable');
+ const decompressed=response.body.pipeThrough(new DecompressionStream('gzip'));
+ return JSON.parse(await new Response(decompressed).text());
+}
+async function attachTranslations(source,sidecar){
+ await Promise.all(Object.entries(sidecar.readouts||{}).map(async([i,tr])=>{
+  const r=source.readouts[i];if(!r||r.status==='excluded')return;
+  const original=r.text??JSON.stringify(r.phrases);
+  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(original));
+  const hash=Array.from(new Uint8Array(digest),x=>x.toString(16).padStart(2,'0')).join('');
+  if(hash===tr.sha256)r._translations=tr.lines;
+ }));
+}
+function translationMarkup(text,translation){
+ if(!hasChinese(text))return '';
+ const url='https://translate.google.com/?sl=zh-CN&tl=en&op=translate&text='+encodeURIComponent(text);
+ const body=translation?`<span class="translation-label" title="${escapeHtml(translation.engine)}">English · ${translation.engine==='reviewed-translation'?'reviewed translation':'machine translation'}</span><span lang="en">${escapeHtml(translation.text)}</span>`:'<span class="translation-label">English translation not available</span>';
+ return `<div class="readout-translation">${body}<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">Compare in Google Translate ↗</a></div>`;
+}
+
 function selectToken(i){
  const item=state.item,r=item.readouts[i];document.querySelectorAll('[data-position]').forEach(b=>b.classList.toggle('active',Number(b.dataset.position)===i));
  $('token-title').textContent=visibleToken(item.tokens[i]);$('fve').textContent=r&&!state.jlens&&!state.olens?r.fve.toFixed(3):'—';
@@ -76,7 +104,7 @@ function selectToken(i){
  if(state.olens){
  if(r.status==='excluded'){$('phrases').innerHTML='<li class="empty">Readout screened out. This token remains in the saved continuation.</li>';$('raw-sample').textContent='Excluded by readout screening; text is not published.';return;}
  const phrases=r.text.split('\n').map(x=>x.replace(/^\s*[-*]\s*/, '').trim()).filter(Boolean);
- $('phrases').innerHTML=phrases.map(t=>`<li class="phrase"><span class="phrase-row"><span class="phrase-text">${escapeHtml(t)}</span></span></li>`).join('')||'<li class="empty">Empty sampled readout.</li>';
+ $('phrases').innerHTML=phrases.map((t,rank)=>`<li class="phrase"><span class="phrase-row"><span class="phrase-text">${escapeHtml(t)}</span></span>${translationMarkup(t,r._translations?.[rank])}</li>`).join('')||'<li class="empty">Empty sampled readout.</li>';
  $('raw-sample').textContent=`One sampled readout · ${r.generated_tokens} tokens · stop: ${r.finish_reason}${r.finish_reason==='length'?' (capped)':''}\n\n${r.text}`;return;
  }
  if(state.jlens){
@@ -85,7 +113,7 @@ function selectToken(i){
  $('raw-sample').textContent=JSON.stringify(r.map(([id,prob])=>({id,text:item.vocabulary[id],probability:prob})),null,2);return;
  }
  const max=Math.max(...r.phrases.map(p=>p[1]),.0001);
- $('phrases').innerHTML=r.phrases.map(([t,w])=>`<li class="phrase"><span class="phrase-fill" style="width:${Math.max(2,100*w/max)}%"></span><span class="phrase-row"><span class="phrase-text">${escapeHtml(t)}</span><span class="phrase-weight">${w.toFixed(3)}</span></span></li>`).join('')||'<li class="empty">No positive reconstruction weights.</li>';
+ $('phrases').innerHTML=r.phrases.map(([t,w],rank)=>`<li class="phrase"><span class="phrase-fill" style="width:${Math.max(2,100*w/max)}%"></span><span class="phrase-row"><span class="phrase-text">${escapeHtml(t)}</span><span class="phrase-weight">${w.toFixed(3)}</span></span>${translationMarkup(t,r._translations?.[rank])}</li>`).join('')||'<li class="empty">No positive reconstruction weights.</li>';
  $('raw-sample').textContent=r.samples.map(([t,f],i)=>`Sample ${i+1} · FVE ${f.toFixed(3)}\n${t}`).join('\n\n');
 }
 async function init(){
@@ -93,7 +121,14 @@ async function init(){
  const requested=new URLSearchParams(location.search).get('model');
  $('model-select').onchange=()=>{const q=new URLSearchParams(location.search);q.set('model',$('model-select').value);location.href=`?${q}`;};
  state.model=['gemma_base','gemma_instruct','qwen36'].includes(requested)?requested:'tulu';state.olens=state.model==='qwen36';state.behavior=false;state.jlens=['gemma_base','gemma_instruct'].includes(state.model);state.base=state.model!=='tulu'?`data/${state.model}`:'data';$('model-select').value=state.model;
+ document.querySelector('.translation-note').hidden=state.jlens;
  state.index=await get(`${state.base}/index.json`);
+ if(!state.jlens){
+  get(`${state.base}/translations/coverage.json`).then(c=>{
+   $('translation-coverage').textContent=`English translations available for ${c.translated_lines.toLocaleString()} / ${c.chinese_lines.toLocaleString()} displayed lines containing Chinese. These are translation-coverage counts, not behavioral categories.`;
+   const a=document.createElement('a');a.href=`${state.base}/translations/method.json`;a.textContent=' Translation method and limitations';$('translation-coverage').append(a);
+  }).catch(()=>{});
+ }
  $('run-meta').innerHTML=state.olens?'<dt>Subject</dt><dd>Qwen3.6-27B</dd><dt>Lens</dt><dd>O-Lens · unweighted</dd><dt>Block</dt><dd>56 (zero-indexed output)</dd><dt>Readout</dt><dd>One sample per token</dd>':state.behavior?'<dt>Subject</dt><dd>Qwen3.6-27B</dd><dt>Experiment</dt><dd>Behavior only · no lens</dd><dt>Chat thinking</dt><dd>Disabled</dd><dt>Generation cap</dt><dd>192 tokens</dd>':state.jlens?`<dt>Subject</dt><dd>Gemma 3 27B ${state.model==='gemma_base'?'Base':'IT'}</dd><dt>Lens</dt><dd>Published J-Lens</dd><dt>Layer</dt><dd>50 / 62</dd><dt>Readout</dt><dd>Top 12 · full-vocab probabilities</dd>`:'<dt>Subject</dt><dd>Tülu 3 70B RL</dd><dt>Lens</dt><dd>RL O-lens adapter</dd><dt>Layer</dt><dd>64 / 80</dd><dt>Readout</dt><dd>K=8, N=8, greedy</dd>';
  $('provenance').href=`${state.base}/provenance.json`;
  if(state.jlens){

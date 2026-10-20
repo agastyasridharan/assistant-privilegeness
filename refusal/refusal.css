@@ -17,3 +17,5 @@ a { color:var(--green); }
 .prompt-panel{grid-column:auto}
 
 .behavior-only .workspace{display:block}
+
+.readout-translation{margin:8px 0 0;padding:8px 10px;border-left:2px solid var(--green);background:var(--panel);font-size:15px;line-height:1.45}.translation-label{display:block;color:var(--muted);font:10px var(--mono);margin-bottom:4px}.readout-translation a{display:block;font:10px var(--mono);margin-top:7px;color:var(--green)}

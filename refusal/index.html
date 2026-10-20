@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
-  <link rel="stylesheet" href="refusal.css?v=qwen36-olens-1">
+  <link rel="stylesheet" href="refusal.css?v=olens-translations-2">
 </head>
 <body class="no-jlens">
   <header class="masthead">
@@ -75,6 +75,8 @@
     <section class="panel evidence"><p class="kicker">Existing behavior judgment</p><div id="evidence"></div></section><section class="method panel">
       <div>
         <p class="kicker">Interpretation</p>
+        <p id="translation-coverage" class="token-help"></p>
+        <p class="translation-note">Chinese passages retain their original text. English translations are machine-generated reading aids, not additional O-Lens evidence; speaker labels and unfinished fragments may need checking against the original. Google Translate links open an independent translation.</p>
         <p id="interpretation">The reader generates eight phrases of eight tokens from the selected layer-64 residual vector, then the frozen activation reconstructor assigns nonnegative weights. FVE reports how much of that vector the weighted phrases reconstruct. Readouts are lossy descriptions, not literal hidden thoughts or evidence that a phrase causally controls the next token.</p>
       </div>
       <div>
@@ -89,6 +91,6 @@
     </section>
   </main>
 
-  <script src="app.js?v=qwen36-olens-1"></script>
+  <script src="app.js?v=olens-translations-2"></script>
 </body>
 </html>
