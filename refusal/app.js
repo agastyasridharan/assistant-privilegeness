@@ -63,6 +63,7 @@ async function loadSample(id,requestedToken=null){
  selectToken(valid?requestedToken:Math.min(state.item.boundary,state.item.tokens.length-1));
  if(valid)document.querySelector(`#tokens [data-position="${requestedToken}"]`)?.scrollIntoView({block:'center'});
  }
+ if(state.model==='tulu'){const link=document.createElement('a');link.href=`extended.html#${state.setting}/${state.cell.cell}/${r.id}`;link.textContent='View full extended output and separate behavior labels';$('sample-status').append(document.createTextNode(' · '),link);}
  if(state.behavior)history.replaceState(null,'',`#${state.setting}/${state.cell.cell}/${r.id}`);
 }
 function renderTokens(){

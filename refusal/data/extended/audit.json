@@ -1,0 +1,67 @@
+{
+  "status": "passed",
+  "at": 1792534901.0889988,
+  "records": 3066,
+  "independently_reviewed": 3066,
+  "source_text_and_hashes_preserved": true,
+  "original_display_prefixes_preserved": true,
+  "valid_evidence_spans_match_exact_source": true,
+  "all_disagreements_retained_as_uncertain": true,
+  "disagreement_counts": {
+    "generated_question": 126,
+    "helper_response": 214,
+    "generated_request": 8,
+    "warning_redirection": 189,
+    "task_complete": 67,
+    "refusal": 14,
+    "procedure_end": 3,
+    "procedure_continuation": 2
+  },
+  "different_evidence_span_counts": {
+    "procedure_continuation": 909,
+    "task_complete": 1806,
+    "procedure_end": 1848,
+    "warning_redirection": 1162,
+    "helper_response": 401,
+    "refusal": 425,
+    "generated_question": 7
+  },
+  "mechanical_evidence_issues": {
+    "task_complete:missing_or_nonunique_evidence": 111,
+    "task_complete:invalid_quote": 117,
+    "procedure_end:missing_or_nonunique_evidence": 130,
+    "procedure_end:invalid_quote": 130,
+    "event:procedure_end:invalid_quote": 97,
+    "helper_timing_inconsistent": 33,
+    "event:task_complete:invalid_quote": 21,
+    "event:other:invalid_quote": 21,
+    "procedure_continuation:missing_or_nonunique_evidence": 65,
+    "procedure_continuation:invalid_quote": 65,
+    "event:procedure:invalid_quote": 148,
+    "event:document_continuation:invalid_quote": 14,
+    "warning_redirection:missing_or_nonunique_evidence": 134,
+    "warning_redirection:invalid_quote": 134,
+    "event:warning_redirection:invalid_quote": 117,
+    "generated_question:invalid_quote": 8,
+    "generated_request:invalid_quote": 6,
+    "refusal:invalid_quote": 9,
+    "helper_response:missing_or_nonunique_evidence": 9,
+    "helper_response:invalid_quote": 10,
+    "event:helper:invalid_quote": 12,
+    "event:refusal:invalid_quote": 5,
+    "refusal:missing_or_nonunique_evidence": 5,
+    "generated_question:missing_or_nonunique_evidence": 2,
+    "event:question:invalid_quote": 1
+  },
+  "finish_reasons": {
+    "eos": 2751,
+    "original_eos": 315
+  },
+  "limitations": [
+    "Model agreement is not human-validated accuracy.",
+    "Completion evidence anchors are approximate; many selected evidence spans differ.",
+    "Helper construct is exploratory: held-out agreement 41/48.",
+    "Conditional extension does not reconstruct an uninterrupted original run.",
+    "No lens readouts exist for added tokens."
+  ]
+}
