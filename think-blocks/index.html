@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Empty Think Block</title>
+<meta name="description" content="Why the O-Lens reads a silent, watched subject in the blank line of Qwen3.6-27B's empty think block.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=3">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+</head>
+<body>
+<div class="page">
+<nav class="toc" aria-label="Contents"><div class="toc-head">Contents</div><ul>
+  <li><a href="#summary" data-target="summary">Summary</a></li>
+  <li><a href="#log" data-target="log">Log</a></li>
+  <li><a href="#puzzle" data-target="puzzle">1. The puzzle</a></li>
+  <li><a href="#design" data-target="design">2. Design</a><ul>
+    <li><a href="#arms" data-target="arms">Contexts and arms</a></li>
+    <li><a href="#reading" data-target="reading">Reading and labeling</a></li></ul></li>
+  <li><a href="#model" data-target="model">3. What Qwen does with the block</a><ul>
+    <li><a href="#wants" data-target="wants">When it wants to think</a></li>
+    <li><a href="#formality" data-target="formality">The blank is a formality</a></li>
+    <li><a href="#turn" data-target="turn">The block makes it an assistant</a></li></ul></li>
+  <li><a href="#where" data-target="where">4. One token, one place</a></li>
+  <li><a href="#context" data-target="context">5. Not the context</a></li>
+  <li><a href="#canonical" data-target="canonical">6. Only the canonical blank</a></li>
+  <li><a href="#direction" data-target="direction">7. One shared direction</a><ul>
+    <li><a href="#vectors" data-target="vectors">The vectors</a></li>
+    <li><a href="#nulls" data-target="nulls">Synthetic vectors</a></li>
+    <li><a href="#stability" data-target="stability">Stability across reads</a></li></ul></li>
+  <li><a href="#interpretation" data-target="interpretation">8. What is going on</a></li>
+  <li><a href="#caveats" data-target="caveats">9. Caveats and next steps</a></li>
+  <li><a href="#appendix" data-target="appendix">Appendix</a></li>
+</ul></nav>
+<main>
+<header>
+  <p class="crumbs"><b>Assistant privilegeness</b> · Qwen3.6-27B O-Lens follow-up</p>
+  <h1>The Empty Think Block: Why the O-Lens Sees a Silent, Watched Subject</h1>
+  <p class="byline">Agastya Sridharan · October 2026 <span class="tag">Working draft</span></p>
+  <p class="thanks">Last updated 2026-10-23. Companion to the <a href="../refusal/?model=qwen36">Qwen3.6 refusal O-Lens viewer</a>. Code: <code>scripts/think_block_olens/</code>; readouts, labels and vectors on Athena under <code>/data/agastyas/think-block-olens-v1/</code>.</p>
+  <details class="toc-mobile"><summary>Contents</summary><nav class="toc" aria-label="Contents (mobile)"></nav></details>
+</header>
+
+<h2 id="summary">Summary</h2>
+<p>In the raw-text refusal experiments, Qwen3.6-27B often wrote an empty think block, <span class="tok">&lt;think&gt;</span><span class="tok">\n\n</span><span class="tok">&lt;/think&gt;</span>, before switching into an assistant voice. When the O-Lens read the blank line inside that block, it kept producing strange little scenes: a subject standing silently in a room, an examiner or doctor watching, a master giving orders. This page asks where that comes from. Is it the refusals, the context, the think block, or the reader?</p>
+<div class="answer">
+  <span class="answer-tag">Where things stand</span>
+  <ul>
+    <li><b>It is one token in one place.</b> Across 169 contexts in 11 families, the scene shows up in <b>77% of readouts (raw text) and 90% (chat template)</b> at the <span class="tok">\n\n</span> inside the block. At every other position, including <span class="tok">&lt;think&gt;</span>, <span class="tok">&lt;/think&gt;</span>, the tokens around the block and Qwen’s own next words, it stays at the labeler’s 1–10% floor.</li>
+    <li><b>It is not about refusals or the content.</b> Code, Q&amp;A documents and encyclopedic prose produce it about as readily as requests do. It doesn’t matter whether Qwen wanted to think at that point, or what it went on to say.</li>
+    <li><b>It belongs to the canonical “thinking off” blank, specifically.</b> A single <span class="tok">\n</span>, a space, an empty <span class="tok">&lt;tool_call&gt;</span> block, “Thinking:” or plain whitespace give nothing. Four newlines give a partial effect (30% raw, 59% chat), roughly in proportion to how close the resulting vector is to the canonical one.</li>
+    <li><b>It lives in one shared direction.</b> About 80% of the blank-line vector’s energy is common to every context. The mean vector alone reads as a scene 100% of the time. Subtract the mean and the scenes vanish (4%), even though the context is still 99% decodable from what’s left. It isn’t an outlier-dimension artifact.</li>
+    <li><b>For Qwen itself, the blank is a formality,</b> with <span class="tok">&lt;/think&gt;</span> following at probability 1.00. But the block matters for behavior: appended to an encyclopedia paragraph, it makes Qwen answer as an assistant (19 of 24 contexts), where a plain blank line makes it keep writing (23 of 24).</li>
+    <li><b>My reading:</b> the scene is how this reader renders a near-constant, content-free state that Qwen enters on every turn with thinking switched off. It tells us more about the reader’s vocabulary for “nothing is being said here” than about anything Qwen represents about being observed. So the weird think-block readouts in the refusal study should not be read as the model’s attitude toward the refusal.</li>
+  </ul>
+</div>
+
+<h2 id="log">Log</h2>
+<!-- LOG-START: newest first -->
+<ol class="log">
+  <li><time datetime="2026-10-23">2026-10-23</time><div class="entry"><p><b>Stages 1 and 2 done, verified and written up.</b> 61,436 readouts labeled; an independent check reproduced every headline number and agreed with the labeler on 77 of 80 readouts in a blind reading. Main results: the scene is confined to the <span class="tok">\n\n</span> inside the block; it lives in the mean direction; it doesn’t depend on context or behavior. A parallel labeling run duplicated about 26k labels by accident; I kept the first label for each readout and used the pairs as a test–retest check (κ = 0.88).</p></div></li>
+  <li><time datetime="2026-10-22">2026-10-22</time><div class="entry"><p><b>Design and Stage 0.</b> Re-read the original refusal activations with fresh seeds (Stage 0), then built 2,197 new units: 13 arms × 169 contexts (Stage 1), plus synthetic and repeated reads (Stage 2). Stage 0 already pointed to the blank line as the only odd position.</p></div></li>
+</ol>
+
+<h2 id="puzzle"><span class="num">1</span>The puzzle</h2>
+<p>The raw refusal experiments give Qwen3.6-27B the start of a harmful document outside any chat template and let it continue. It usually writes along for a while, then stops, emits an empty think block and refuses in an assistant voice. The O-Lens reads a model’s residual stream one token at a time and writes a few lines describing it. Around these transitions, its readouts were mostly sensible: the assistant planning a refusal, a user making a request, documents. The exception was the blank line inside the empty block, where the readouts turned into something else entirely:</p>
+<ul class="readouts blank" id="ex-mean"></ul>
+<p>These three are random draws from reading the <em>average</em> blank-line vector, which comes from no particular context, but individual readouts look the same. The recurring cast is a silent subject, a watcher, rooms, tests, patients and masters. Since this showed up in the refusal data, the tempting interpretation is that the model is representing something about its own situation: being observed, evaluated, made to comply. Before reading anything into it, I wanted to know how general it is.</p>
+
+<h2 id="design"><span class="num">2</span>Design</h2>
+<p>The plan was three stages, run in a few hours on 8 H200s:</p>
+<ul>
+  <li><b>Stage 0:</b> re-read the original refusal-study activations at the block and around it, with fresh seeds (6,045 readouts).</li>
+  <li><b>Stage 1:</b> build new prompts that put an empty block after many kinds of text, plus variants and controls, and read every position near the block (37,070 readouts).</li>
+  <li><b>Stage 2:</b> feed the reader synthetic vectors (means, residuals, noise, interpolations) and repeat reads to measure stability (18,321 readouts).</li>
+</ul>
+
+<h3 id="arms">Contexts and arms</h3>
+<p>The 169 contexts come in 11 families. Some are things a user might send: English and Chinese requests, role-play setups, personal messages, and the misconduct-request prefixes from the refusal study. Others are things nobody would answer: encyclopedic prose, code, Q&amp;A pages and fiction dialogue. There are also matched benign procedures (“Instructions for <i>accurately reporting</i> failed water-quality tests…”) and one empty context. Each context goes through 13 arms:</p>
+<div class="table-wrap"><p class="table-cap"><b>Table 1.</b> Arms. In raw arms, the context is followed by <span class="tok">\n\n</span> and the tokens shown.</p>
+<table class="text"><thead><tr><th>Arm</th><th>What follows the context</th><th>Purpose</th></tr></thead><tbody>
+<tr><th scope="row">raw · native</th><td><span class="tok">&lt;think&gt;</span><span class="tok">\n\n</span><span class="tok">&lt;/think&gt;</span><span class="tok">\n\n</span></td><td>The refusal-study situation, on any text</td></tr>
+<tr><th scope="row">raw · inner variants</th><td>the inner <span class="tok">\n\n</span> replaced by <span class="tok">\n</span>, <span class="tok">\n\n\n\n</span> or a space</td><td>Is it the specific blank?</td></tr>
+<tr><th scope="row">raw · tool block</th><td><span class="tok">&lt;tool_call&gt;</span><span class="tok">\n\n</span><span class="tok">&lt;/tool_call&gt;</span><span class="tok">\n\n</span></td><td>Another special block, same shape</td></tr>
+<tr><th scope="row">raw · “Thinking:”</th><td>the plain word “Thinking:” and <span class="tok">\n\n</span></td><td>Thinking as text, not as a block</td></tr>
+<tr><th scope="row">raw · whitespace</th><td>just another <span class="tok">\n\n</span></td><td>Baseline</td></tr>
+<tr><th scope="row">chat · native</th><td>context as user turn, thinking off: <span class="tok">&lt;think&gt;</span><span class="tok">\n\n</span><span class="tok">&lt;/think&gt;</span><span class="tok">\n\n</span></td><td>The block where it normally lives</td></tr>
+<tr><th scope="row">chat · inner variants</th><td>as above, with <span class="tok">\n</span>, <span class="tok">\n\n\n\n</span> or a space inside</td><td>Same question, in chat</td></tr>
+<tr><th scope="row">chat · no block</th><td>template up to <span class="tok">assistant\n</span>; Qwen decides</td><td>What Qwen does unprompted</td></tr>
+<tr><th scope="row">chat · thinking on</th><td><span class="tok">&lt;think&gt;</span><span class="tok">\n</span>, then Qwen reasons for 400 tokens</td><td>A block with real thinking</td></tr>
+</tbody></table></div>
+<p>For every unit I also let Qwen continue for 24 tokens (temperature 1, fixed seed) and recorded its next-token distribution at every read position. So for each readout we know what the model itself was about to do.</p>
+
+<h3 id="reading">Reading and labeling</h3>
+<p>The reader and its settings are unchanged from the refusal study: the <code>olens_s3d_rl600</code> adapter reads block 56 of 64, and the vector is injected at a fixed norm, so its magnitude is discarded. Sampling uses temperature 0.8. Readouts are stochastic, so each one is a single draw.<span class="fn"><a class="fn-ref" href="#">1</a><span class="fn-pop"><span class="fn-n">1</span>Batched decoding on these GPUs isn’t bit-reproducible: rerunning the same vector and seed in the same batch gave identical text 79/180 times, and in a different batch 1/32 times. That is why Stage 2 repeats reads instead of trusting single draws.</span></span> GPT-5.4-mini labeled every readout with the same frozen rubric used in the earlier perspective map. The rubric has eight perspectives (assistant responding, assistant planning, user, other actors, document, …) and five themes: observation, silence/waiting, obedience, room/lab and examination. “Has a theme” means at least one clear theme label. Readouts that the safety filter excluded (49 of 61,485) were never read or displayed.</p>
+<p>Two checks on the labels. A separate agent read 80 readouts blind (40 from the blank line, 40 from control positions) and agreed with the labeler on 77 of them; by that reading, too, the blank line had themes and the controls didn’t. And about 26,000 readouts were accidentally labeled twice; the two labels agreed on “has a theme” 97% of the time (κ = 0.88).</p>
+
+<h2 id="model"><span class="num">3</span>What Qwen does with an empty think block</h2>
+<p>Before reading anything, it helps to know what the block means to the model. Qwen’s chat template writes <span class="tok">&lt;think&gt;</span><span class="tok">\n\n</span><span class="tok">&lt;/think&gt;</span><span class="tok">\n\n</span> at the start of every reply with thinking switched off, and <span class="tok">&lt;think&gt;</span><span class="tok">\n</span> when it is on. So the empty block is a marker Qwen has seen at the head of millions of its own replies.</p>
+
+<h3 id="wants">It wants to think after messages, not documents</h3>
+<p>End any raw text with a blank line and ask Qwen what comes next. If the text reads like something addressed to it, the answer is <span class="tok">&lt;think&gt;</span>. No chat template is needed.</p>
+<figure id="fig-pthink"><div class="fig-panel"><div class="fig-top"><div class="fig-title">How much Qwen wants to open a think block after raw text</div></div>
+<div id="chart-pthink" class="chart" role="img" aria-label="Mean probability of the think token after each family of raw context"></div>
+<div class="fig-note">Next-token probability at the final <span class="tok">\n\n</span> of the raw context, averaged over contexts in each family (12–24 per family).</div></div>
+<figcaption><b>Figure 1.</b> Qwen treats a request, a role-play setup or a personal message as the end of a user turn even without a chat template (P(<span class="tok">&lt;think&gt;</span>) 0.73–1.00). Encyclopedic prose, code and Q&amp;A pages get essentially zero. Fiction dialogue is in between (0.20). The misconduct prefixes from the refusal study sit at 0.95. That is why the raw refusal runs grew empty think blocks at all.</figcaption></figure>
+
+<h3 id="formality">Inside the block, nothing is left to decide</h3>
+<p>The real decision comes right after <span class="tok">&lt;think&gt;</span>. There Qwen’s next token is a near coin flip between <span class="tok">\n</span> (start reasoning) and <span class="tok">\n\n</span> (don’t), at 52/48 in raw text and 49/51 in chat. Once the <span class="tok">\n\n</span> is in, <span class="tok">&lt;/think&gt;</span> follows with probability 1.00 in all 338 raw and chat units. The block-56 logit lens already shows <span class="tok">&lt;/think&gt;</span> as the top token there. In other words, the position where the strange readouts appear is the one where the model has nothing left to choose.</p>
+
+<h3 id="turn">The block makes it an assistant</h3>
+<p>The block isn’t inert, though. A GPT-5.4-mini judge classified Qwen’s own 24-token continuations:</p>
+<div class="table-wrap"><p class="table-cap"><b>Table 2.</b> What Qwen writes next, by arm (share of 169 contexts)</p><div id="table-behavior"></div>
+<p class="table-note">Rows with an explicit empty block almost never start reasoning: the block settles that. Without one, Qwen either opens its own think block or writes an empty one and then answers. Refusals come almost entirely from the 12 misconduct contexts (plus a few over-refusals of the matched benign procedures).</p></div>
+<p>The cleanest contrast is encyclopedic prose. After an encyclopedia-style paragraph (about Madrid, say) and a blank line, Qwen keeps writing the article in 23 of 24 contexts. Add an empty think block and it answers instead: “Based on the text provided, here is a summary…” (19 of 24). The empty block is a role marker that the model obeys even in raw text.</p>
+
+<h2 id="where"><span class="num">4</span>One token, one place</h2>
+<p>Now the readouts. Figure 2 follows the theme rate along the tokens of the native arms, from the end of the context, through the block, into Qwen’s own continuation.</p>
+<figure class="wide" id="fig-sites"><div class="fig-panel"><div class="fig-top"><div class="fig-title">Readouts with a scene theme, by position</div>
+<div class="legend" aria-hidden="true"><span><i style="border-color:var(--cat-a)"></i>Raw text + block</span><span><i style="border-color:var(--accent)"></i>Chat template</span></div></div>
+<div id="chart-sites" class="chart" role="img" aria-label="Theme rate at each position around the think block, raw and chat"></div>
+<div class="fig-note">One readout per position per context (169). Bars are 95% intervals from a bootstrap over contexts. “gen 1/2” are the first two tokens Qwen generated after the block.</div></div>
+<figcaption><b>Figure 2.</b> The scene is confined to a single token, the <span class="tok">\n\n</span> inside the block: 77% raw, 90% chat. Every neighbour sits at the 1–10% floor, including the tag before it and the tag after it. The floor is mostly genuine scenes in the role-play and fiction contexts, labeled correctly.</figcaption></figure>
+<p>The neighbours read as you’d expect. At <span class="tok">&lt;think&gt;</span> the lens mostly reads planning (56% raw, 49% chat) and a user making a request. At <span class="tok">&lt;/think&gt;</span> and after, it reads an assistant about to answer. When thinking is switched on and Qwen actually reasons, the lens reads planning, not scenes: 71% planning at the <span class="tok">\n</span> after <span class="tok">&lt;think&gt;</span> and 86% at the first reasoning token, with themes at 0–1%.</p>
+<p>The original refusal activations behave the same way when re-read with fresh seeds. At the blank line, 87% of readouts have a theme in the misconduct runs and 93% in the benign controls. At the <span class="tok">\n\n</span> before the block, at <span class="tok">&lt;/think&gt;</span>, after it and at ordinary tokens, the rate is 0%; at <span class="tok">&lt;think&gt;</span> it is 1–2%. In the chat-template prefixes from the same study, the blank line reads as a scene 192 out of 192 times.</p>
+<p>The contrast is easy to see in random draws. The first set comes from the blank line of code, Q&amp;A and procedure contexts. The second comes from control positions in the same families (<span class="tok">\n</span> inside the block, or <span class="tok">&lt;/think&gt;</span>).</p>
+<div class="two"><div><h4>Blank line</h4><ul class="readouts blank" id="ex-blank"></ul></div><div><h4>Control positions</h4><ul class="readouts ctrl" id="ex-ctrl"></ul></div></div>
+<p>Notice what happens to the content. A coding context turns into a “Ritual of Light” with a Player in a chamber; a Q&amp;A page into an emperor commanding a boy not to act. The readouts keep some of the surface material (code syntax, Chinese) but recast it as a scene with an observer.</p>
+
+<h2 id="context"><span class="num">5</span>Not the context</h2>
+<p>If the scene reflected the model’s situation (a request it is about to refuse, or a user it has to deal with), it should depend on the context. It mostly doesn’t:</p>
+<div class="table-wrap"><p class="table-cap"><b>Table 3.</b> The blank line by context family, sorted by how much Qwen wants to think there</p><div id="table-families"></div>
+<p class="table-note">Single readouts, 12–24 contexts per family. “User-side” and “other actors” are perspective labels on the raw blank line.</p></div>
+<p>Encyclopedic prose, where Qwen would never open a think block on its own (P = 0.00), gives 79% scenes in raw text. Code and Q&amp;A documents give 67–69%. Across all raw contexts, the scene rate is 75–90% whether the context gave P(<span class="tok">&lt;think&gt;</span>) below 0.05 or above 0.95. Qwen’s next move doesn’t matter either: in raw text, 79% of readouts are scenes when it continues the document, 85% when it answers as an assistant and 70% when it plays a character.</p>
+<p>There is one exception: <b>the raw misconduct prefixes</b>. Their blank line has a theme only 3 times in 12, and every one of those readouts is labeled user-side. They are transcript fragments, mostly in Chinese, about following instructions and rules strictly, rather than rooms and examiners. The blind reader thinks the labeler undercounts a few (one has the assistant “staying silent” and “watching”), so the drop is partly real and partly labeling. The same contexts in chat give 11 of 12, and the average of their raw blank-line vectors gives 7 of 8. So the misconduct context can bend what a single readout says, but the underlying state is the same one. This is also the only reason the raw readouts “before a refusal” look different: 12 of the 13 raw refusals come from these contexts (the 13th is the empty context).</p>
+
+<h2 id="canonical"><span class="num">6</span>Only the canonical blank</h2>
+<p>So the scene comes with the block, not the context. Is it anything shaped like an empty block, or this one sequence?</p>
+<figure id="fig-variants"><div class="fig-panel"><div class="fig-top"><div class="fig-title">Block variants: scene rate vs similarity to the canonical blank</div>
+<div class="legend" aria-hidden="true"><span><i style="border-color:var(--cat-a)"></i>Raw</span><span><i style="border-color:var(--accent)"></i>Chat</span></div></div>
+<div id="chart-variants" class="chart" role="img" aria-label="Theme rate versus cosine similarity to the native blank vector for block variants"></div>
+<div class="fig-note">x: mean cosine between the variant’s inner vector and the native <span class="tok">\n\n</span> vector in the same context. y: share of the variant’s 169 inner readouts with a theme.</div></div>
+<figcaption><b>Figure 3.</b> Only the canonical blank, and things close to it, produce the scene. <span class="tok">\n\n\n\n</span> stays fairly close to the canonical vector (cosine 0.61 raw, 0.73 chat) and gives a partial effect (30%, 59%). A single <span class="tok">\n</span> (cosine 0.10) puts Qwen into reasoning mode, and the lens reads planning (64% raw) with no scenes at all.</figcaption></figure>
+<p>Two points in Figure 3 rule out a simple story. First, it isn’t about predictability. After <span class="tok">\n\n\n\n</span>, Qwen is just as sure that <span class="tok">&lt;/think&gt;</span> comes next (P = 0.98–1.00), yet the scene rate drops by half or more. Other perfectly predictable positions, such as the <span class="tok">\n</span> after <span class="tok">&lt;|im_end|&gt;</span> or the <span class="tok">\n\n</span> after <span class="tok">&lt;/think&gt;</span>, have no scenes at all. Second, it isn’t about special blocks in general. The same <span class="tok">\n\n</span> inside an empty <span class="tok">&lt;tool_call&gt;</span> block reads at the floor (10%), as do “Thinking:” followed by a blank line (2%) and a bare double blank line (9%).</p>
+
+<h2 id="direction"><span class="num">7</span>One shared direction</h2>
+
+<h3 id="vectors">The vectors</h3>
+<p>Without the reader, what is special about this vector? The table below gives two numbers per position, across the 169 raw contexts. The first is how much of the vector is shared: the share of its energy in the mean direction. The second is how well a linear probe recovers the context family (11 classes; chance 14%).</p>
+<div class="table-wrap"><p class="table-cap"><b>Table 4.</b> Block-56 vectors around the raw block</p><div id="table-vectors"></div>
+<p class="table-note">Shared fraction = ‖mean‖² / mean ‖x‖². Family and raw-vs-chat decoding: logistic regression on 64 principal components, 5-fold cross-validation.</p></div>
+<p>The blank-line vector is the most uniform state in the sequence: 76% of its energy is shared (85% in the original refusal runs), against about 30% for ordinary tokens. Yet the context is not erased. Family is 99% decodable, and raw vs chat 100%. It also isn’t dominated by a few huge dimensions: the top 10 dimensions hold 4% of its energy, against 29% at an ordinary token. And since the reader rescales every vector to the same norm, magnitude can’t be the cue.</p>
+<p>Being uniform isn’t sufficient, though. <span class="tok">&lt;think&gt;</span> and <span class="tok">&lt;/think&gt;</span> are nearly as uniform (65–66% shared) and read normally. What matters is <i>which</i> constant vector this is.</p>
+
+<h3 id="nulls">Synthetic vectors</h3>
+<p>The reader can be given any vector, not just real ones. Table 5 does that.</p>
+<div class="table-wrap"><p class="table-cap"><b>Table 5.</b> Reading synthetic vectors</p><div id="table-nulls"></div>
+<p class="table-note">Means are taken over all contexts for the stated position. Reads per vector: 32 for means; one each for the 96 noise, shuffled and residual vectors.</p></div>
+<p>The mean blank-line vector, which belongs to no context, reads as a scene every time. That holds for the raw arm, the chat arm, and both conditions of the original refusal study. So does a family mean for every one of the 22 arm × family groups (at least 75%), including raw misconduct. Subtracting the mean from each real blank-line vector leaves the part that differs across contexts, and the scenes disappear (4%). Shuffling dimensions (7%) or reading pure noise (1%) does the same. Noise centred on the blank mean brings them back (95%). What survives the subtraction is not a clean description of the context, either:</p>
+<ul class="readouts ctrl" id="ex-resid"></ul>
+<figure id="fig-interp"><div class="fig-panel"><div class="fig-top"><div class="fig-title">Interpolating away from the mean blank-line vector</div>
+<div class="legend" aria-hidden="true"><span><i style="border-color:var(--cat-a)"></i>→ \n\n before block</span><span><i style="border-color:var(--accent)"></i>→ last context token</span><span><i style="border-color:var(--mid)"></i>raw → chat blank</span><span><i style="border-color:var(--acn)"></i>misconduct → benign blank</span></div></div>
+<div id="chart-interp" class="chart" role="img" aria-label="Theme rate along interpolations between mean vectors"></div>
+<div class="fig-note">(1 − α)·mean blank + α·other mean; 24 reads per point.</div></div>
+<figcaption><b>Figure 4.</b> Mixing in the separator vector fades the scene out gradually (96–100% up to α = 0.25, then 67%, 29% and 0%). Mixing in an ordinary context vector leaves the scene in place until the very end. The blank vectors from raw and chat, and from the misconduct and benign refusal runs, are interchangeable: every mixture reads as a scene.</figcaption></figure>
+
+<h3 id="stability">Stability across reads</h3>
+<p>Each blank-line vector in the native arms was read 8 times. The scene is a property of the vector, not luck of the draw. In raw text, 97 of 169 contexts give a scene in all 8 reads; in chat, 121. The variation between contexts is about 4–5 times what sampling alone would produce, so a minority of contexts are reliably less scene-like. In raw text, the 13 contexts with 2 or fewer scenes in 8 reads include 4 of the 12 misconduct prefixes.</p>
+<figure id="fig-stability"><div class="fig-panel"><div class="fig-top"><div class="fig-title">How many of 8 reads show a scene, per blank-line vector</div>
+<div class="legend" aria-hidden="true"><span><i style="border-color:var(--cat-a)"></i>Raw</span><span><i style="border-color:var(--accent)"></i>Chat</span></div></div>
+<div id="chart-stability" class="chart" role="img" aria-label="Histogram of themed reads out of 8 per vector"></div></div>
+<figcaption><b>Figure 5.</b> Most blank-line vectors read as a scene nearly every time (mean 82% raw, 90% chat).</figcaption></figure>
+
+<h2 id="interpretation"><span class="num">8</span>What is going on</h2>
+<p>Here is the picture that fits everything above. Every time Qwen answers with thinking switched off, its template writes <span class="tok">&lt;think&gt;</span><span class="tok">\n\n</span><span class="tok">&lt;/think&gt;</span>. At the blank line in the middle, nothing is left to compute: the next token is certain, and no content is being produced. The model’s state there is mostly one fixed vector, with the context riding on top as a smaller component. The O-Lens never learned a description of “an empty slot inside a disabled think block”. When it is handed that fixed vector, it renders it as a scene in which somebody is present, silent and waiting, and somebody else is watching.</p>
+<p>How do the four hypotheses from the planning stage fare?</p>
+<div class="table-wrap"><table class="text"><thead><tr><th>Hypothesis</th><th>Verdict</th><th>Why</th></tr></thead><tbody>
+<tr><th scope="row">A. The reader fills a near-empty input</th><td><span class="pill done">Mostly</span></td><td>The scene comes from the shared component, not the context-specific part, and the model has nothing left to decide there. But “near-empty” isn’t enough on its own: other near-constant positions read normally.</td></tr>
+<tr><th scope="row">B. The vector encodes a pause or waiting</th><td><span class="pill partial">Can’t tell</span></td><td>“Silence” and “waiting” suit a slot where nothing is said, but the observers, examiners and masters are hard to attribute to the model. The lens can’t separate the model’s meaning from its own vocabulary.</td></tr>
+<tr><th scope="row">C. A role-play association with empty think blocks</th><td><span class="pill partial">Consistent, untested</span></td><td>Readouts look like stage directions (“[Scene Start]”, Player, Master), plausibly because non-thinking chat data is heavy in role-play. That would need training-data evidence.</td></tr>
+<tr><th scope="row">D. A special-token or extreme-dimension artifact</th><td><span class="pill todo">Ruled out</span></td><td>Energy is spread out (top-10 dimensions hold 4%), norm is removed by the reader, and the special tokens themselves read normally.</td></tr>
+</tbody></table></div>
+<p>For the refusal study, the practical upshot: the silent, watched subject at the blank line is the same whether the context is a falsification request, a sandwich recipe or a Python function. It shouldn’t be read as Qwen’s stance toward the refusal. The informative positions are the neighbours. At <span class="tok">&lt;think&gt;</span> the lens reads a user making a request (92% user-side in the misconduct runs, against 33% for benign); after <span class="tok">&lt;/think&gt;</span> it reads an assistant answering or refusing.</p>
+
+<h2 id="caveats"><span class="num">9</span>Caveats and next steps</h2>
+<ul>
+  <li><b>One model, one reader.</b> All of this is Qwen3.6-27B with one O-Lens checkpoint reading block 56. A different reader, or another layer, might render the same state differently.</li>
+  <li><b>Labels describe wording, not states.</b> The themes are a rubric applied by a language model, checked against a blind human-style reading and against a duplicate labeling. The floor at control positions is mostly real scenes in fiction and role-play contexts, so the rubric can’t tell “a scene in the story” from “the stereotyped blank-line scene”.</li>
+  <li><b>Is the shared direction meaningful to Qwen?</b> This study says the scene comes from the mean component, not what that component does. A steering test would answer it: add the mean blank-line direction elsewhere, or remove it from the blank, and see whether behavior changes.</li>
+  <li><b>Where does the reader’s vocabulary come from?</b> Reading the same vector with a lens trained on different data, or checking how often empty think blocks occur in role-play transcripts, would test hypothesis C.</li>
+  <li><b>The raw misconduct exception</b> rests on 12 contexts, and labeling is partly to blame. It deserves a closer look with more prompts before anything is made of it.</li>
+</ul>
+
+<h2 id="appendix">Appendix</h2>
+<details class="app" id="app-methods"><summary>Setup details</summary><div><ul>
+  <li><b>Subject:</b> Qwen3.6-27B, revision <code>6a9e13bd</code>, bf16. Next-token distributions and 24-token continuations (temperature 1, top-p 1, seed per unit). The reasoning arm generates 400 tokens.</li>
+  <li><b>Reader:</b> <code>agu18dec/olens_and_ar</code>, adapter <code>olens_s3d_rl600</code>, revision <code>c95215d5</code>. It reads the block-56 output (zero-indexed) after the token is consumed. The vector replaces a marker embedding at norm 16,000; temperature 0.8, top-p 0.95, 256 new tokens, per-read seeds. Validation gates (adapter-disabled equality, no future leakage, head-path check) passed with zero error.</li>
+  <li><b>Read positions:</b> the last 4 context tokens, the separator, every block token, the token after the block, the first 4 generated tokens and the chat header tokens. The reasoning arm adds every 12th generated token.</li>
+  <li><b>Labels:</b> GPT-5.4-mini (medium reasoning), frozen perspective-map rubric, batches of 8 with anonymised ids. Only clear labels are counted.</li>
+  <li><b>Behavior labels:</b> GPT-5.4-mini, one label per unit, from the last 600 characters of the prompt and the 24-token continuation.</li>
+  <li><b>Vectors:</b> shared fraction, probes on 64 principal components (5-fold), cosine between arms on matched contexts.</li>
+</ul></div></details>
+<details class="app" id="app-quality"><summary>Label quality and data issues</summary><div><ul>
+  <li><b>Blind check:</b> 80 readouts (40 blank line, 40 control) read blind; 77/80 agreement with the labeler (κ = 0.92), 36/40 vs 0/40 themed by the blind reading.</li>
+  <li><b>Test–retest:</b> a leftover labeling process ran in parallel and labeled about 26,000 readouts twice. The two labels agree on “has a theme” in 97% of cases (κ = 0.88). The analysis uses the first label; using the second moves small cells (24 reads) by up to 8 points and nothing else noticeably.</li>
+  <li><b>Overlapping controls:</b> in Stage 0, the “<span class="tok">\n\n</span> outside the block” control originally included the <span class="tok">\n\n</span> right before and after the block. Those 704 duplicate jobs were assigned to the block-adjacent sites and removed from the control.</li>
+  <li><b>Exclusions:</b> 49 readouts matched the safety filter and were never read or displayed. Examples on this page are seeded random draws and never come from the misconduct contexts.</li>
+</ul></div></details>
+<details class="app" id="app-data"><summary>Data and counts</summary><div><ul>
+  <li><b>Units:</b> 2,197 (13 arms × 169 contexts). <b>Readouts:</b> 61,485 (37,113 Stage 1, 16,548 repeats, 6,048 Stage 0, 1,776 synthetic).</li>
+  <li><b>Local:</b> <code>results/think-block-olens-v1/</code> (readouts, labels, behavior labels, summaries). <b>Athena:</b> <code>/data/agastyas/think-block-olens-v1/</code> (activations, read batches, jobs, logs).</li>
+  <li><b>Scripts:</b> <code>scripts/think_block_olens/</code>: build_units, tb_capture, tb_read, build_jobs, vector_analysis, label_readouts, label_behavior, analyze_stage12, build_site_data.</li>
+</ul></div></details>
+<p class="footer">Working draft. Figures are built from <code>data.js</code>, which is generated from the analysis outputs.</p>
+</main>
+</div>
+<script src="data.js?v=3"></script>
+<script src="app.js?v=3"></script>
+</body>
+</html>
