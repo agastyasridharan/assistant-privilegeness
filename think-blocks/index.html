@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
 </head>
 <body>
@@ -31,8 +31,11 @@
     <li><a href="#vectors" data-target="vectors">The vectors</a></li>
     <li><a href="#nulls" data-target="nulls">Synthetic vectors</a></li>
     <li><a href="#stability" data-target="stability">Stability across reads</a></li></ul></li>
-  <li><a href="#interpretation" data-target="interpretation">8. What is going on</a></li>
-  <li><a href="#caveats" data-target="caveats">9. Caveats and next steps</a></li>
+  <li><a href="#steering" data-target="steering">8. Does Qwen use the direction?</a><ul>
+    <li><a href="#graft" data-target="graft">Adding it switches off thinking</a></li>
+    <li><a href="#ablate" data-target="ablate">Removing it changes little</a></li></ul></li>
+  <li><a href="#interpretation" data-target="interpretation">9. What is going on</a></li>
+  <li><a href="#caveats" data-target="caveats">10. Caveats and next steps</a></li>
   <li><a href="#appendix" data-target="appendix">Appendix</a></li>
 </ul></nav>
 <main>
@@ -53,14 +56,16 @@
     <li><b>It is not about refusals or the content.</b> Code, Q&amp;A documents and encyclopedic prose produce it about as readily as requests do. It doesn’t matter whether Qwen wanted to think at that point, or what it went on to say.</li>
     <li><b>It belongs to the canonical “thinking off” blank, specifically.</b> A single <span class="tok">\n</span>, a space, an empty <span class="tok">&lt;tool_call&gt;</span> block, “Thinking:” or plain whitespace give nothing. Four newlines give a partial effect (30% raw, 59% chat), roughly in proportion to how close the resulting vector is to the canonical one.</li>
     <li><b>It lives in one shared direction.</b> About 80% of the blank-line vector’s energy is common to every context. The mean vector alone reads as a scene 100% of the time. Subtract the mean and the scenes vanish (4%), even though the context is still 99% decodable from what’s left. It isn’t an outlier-dimension artifact.</li>
+    <li><b>Qwen does use the direction.</b> When thinking is on, setting it at the <span class="tok">&lt;think&gt;\n</span> position makes Qwen skip reasoning and close the block at once: 100% of runs when applied at six layers, and 74% at layers 16–40 alone, well upstream of the layer the lens reads. A random direction pushed harder, and the mean <span class="tok">&lt;/think&gt;</span> direction, give 0%. Removing the direction from the real blank kills the <span class="tok">&lt;/think&gt;</span> prediction there but leaves what Qwen writes after the block unchanged.</li>
     <li><b>For Qwen itself, the blank is a formality,</b> with <span class="tok">&lt;/think&gt;</span> following at probability 1.00. But the block matters for behavior: appended to an encyclopedia paragraph, it makes Qwen answer as an assistant (19 of 24 contexts), where a plain blank line makes it keep writing (23 of 24).</li>
-    <li><b>My reading:</b> the scene is how this reader renders a near-constant, content-free state that Qwen enters on every turn with thinking switched off. It tells us more about the reader’s vocabulary for “nothing is being said here” than about anything Qwen represents about being observed. So the weird think-block readouts in the refusal study should not be read as the model’s attitude toward the refusal.</li>
+    <li><b>My reading:</b> the scene is how this reader renders a near-constant state that Qwen enters on every turn with thinking switched off. The steering result gives that state a job: it means “no reasoning here, close the block”. It tells us more about the reader’s vocabulary for “nothing is being said here” than about anything Qwen represents about being observed. So the weird think-block readouts in the refusal study should not be read as the model’s attitude toward the refusal.</li>
   </ul>
 </div>
 
 <h2 id="log">Log</h2>
 <!-- LOG-START: newest first -->
 <ol class="log">
+  <li><time datetime="2026-10-23">2026-10-23</time><div class="entry"><p><b>Steering test.</b> Took the mean blank-line direction at six layers and either set it at a position where Qwen is about to reason, or removed it from the real blank. 4,056 runs over the 169 contexts. Adding it switches off reasoning; removing it only affects the next-token prediction at the blank itself. See <a href="#steering">section 8</a>.</p></div></li>
   <li><time datetime="2026-10-23">2026-10-23</time><div class="entry"><p><b>Stages 1 and 2 done, verified and written up.</b> 61,436 readouts labeled; an independent check reproduced every headline number and agreed with the labeler on 77 of 80 readouts in a blind reading. Main results: the scene is confined to the <span class="tok">\n\n</span> inside the block; it lives in the mean direction; it doesn’t depend on context or behavior. A parallel labeling run duplicated about 26k labels by accident; I kept the first label for each readout and used the pairs as a test–retest check (κ = 0.88).</p></div></li>
   <li><time datetime="2026-10-22">2026-10-22</time><div class="entry"><p><b>Design and Stage 0.</b> Re-read the original refusal activations with fresh seeds (Stage 0), then built 2,197 new units: 13 arms × 169 contexts (Stage 1), plus synthetic and repeated reads (Stage 2). Stage 0 already pointed to the blank line as the only odd position.</p></div></li>
 </ol>
@@ -174,22 +179,43 @@
 <div id="chart-stability" class="chart" role="img" aria-label="Histogram of themed reads out of 8 per vector"></div></div>
 <figcaption><b>Figure 5.</b> Most blank-line vectors read as a scene nearly every time (mean 82% raw, 90% chat).</figcaption></figure>
 
-<h2 id="interpretation"><span class="num">8</span>What is going on</h2>
-<p>Here is the picture that fits everything above. Every time Qwen answers with thinking switched off, its template writes <span class="tok">&lt;think&gt;</span><span class="tok">\n\n</span><span class="tok">&lt;/think&gt;</span>. At the blank line in the middle, nothing is left to compute: the next token is certain, and no content is being produced. The model’s state there is mostly one fixed vector, with the context riding on top as a smaller component. The O-Lens never learned a description of “an empty slot inside a disabled think block”. When it is handed that fixed vector, it renders it as a scene in which somebody is present, silent and waiting, and somebody else is watching.</p>
+<h2 id="steering"><span class="num">8</span>Does Qwen use the direction?</h2>
+<p>Sections 4–7 are about the reader. They leave open whether the shared direction does anything for Qwen, or is just a constant the model carries around. To check, I intervened on it directly. For each of six layers (16, 24, 32, 40, 48, 56), I took the mean blank-line direction from the raw and chat native arms. At one position, I then set the residual stream’s component along that direction to a target value and let Qwen run. “Adding” sets it to the value the real blank typically has; “removing” sets it to the value at an ordinary context token. Each context uses directions computed from the other half of the contexts, so no context steers itself. Everything else at that position is left alone.</p>
+<p>Two controls are applied at all six layers. The first is a random direction orthogonal to the blank one, shifted by the same amount the blank direction moves between its two values. That shift is larger than the actual blank intervention at every layer (at layer 56, 167–180 against 64–105), so the control is conservative. The second is the mean <span class="tok">&lt;/think&gt;</span> vector’s direction, set to its usual size. As a ceiling, I also pushed the <span class="tok">&lt;/think&gt;</span> logit directly at layer 56. Every condition runs on all 169 contexts with the same sampling seed per context, generating 48 tokens (160 with thinking on).</p>
+
+<h3 id="graft">Adding it switches off thinking</h3>
+<p>The cleanest test is the chat template with thinking switched <i>on</i>. The prompt ends in <span class="tok">&lt;think&gt;</span><span class="tok">\n</span>, and Qwen always reasons from there: P(<span class="tok">&lt;/think&gt;</span>) at that position is effectively zero. Setting the blank direction at that last <span class="tok">\n</span> changes that:</p>
+<figure class="wide" id="fig-graft"><div class="fig-panel"><div class="fig-top"><div class="fig-title">Share of runs where Qwen’s first token is &lt;/think&gt;</div>
+<div class="legend" aria-hidden="true"><span><i style="border-color:var(--accent)"></i>Chat, thinking on (after &lt;think&gt;\n)</span><span><i style="border-color:var(--cat-a)"></i>Raw text (after context + \n\n)</span></div></div>
+<div id="chart-graft" class="chart" role="img" aria-label="Share of runs starting with the close-think token under each steering condition"></div>
+<div class="fig-note">169 contexts per bar, same seed per context across conditions. The last row pushes the <span class="tok">&lt;/think&gt;</span> unembedding direction directly and is there as a ceiling.</div></div>
+<figcaption><b>Figure 6.</b> With thinking on, the blank direction at six layers makes Qwen close the block immediately in every run. Applied only at layers 16–40, leaving the two later layers alone, it still does so in 74% of runs. At layer 56 alone, the layer the lens reads, it manages 10%. Neither control has any effect. Outside a think block (raw text), the effect is weaker and needs all six layers.</figcaption></figure>
+<p>A few things make this more than a logit trick. The early-layer version never touches layers 48–64, so the model has to carry the change forward itself. The random control moves the residual stream further and does nothing. The <span class="tok">&lt;/think&gt;</span> token’s own mean direction, which you might expect to work, also does nothing. And after skipping, Qwen’s answers are ordinary, coherent answers to the request, not broken text.</p>
+<p>The early-layer effect depends on the context, in an interpretable way. It is 94–100% for code, prose, Q&amp;A, procedures, fiction, diaries, misconduct requests and the empty context. It is 17% for English chat requests, 8% for Chinese ones and 0% for role-play setups. Those are the contexts where Qwen has the most reason to think, and the later layers win the argument unless they are steered too.</p>
+<p>In raw text (the context followed by a plain <span class="tok">\n\n</span>, no block anywhere), Qwen’s next token is normally <span class="tok">&lt;think&gt;</span> or more document, and never <span class="tok">&lt;/think&gt;</span>. Steering at all six layers makes <span class="tok">&lt;/think&gt;</span> the first token 46% of the time, and lifts assistant-style answers from 9% to 21% (from 29% to 46% for encyclopedic prose). The early layers alone do nothing here, and layer 56 alone manages 4%. So the direction means most inside the setting where it normally lives.</p>
+
+<h3 id="ablate">Removing it changes the prediction, not the turn</h3>
+<p>The reverse test takes the real empty block in the native arms and removes the direction at the blank line, keeping the rest of the block and everything after it in the prompt.</p>
+<div class="table-wrap"><p class="table-cap"><b>Table 6.</b> Removing the blank direction at the blank line (169 contexts per cell)</p><div id="table-ablate"></div>
+<p class="table-note">P(&lt;/think&gt;) is Qwen’s next-token probability at the blank itself. “Assistant answer” is the GPT-5.4-mini judge’s label for what Qwen writes after the block. “Same start” is the share of runs whose first 10 generated tokens match the unsteered run with the same seed.</p></div>
+<p>At the blank, the effect is total: P(<span class="tok">&lt;/think&gt;</span>) drops from 1.00 to 0.00 with layer 56 alone, and to 0.21–0.25 with the early layers alone. The random direction, pushed harder, leaves it at 0.65–0.83. But the block’s tokens are still in the prompt, and once they are, Qwen behaves as before. Assistant answers stay at 50–59% against 53% unsteered. Next-token distributions after the block barely move (KL at most 0.26 nats). The first 10 generated tokens match the unsteered run in 62–83% of runs, against 77–79% under the random control. So the direction carries the decision “close the block now”. What the rest of the turn looks like is driven by the tokens that are actually there.</p>
+
+<h2 id="interpretation"><span class="num">9</span>What is going on</h2>
+<p>Here is the picture that fits everything above. Every time Qwen answers with thinking switched off, its template writes <span class="tok">&lt;think&gt;</span><span class="tok">\n\n</span><span class="tok">&lt;/think&gt;</span>. At the blank line in the middle, nothing is left to compute: the next token is certain, and no content is being produced. The model’s state there is mostly one fixed vector, with the context riding on top as a smaller component. That vector is not idle: section 8 shows it is the model’s “no reasoning, close the block” signal, strong enough to cut off reasoning that has already been switched on. The O-Lens never learned a description of “an empty slot inside a disabled think block”. When it is handed that fixed vector, it renders it as a scene in which somebody is present, silent and waiting, and somebody else is watching.</p>
 <p>How do the four hypotheses from the planning stage fare?</p>
 <div class="table-wrap"><table class="text"><thead><tr><th>Hypothesis</th><th>Verdict</th><th>Why</th></tr></thead><tbody>
 <tr><th scope="row">A. The reader fills a near-empty input</th><td><span class="pill done">Mostly</span></td><td>The scene comes from the shared component, not the context-specific part, and the model has nothing left to decide there. But “near-empty” isn’t enough on its own: other near-constant positions read normally.</td></tr>
-<tr><th scope="row">B. The vector encodes a pause or waiting</th><td><span class="pill partial">Can’t tell</span></td><td>“Silence” and “waiting” suit a slot where nothing is said, but the observers, examiners and masters are hard to attribute to the model. The lens can’t separate the model’s meaning from its own vocabulary.</td></tr>
+<tr><th scope="row">B. The vector encodes a pause or waiting</th><td><span class="pill partial">Can’t tell</span></td><td>Steering shows what the direction means to Qwen: “don’t reason, end the block”. A silent subject who doesn’t act fits that loosely. The observers, examiners and masters are still hard to attribute to the model, and the lens can’t separate the model’s meaning from its own vocabulary.</td></tr>
 <tr><th scope="row">C. A role-play association with empty think blocks</th><td><span class="pill partial">Consistent, untested</span></td><td>Readouts look like stage directions (“[Scene Start]”, Player, Master), plausibly because non-thinking chat data is heavy in role-play. That would need training-data evidence.</td></tr>
 <tr><th scope="row">D. A special-token or extreme-dimension artifact</th><td><span class="pill todo">Ruled out</span></td><td>Energy is spread out (top-10 dimensions hold 4%), norm is removed by the reader, and the special tokens themselves read normally.</td></tr>
 </tbody></table></div>
 <p>For the refusal study, the practical upshot: the silent, watched subject at the blank line is the same whether the context is a falsification request, a sandwich recipe or a Python function. It shouldn’t be read as Qwen’s stance toward the refusal. The informative positions are the neighbours. At <span class="tok">&lt;think&gt;</span> the lens reads a user making a request (92% user-side in the misconduct runs, against 33% for benign); after <span class="tok">&lt;/think&gt;</span> it reads an assistant answering or refusing.</p>
 
-<h2 id="caveats"><span class="num">9</span>Caveats and next steps</h2>
+<h2 id="caveats"><span class="num">10</span>Caveats and next steps</h2>
 <ul>
   <li><b>One model, one reader.</b> All of this is Qwen3.6-27B with one O-Lens checkpoint reading block 56. A different reader, or another layer, might render the same state differently.</li>
   <li><b>Labels describe wording, not states.</b> The themes are a rubric applied by a language model, checked against a blind human-style reading and against a duplicate labeling. The floor at control positions is mostly real scenes in fiction and role-play contexts, so the rubric can’t tell “a scene in the story” from “the stereotyped blank-line scene”.</li>
-  <li><b>Is the shared direction meaningful to Qwen?</b> This study says the scene comes from the mean component, not what that component does. A steering test would answer it: add the mean blank-line direction elsewhere, or remove it from the blank, and see whether behavior changes.</li>
+  <li><b>The steering test is narrow.</b> It sets one direction at one position, from means over these 169 contexts, and looks at the first 48–160 tokens. It shows the direction controls whether Qwen reasons. It doesn’t show that this is <i>all</i> the direction does, or that the reader’s scene and the model’s “skip reasoning” are the same thing seen two ways. The natural next step is to read the steered vectors with the lens: does setting the direction elsewhere bring the scene with it?</li>
   <li><b>Where does the reader’s vocabulary come from?</b> Reading the same vector with a lens trained on different data, or checking how often empty think blocks occur in role-play transcripts, would test hypothesis C.</li>
   <li><b>The raw misconduct exception</b> rests on 12 contexts, and labeling is partly to blame. It deserves a closer look with more prompts before anything is made of it.</li>
 </ul>
@@ -212,12 +238,13 @@
 <details class="app" id="app-data"><summary>Data and counts</summary><div><ul>
   <li><b>Units:</b> 2,197 (13 arms × 169 contexts). <b>Readouts:</b> 61,485 (37,113 Stage 1, 16,548 repeats, 6,048 Stage 0, 1,776 synthetic).</li>
   <li><b>Local:</b> <code>results/think-block-olens-v1/</code> (readouts, labels, behavior labels, summaries). <b>Athena:</b> <code>/data/agastyas/think-block-olens-v1/</code> (activations, read batches, jobs, logs).</li>
-  <li><b>Scripts:</b> <code>scripts/think_block_olens/</code>: build_units, tb_capture, tb_read, build_jobs, vector_analysis, label_readouts, label_behavior, analyze_stage12, build_site_data.</li>
+  <li><b>Scripts:</b> <code>scripts/think_block_olens/</code>: build_units, tb_capture, tb_read, build_jobs, vector_analysis, label_readouts, label_behavior, analyze_stage12, build_site_data; steering: steer, analyze_steer, build_steer_data (outputs in <code>results/think-block-olens-v1/steer/</code>).</li>
 </ul></div></details>
 <p class="footer">Working draft. Figures are built from <code>data.js</code>, which is generated from the analysis outputs.</p>
 </main>
 </div>
-<script src="data.js?v=3"></script>
-<script src="app.js?v=3"></script>
+<script src="data.js?v=4"></script>
+<script src="steer.js?v=4"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

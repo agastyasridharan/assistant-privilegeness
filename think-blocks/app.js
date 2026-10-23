@@ -90,7 +90,23 @@ function figStability() {
     yaxis: axis({ title: ytitle("vectors") }) });
 }
 
+/* Figure 6: steering — first token </think> under each graft condition */
+function figGraft() {
+  const d = STEER.graft.slice().reverse(), lab = d.map(r => r.label.replace(/</g, "&lt;"));
+  const tr = [["B", C.a, "Raw text"], ["C", C.accent, "Chat, thinking on"]].map(([k, col, name]) => ({ type: "bar", orientation: "h",
+    y: lab, x: d.map(r => r[k]), name, marker: { color: col },
+    text: d.map(r => pct(r[k])), textposition: "outside", cliponaxis: false, textfont: { size: 11.5, color: C.ink2 },
+    hovertemplate: name + " · %{y}: %{x:.0%}<extra></extra>" }));
+  draw("chart-graft", tr, { height: 380, barmode: "group", bargap: 0.25, margin: { l: narrow() ? 170 : 240, r: 44, t: 6, b: 40 },
+    xaxis: axis({ range: [0, 1.12], tickformat: ".0%", title: ytitle("runs whose first generated token is </think>") }),
+    yaxis: axis({ showline: false, ticks: "" }) });
+}
+
 function tables() {
+  if (typeof STEER !== "undefined") table("table-ablate", ["Condition", "Raw: P(&lt;/think&gt;)", "Chat: P(&lt;/think&gt;)", "Raw: assistant answer",
+    "Chat: assistant answer", "Raw: same start", "Chat: same start"],
+    STEER.ablate.map(r => [esc(r.label), r.raw_native.p.toFixed(2), r.chat_native.p.toFixed(2), pct(r.raw_native.asst), pct(r.chat_native.asst),
+      pct(r.raw_native.same), pct(r.chat_native.same)]));
   const b = DATA.behavior;
   table("table-behavior", ["Arm"].concat(b.cats.map(c => c.label)),
     b.rows.map(r => [esc(r.label) + `<span class="sub">n = ${r.n}</span>`].concat(b.cats.map(c => {
@@ -110,7 +126,7 @@ function examples() {
   }
 }
 
-function renderAll() { figPthink(); figSites(); figVariants(); figInterp(); figStability(); }
+function renderAll() { figPthink(); figSites(); figVariants(); figInterp(); figStability(); if (typeof STEER !== "undefined") figGraft(); }
 tables(); examples(); renderAll();
 let rT; window.addEventListener("resize", () => { clearTimeout(rT); rT = setTimeout(renderAll, 150); });
 
