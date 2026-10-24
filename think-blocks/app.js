@@ -92,14 +92,19 @@ function figStability() {
 
 /* Figure 6: steering — first token </think> under each graft condition */
 function figGraft() {
-  const d = STEER.graft.slice().reverse(), lab = d.map(r => r.label.replace(/</g, "&lt;"));
-  const tr = [["B", C.a, "Raw text"], ["C", C.accent, "Chat, thinking on"]].map(([k, col, name]) => ({ type: "bar", orientation: "h",
-    y: lab, x: d.map(r => r[k]), name, marker: { color: col },
-    text: d.map(r => pct(r[k])), textposition: "outside", cliponaxis: false, textfont: { size: 11.5, color: C.ink2 },
-    hovertemplate: name + " · %{y}: %{x:.0%}<extra></extra>" }));
-  draw("chart-graft", tr, { height: 380, barmode: "group", bargap: 0.25, margin: { l: narrow() ? 170 : 240, r: 44, t: 6, b: 40 },
-    xaxis: axis({ range: [0, 1.12], tickformat: ".0%", title: ytitle("runs whose first generated token is </think>") }),
-    yaxis: axis({ showline: false, ticks: "" }) });
+  if (!STEER.cells2x2) return;
+  const d = STEER.cells2x2.slice().reverse(), lab = d.map(r => r.label.replace(/</g, "&lt;"));
+  const panel = (id, keys) => draw(id, keys.map(([k, col, name]) => ({ type: "bar", orientation: "h",
+    y: lab, x: d.map(r => r[k].reasons), name, marker: { color: col },
+    customdata: d.map(r => [r[k].ci[0], r[k].ci[1], r[k].first_close]),
+    text: d.map(r => pct(r[k].reasons)), textposition: "outside", cliponaxis: false, textfont: { size: 11.5, color: C.ink2 },
+    hovertemplate: name + " · %{y}<br>writes reasoning: %{x:.0%} (95% CI %{customdata[0]:.0%}–%{customdata[1]:.0%})" +
+      "<br>first token </think>: %{customdata[2]:.0%}<extra></extra>" })),
+    { height: 340, barmode: "group", bargap: 0.25, margin: { l: narrow() ? 176 : 252, r: 44, t: 6, b: 40 },
+      xaxis: axis({ range: [0, 1.12], tickformat: ".0%", title: ytitle("runs where Qwen writes reasoning in a think block") }),
+      yaxis: axis({ showline: false, ticks: "" }) });
+  panel("chart-graft-in", [["D", C.a, "Raw text"], ["C", C.accent, "Chat"]]);
+  panel("chart-graft-out", [["B", C.a, "Raw text"], ["E", C.accent, "Chat"]]);
 }
 
 /* Figure 7: O-Lens scene rate of the steered block-56 vectors */
@@ -110,7 +115,7 @@ function figSteerRead() {
     error_x: { type: "data", symmetric: false, array: d.map(r => r.read[k].hi - r.read[k].theme), arrayminus: d.map(r => r.read[k].theme - r.read[k].lo),
       color: C.ink3, thickness: 1, width: 2 },
     hovertemplate: name + " · %{y}: %{x:.0%}<extra></extra>" }));
-  draw("chart-steer-read", tr, { height: 380, barmode: "group", bargap: 0.25, margin: { l: narrow() ? 170 : 240, r: 44, t: 6, b: 40 },
+  draw("chart-steer-read", tr, { height: 380, barmode: "group", bargap: 0.25, margin: { l: narrow() ? 176 : 252, r: 44, t: 6, b: 40 },
     xaxis: axis({ range: [0, 0.5], tickformat: ".0%", title: ytitle("O-Lens readouts with a scene theme") }),
     yaxis: axis({ showline: false, ticks: "" }) });
 }
