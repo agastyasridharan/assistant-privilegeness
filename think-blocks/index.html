@@ -44,7 +44,7 @@
   <p class="crumbs"><b>Assistant privilegeness</b> · Qwen3.6-27B O-Lens follow-up</p>
   <h1>The Empty Think Block: Why the O-Lens Sees a Silent, Watched Subject</h1>
   <p class="byline">Agastya Sridharan · October 2026 <span class="tag">Working draft</span></p>
-  <p class="thanks">Last updated 2026-10-23. Companion to the <a href="../refusal/?model=qwen36">Qwen3.6 refusal O-Lens viewer</a>. Code: <code>scripts/think_block_olens/</code>; readouts, labels and vectors on Athena under <code>/data/agastyas/think-block-olens-v1/</code>.</p>
+  <p class="thanks">Last updated 2026-10-24. Companion to the <a href="../refusal/?model=qwen36">Qwen3.6 refusal O-Lens viewer</a>. Tulu-3-70B with the Llama O-Lens: <a href="llama.html">Tulu’s switch points</a>. Code: <code>scripts/think_block_olens/</code>; readouts, labels and vectors on Athena under <code>/data/agastyas/think-block-olens-v1/</code>.</p>
   <details class="toc-mobile"><summary>Contents</summary><nav class="toc" aria-label="Contents (mobile)"></nav></details>
 </header>
 
@@ -67,6 +67,7 @@
 <h2 id="log">Log</h2>
 <!-- LOG-START: newest first -->
 <ol class="log">
+  <li><time datetime="2026-10-24">2026-10-24</time><div class="entry"><p><b>Llama comparison.</b> Ran the analogous test on Tulu-3-70B with the Llama O-Lens: its own switch points, prefilled turn markers and a planted empty block (51,060 readouts). No scenes; the lens forecasts the upcoming refusal instead. See the <a href="llama.html">companion page</a>.</p></div></li>
   <li><time datetime="2026-10-24">2026-10-24</time><div class="entry"><p><b>Steering as a 2×2.</b> The two graft tests differed in both format (raw vs chat) and position (inside a just-opened block vs no block), so comparing them mixed the two. Added the missing cells: raw text ending in <span class="tok">&lt;think&gt;\n</span>, and the chat template with no block (2,366 runs). Figure 6 now shows all four on one measure, and the conclusion changed: format matters, the block mostly doesn’t. See <a href="#graft">section 8</a>.</p></div></li>
   <li><time datetime="2026-10-23">2026-10-23</time><div class="entry"><p><b>Fixed the behavior judge.</b> The judge that labels Qwen’s continuations had been shown the continuation twice, appended to the prompt, so it often read a fresh answer as “continuing the text”. It also credited the template’s empty block to Qwen. Re-judged all 2,028 Stage-1 continuations and 2,873 steering continuations with the corrected input. Table 3 now has more assistant answers and fewer continuations, plus a column for reasoning written without a tag. No conclusion changed; the affected numbers in sections 3, 5 and 8 are updated.</p></div></li>
   <li><time datetime="2026-10-23">2026-10-23</time><div class="entry"><p><b>Reading the steered vectors.</b> Captured the block-56 vector at the steered position for all 4,056 steering runs and read each twice with the O-Lens (8,112 readouts; 4 excluded by the safety filter, all others labeled with the frozen rubric). The scene does not follow the direction or the behavior it causes. See <a href="#steer-read">the end of section 8</a>.</p></div></li>
@@ -245,7 +246,7 @@
 
 <h2 id="caveats"><span class="num">10</span>Caveats and next steps</h2>
 <ul>
-  <li><b>One model, one reader.</b> All of this is Qwen3.6-27B with one O-Lens checkpoint reading block 56. A different reader, or another layer, might render the same state differently.</li>
+  <li><b>One model, one reader.</b> All of this is Qwen3.6-27B with one O-Lens checkpoint reading block 56. A different reader, or another layer, might render the same state differently. The <a href="llama.html">Tulu-3-70B companion</a> runs the analogous test with the Llama O-Lens, at Tulu’s own switch points and with prefilled turn markers and empty blocks: no scene appears anywhere, and constant states there read as stock assistant or markup phrases.</li>
   <li><b>Labels describe wording, not states.</b> The themes are a rubric applied by a language model, checked against a blind human-style reading and against a duplicate labeling. The floor at control positions is mostly real scenes in fiction and role-play contexts, so the rubric can’t tell “a scene in the story” from “the stereotyped blank-line scene”.</li>
   <li><b>The steering test is narrow.</b> It sets one direction at one position, from means over these 169 contexts, and looks at the first 48–160 tokens. It shows the direction controls whether Qwen reasons. It doesn’t show that this is <i>all</i> the direction does. Reading the steered vectors used one layer and one lens, and 2 reads per vector; another reader might respond to the direction itself. The lens reads (Figure 7) cover only the original two steering cells, not the two added for the 2×2.</li>
   <li><b>Where does the reader’s vocabulary come from?</b> Reading the same vector with a lens trained on different data, or checking how often empty think blocks occur in role-play transcripts, would test hypothesis C.</li>

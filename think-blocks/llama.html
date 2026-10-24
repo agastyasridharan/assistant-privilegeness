@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tulu Switch Points</title>
+<meta name="description" content="Does the Llama O-Lens read a silent, watched subject where Tulu-3-70B switches into an assistant voice, or at prefilled turn markers and empty think blocks?">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=9">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+</head>
+<body>
+<div class="page">
+<nav class="toc" aria-label="Contents"><div class="toc-head">Contents</div><ul>
+  <li><a href="#summary" data-target="summary">Summary</a></li>
+  <li><a href="#log" data-target="log">Log</a></li>
+  <li><a href="#question" data-target="question">1. The question</a></li>
+  <li><a href="#setup" data-target="setup">2. Setup</a></li>
+  <li><a href="#own" data-target="own">3. Tulu’s own switches</a></li>
+  <li><a href="#prefill" data-target="prefill">4. Prefilled markers at the switch</a></li>
+  <li><a href="#contexts" data-target="contexts">5. Markers after 169 contexts</a><ul>
+    <li><a href="#profiles" data-target="profiles">Position by position</a></li>
+    <li><a href="#behavior" data-target="behavior">What Tulu does</a></li></ul></li>
+  <li><a href="#stereo" data-target="stereo">6. Constant states, stock readouts</a></li>
+  <li><a href="#meaning" data-target="meaning">7. What it means</a></li>
+  <li><a href="#caveats" data-target="caveats">8. Caveats</a></li>
+  <li><a href="#appendix" data-target="appendix">Appendix</a></li>
+</ul></nav>
+<main>
+<header>
+  <p class="crumbs"><b>Assistant privilegeness</b> · Tulu-3-70B O-Lens follow-up</p>
+  <h1>Tulu’s Switch Points: Does the Llama O-Lens See the Same Scene?</h1>
+  <p class="byline">Agastya Sridharan · October 2026 <span class="tag">Working draft</span></p>
+  <p class="thanks">Last updated 2026-10-24. Companion to <a href="./">The Empty Think Block</a> (Qwen3.6-27B) and the <a href="../refusal/?model=tulu">Tulu refusal O-Lens viewer</a>. Code: <code>scripts/tulu_think_block/</code>; activations and read batches on Athena under <code>/data/agastyas/tulu-think-block-v1/</code>.</p>
+  <details class="toc-mobile"><summary>Contents</summary><nav class="toc" aria-label="Contents (mobile)"></nav></details>
+</header>
+
+<h2 id="summary">Summary</h2>
+<p>For Qwen, the O-Lens read a silent, watched subject at the blank line inside an empty think block, the point where Qwen switches from continuing a document to answering as an assistant. Tulu-3-70B makes the same kind of switch in the raw-text refusal runs: it writes along, then breaks off into a warning or a refusal. This page asks whether the Llama O-Lens shows anything similar there, and when we prefill the turn markers that would make the switch explicit.</p>
+<div class="answer">
+  <span class="answer-tag">Where things stand</span>
+  <ul>
+    <li><b>No scene, anywhere.</b> Across 733 switch points in Tulu’s own refusal outputs, 2,932 prefilled switch points and 1,014 prefilled contexts (51,060 readouts), no position reaches more than about 8% scene themes. That is the labeler’s floor, and most of it is genuine scenes in role-play and fiction contexts.</li>
+    <li><b>At Tulu’s own switches the lens forecasts the warning.</b> At the paragraph break just before the switch, 87% of readouts contain a warning-like phrase (“it is important to note”, “illegal”, “I cannot”), against 26% at earlier breaks in the same outputs. Almost all are labeled “document”: the lens reads upcoming text, not a perspective.</li>
+    <li><b>Prefilling an assistant header changes both the forecast and the behavior.</b> At the last token of <span class="tok">\n&lt;|assistant|&gt;\n</span> inserted at the switch, 96% of readouts open like a reply, most with “I’m sorry, but I cannot assist”, and Tulu refuses in 89% of runs (44% with the plain break it wrote itself). A foreign empty <span class="tok">&lt;think&gt;</span> block works too, less strongly (82% reply openers; 64% refusals).</li>
+    <li><b>Constant states get stock readouts, but not scenes.</b> The interior tokens of a marker, like “assistant” in the header or “ink” in <span class="tok">&lt;think&gt;</span>, are nearly the same vector in every context (73–77% shared) and get the same readout every time (60–98%). Those stock readouts are assistant boilerplate (“I am ready to assist you with”), markup and Chinese fragments. The mean vectors read the same way; 0 of 74 mean vectors read as a scene, against 100% of Qwen’s mean blank line.</li>
+    <li><b>The blank inside Tulu’s empty block reads as an answer.</b> The analogue of Qwen’s scene position gives answer forecasts tailored to the context (“**Answer:** To solve a linear equation…”), 4% themes.</li>
+    <li><b>My reading:</b> the Qwen scene is not a general property of switch points or of O-Lenses reading them. This Llama lens is a forecaster of upcoming text and renders the switch as the refusal it is about to write. Since the two lenses differ in type and the two models differ in whether the empty block is native, this is a comparison of model–reader pairs, not a clean test of either factor alone.</li>
+  </ul>
+</div>
+
+<h2 id="log">Log</h2>
+<!-- LOG-START: newest first -->
+<ol class="log">
+  <li><time datetime="2026-10-24">2026-10-24</time><div class="entry"><p><b>Study run and written up.</b> Checked the existing Tulu refusal readouts at 733 switch points (3,453 readouts). Then built 3,946 prefilled units (4 markers at the 733 switch points, 6 arms over the 169 Qwen contexts), generated Tulu’s continuations, captured layer 64 and read 47,607 positions with the Llama O-Lens on four GPUs (2 excluded by the safety filter). All readouts labeled with the frozen Qwen rubric; continuations judged with the same behavior rubric. Added vector statistics and 650 synthetic reads.</p></div></li>
+</ol>
+
+<h2 id="question"><span class="num">1</span>The question</h2>
+<p>The Qwen study found that the strange O-Lens scenes live at one token: the blank line in <span class="tok">&lt;think&gt;\n\n&lt;/think&gt;</span>, where Qwen has stopped writing the document but hasn’t yet started answering. Tulu-3-70B has no think block, but in the raw-text refusal runs it also stops writing the document and turns into an assistant, usually after a paragraph break. So the natural questions are:</p>
+<ol>
+  <li>At the break where Tulu actually switches, does the Llama O-Lens read anything scene-like?</li>
+  <li>If we prefill a turn marker at that point (<span class="tok">\n&lt;|assistant|&gt;\n</span>, <span class="tok">\n&lt;|user|&gt;\n</span>, or Qwen’s empty think block), do the marker tokens produce scenes?</li>
+  <li>Does the same happen after neutral contexts, where Tulu has no reason to refuse?</li>
+</ol>
+
+<h2 id="setup"><span class="num">2</span>Setup</h2>
+<ul>
+  <li><b>Subject:</b> <code>allenai/Llama-3.1-Tulu-3-70B</code>, bf16. Its chat template is <span class="tok">&lt;|user|&gt;\n…\n&lt;|assistant|&gt;\n</span>. The header tokenizes as <span class="tok">&lt;</span> <span class="tok">|</span> <span class="tok">assistant</span> <span class="tok">|</span> <span class="tok">&gt;\n</span>; Qwen’s empty block as <span class="tok">&lt;th</span> <span class="tok">ink</span> <span class="tok">&gt;\n\n</span> <span class="tok">&lt;/</span> <span class="tok">think</span> <span class="tok">&gt;\n\n</span>.</li>
+  <li><b>Reader:</b> the Llama O-Lens (<code>olens-tulu3-70b</code>, RL adapter) reading layer 64. Unlike the Qwen lens, which writes a few sampled lines describing the state, this one outputs a weighted list of short phrases that the state predicts will come next. Reads are greedy, so each position has one deterministic readout.</li>
+  <li><b>Switch points:</b> in the 733 raw-text refusal outputs whose judged refusal, warning or helper response starts at a new paragraph, the switch is the first token of that paragraph and the break is the <span class="tok">\n\n</span> token before it (usually <span class="tok">.\n\n</span>). 727 are warnings or redirections, 6 helper responses; 668 come from unsafe prompts and 65 from the benign controls.</li>
+  <li><b>Prefill at switch points:</b> Tulu’s output up to the break, then one of four endings: the break it wrote itself (<span class="tok">\n\n</span>), <span class="tok">\n&lt;|assistant|&gt;\n</span>, <span class="tok">\n&lt;|user|&gt;\n</span>, or <span class="tok">\n\n&lt;think&gt;\n\n&lt;/think&gt;\n\n</span>.</li>
+  <li><b>Prefill after contexts:</b> the 169 contexts from the Qwen study (11 families), each with six endings: the four above, the chat template, and the chat template followed by an empty block.</li>
+  <li><b>Reading and labels:</b> the last 3 context tokens, every marker token and Tulu’s first 4 generated tokens (temperature 1, 48 tokens). Readouts were labeled with the same frozen rubric as the Qwen page; “scene theme” means at least one clear observation, silence or waiting, obedience, room or lab, or examination label. Continuations were judged with the same behavior rubric.</li>
+</ul>
+
+<h2 id="own"><span class="num">3</span>Tulu’s own switches</h2>
+<p>The refusal study already read every output token of Tulu’s raw-text runs. Figure 1 takes those readouts at the switch and around it.</p>
+<figure id="fig-existing"><div class="fig-panel"><div class="fig-top"><div class="fig-title">Existing readouts around Tulu’s 733 switch points</div>
+<div class="legend" aria-hidden="true"><span><i style="border-color:var(--cat-a)"></i>Warning-like phrase</span><span><i style="border-color:var(--accent)"></i>Scene theme</span></div></div>
+<div id="chart-existing" class="chart" role="img" aria-label="Share of readouts with a warning-like phrase and with a scene theme at five positions around the switch"></div>
+<div class="fig-note">One readout per position per switch. “Earlier paragraph break” is up to three other <span class="tok">\n\n</span> tokens from the same outputs (521 readouts). Warning-like means the readout contains “illegal”, “unethical”, “important to note”, “cannot”, “sorry”, “as an AI” or similar.</div></div>
+<figcaption><b>Figure 1.</b> Scene themes stay at 0–2% at every position. What changes at the break is the forecast: 87% of readouts there already contain warning language, against about 25% at earlier breaks and at the token before.</figcaption></figure>
+<p>97–100% of these readouts are labeled “document”. The lens is not describing a situation; it is listing the text that comes next, and at the break that text is the warning.</p>
+
+<h2 id="prefill"><span class="num">4</span>Prefilled markers at the switch</h2>
+<p>Next, I cut each of the 733 outputs at the break and appended a marker, then read the marker tokens and let Tulu continue. Table 1 shows the readout at the last marker token, which is the position right before Tulu’s next word, alongside what Tulu wrote.</p>
+<div class="table-wrap"><p class="table-cap"><b>Table 1.</b> Lens readout at the last marker token, and Tulu’s continuation (733 switch points each)</p><div id="table-switch"></div>
+<p class="table-note">“Reply opener” means a phrase starting like a reply (“Here is”, “I’m sorry”, “Sure”, “It sounds like”…). Behavior labels are from the GPT-5.4-mini judge on Tulu’s first 48 tokens. Rows don’t sum to 100% because a few continuations fit no category.</p></div>
+<p>With the break Tulu wrote itself, the lens forecasts the warning as continued prose (87% warning-like, 5% reply openers). With an assistant or user header, the forecast turns into a reply: at the header’s <span class="tok">&gt;\n</span>, 90% of readouts contain the phrase “I’m sorry, but I cannot assist”. Behavior moves the same way: the assistant header doubles the refusal rate. The empty think block, which Tulu was never trained on, sits in between on both measures. In none of the four arms does any position read as a scene (0–0.4%).</p>
+<ul class="readouts ctrl" id="ex-switch"></ul>
+<p class="table-note">Readouts at <span class="tok">&gt;\n</span> of the inserted assistant header, from the benign control prompts (the only switch points not from misconduct contexts). Top four phrases, by weight.</p>
+
+<h2 id="contexts"><span class="num">5</span>Markers after 169 contexts</h2>
+<p>The switch points are almost all refusals of misconduct requests. To check that the result isn’t specific to them, I appended the same markers to the 169 contexts from the Qwen study: chat requests, code, Q&amp;A documents, encyclopedic prose, fiction, role-play and the rest.</p>
+
+<h3 id="profiles">Position by position</h3>
+<p>Figures 2 and 3 follow two arms through every marker token. The line is the scene theme rate. The bars show how stereotyped the readouts are: the share of contexts whose readout contains that position’s single most common phrase.</p>
+<figure class="wide" id="fig-asst"><div class="fig-panel"><div class="fig-top"><div class="fig-title">Raw text + <span class="tok">\n&lt;|assistant|&gt;\n</span></div>
+<div class="legend" aria-hidden="true"><span><i style="border-color:var(--accent)"></i>Scene theme</span><span><i style="border-color:var(--cat-a)"></i>Readouts with the most common phrase</span></div></div>
+<div id="chart-asst" class="chart" role="img" aria-label="Scene theme rate and stock-phrase share at each token of the assistant header"></div></div>
+<figcaption><b>Figure 2.</b> The interior tokens of the header (<span class="tok">|</span>, <span class="tok">assistant</span>, <span class="tok">|</span>) get the same readout in 40–60% of contexts, yet no scene. At <span class="tok">&gt;\n</span> the readouts become context-specific again and forecast a reply (38% reply openers).</figcaption></figure>
+<figure class="wide" id="fig-think"><div class="fig-panel"><div class="fig-top"><div class="fig-title">Raw text + empty <span class="tok">&lt;think&gt;</span> block</div>
+<div class="legend" aria-hidden="true"><span><i style="border-color:var(--accent)"></i>Scene theme</span><span><i style="border-color:var(--cat-a)"></i>Readouts with the most common phrase</span></div></div>
+<div id="chart-think" class="chart" role="img" aria-label="Scene theme rate and stock-phrase share at each token of the empty think block"></div>
+<div class="fig-note">One readout per position per context (169). Error bars are 95% intervals from a bootstrap over contexts. The fourth position, <span class="tok">&gt;\n\n</span> after <span class="tok">&lt;th</span><span class="tok">ink</span>, holds the blank line: Tulu’s tokenizer merges it into the tag. That is the position matching Qwen’s scene.</div></div>
+<figcaption><b>Figure 3.</b> Inside the foreign block, the tag fragments are almost perfectly stereotyped (86–98%), but their stock readouts are markup and Chinese fragments. The blank line reads as a scene in 4% of contexts, at the floor, against 77% for Qwen.</figcaption></figure>
+<div class="two"><div><h4>“assistant” in the header</h4><ul class="readouts ctrl" id="ex-assistant"></ul></div><div><h4>Blank inside the empty block</h4><ul class="readouts blank" id="ex-blank"></ul></div></div>
+<p>Random draws from non-misconduct contexts, top four phrases each. Even where the readout is stereotyped, it is fragments of chat or document text. At <span class="tok">&gt;\n</span>, readouts follow the context closely:</p>
+<ul class="readouts ctrl" id="ex-header"></ul>
+
+<h3 id="behavior">What Tulu does</h3>
+<div class="table-wrap"><p class="table-cap"><b>Table 2.</b> What Tulu writes next, by arm (share of 169 contexts)</p><div id="table-behavior"></div>
+<p class="table-note">Same judge as Table 1. The last column is the 24 encyclopedic-prose contexts only: the cleanest test of whether the marker makes Tulu answer instead of continuing the article.</p></div>
+<p>Tulu is much less moved by markers in raw text than Qwen. After encyclopedic prose and an empty think block, Qwen answered in 19 of 24 contexts; Tulu answers in 1 of 24 and keeps writing the article. Its own assistant header gets 3 of 24 in raw text and 14 of 24 in the chat template. The user header, oddly, works better in raw text (12 of 24); I haven’t looked into why.</p>
+
+<h2 id="stereo"><span class="num">6</span>Constant states, stock readouts</h2>
+<p>For Qwen, the scene went with a near-constant vector: about 80% of the blank line’s energy was shared by every context, and the mean vector alone read as a scene every time. Tulu has positions like that too. Table 3 lists them.</p>
+<div class="table-wrap"><p class="table-cap"><b>Table 3.</b> How constant each position is, and what the lens says there (169 contexts)</p><div id="table-stereo"></div>
+<p class="table-note">Shared fraction = ‖mean‖² / mean ‖x‖² of the layer-64 vectors over contexts (Qwen’s blank line: about 0.8). Stock phrase = the position’s most common readout phrase (lower-cased; ↵ is a newline).</p></div>
+<p>The two near-constant positions inside markers, “assistant”/“user” in the header and “ink” in <span class="tok">&lt;think&gt;</span>, are as constant as Qwen’s blank line, and their readouts are equally stereotyped. But they don’t read as scenes. Reading the mean vectors directly gives the same picture:</p>
+<ul class="readouts ctrl" id="ex-means"></ul>
+<p>Over all 74 position means, 0 read as a scene. Per-context residuals (vector minus mean) at the key positions give 5 of 288 and dimension-shuffled vectors 1 of 288. So for this lens, a constant state means a stock phrase, not a silent, watched subject.</p>
+
+<h2 id="meaning"><span class="num">7</span>What it means</h2>
+<ul>
+  <li><b>The scene doesn’t transfer.</b> Neither Tulu’s own switch points, nor prefilled assistant or user headers, nor Qwen’s empty block planted in Tulu’s text produce it. So it is not a general property of “the moment a model turns into an assistant”, nor of how O-Lenses read constant states.</li>
+  <li><b>The Llama lens sees the switch coming, as text.</b> At the break before a switch it already lists the warning; at a header it lists the refusal. That fits a reader trained to forecast continuations, and it makes this lens useful for the refusal study in a different way: it tells us when Tulu has committed to warning, about one token before it starts.</li>
+  <li><b>Markers move both the forecast and the behavior.</b> An inserted assistant header makes Tulu refuse twice as often and makes the lens forecast a refusal in almost every readout. The lens tracks what the marker does to Tulu.</li>
+  <li><b>For the Qwen result,</b> this supports the view that the scene is about that model–reader pair: a near-constant state that Qwen enters on every non-thinking turn, rendered by a reader with a particular vocabulary for “nothing is being said here”.</li>
+</ul>
+
+<h2 id="caveats"><span class="num">8</span>Caveats</h2>
+<ul>
+  <li><b>Different lens types.</b> The Qwen lens writes sampled descriptions; this one lists greedy next-text phrases. A forecaster might never produce a “scene” even if the model represented one. The labels were applied to both, but the readouts are not the same kind of text.</li>
+  <li><b>One greedy read per position.</b> There are no repeat reads to measure stability, as there were for Qwen.</li>
+  <li><b>Tulu rarely becomes a true assistant in raw text.</b> Most of its switches are warnings appended to the document, not turns, and markers move it less than they move Qwen. The best Tulu analogue of Qwen’s blank line may simply not exist.</li>
+  <li><b>The switch points are mostly misconduct contexts</b> (668 of 733). The 169-context arms cover the rest, and examples on this page come only from benign contexts.</li>
+  <li><b>The empty block is foreign to Tulu.</b> It tests what the reader does with those tokens in Tulu’s stream, not what an empty block means to a model trained with one.</li>
+</ul>
+
+<h2 id="appendix">Appendix</h2>
+<details class="app" id="app-methods"><summary>Setup details</summary><div><ul>
+  <li><b>Subject:</b> Tulu-3-70B, revision <code>cfc1d855</code>, bf16 in vLLM (tensor parallel 4). Continuations: temperature 1, 48 tokens, seed per unit, stop at <span class="tok">&lt;|end_of_text|&gt;</span>.</li>
+  <li><b>Reader:</b> <code>agastyasridharan/olens-tulu3-70b</code>, RL adapter, layer 64 (dense capture, FP8 reader with the AR head and whitener), greedy decoding with 8 phrases. Reads were batched across units on four GPUs.</li>
+  <li><b>Switch onset:</b> the paragraph holding the earliest judged refusal, helper response or warning/redirection span (leading spaces, dashes and #s skipped). Re-tokenizing Tulu’s output up to the break and appending <span class="tok">\n\n</span> reproduced the original break token in 732 of 733 cases.</li>
+  <li><b>Labels:</b> GPT-5.4-mini, frozen perspective-map rubric from <code>scripts/think_block_olens/label_readouts.py</code>. Readout text is the phrase list sorted by weight. Only clear labels count.</li>
+  <li><b>Behavior:</b> GPT-5.4-mini with the rubric from <code>label_behavior.py</code>, on the end of the prompt and Tulu’s continuation.</li>
+  <li><b>Vectors:</b> per position over the 169 contexts, shared fraction, top-10-dimension energy share and cosine to the raw <span class="tok">\n\n</span> vector. Synthetic reads: every position mean (74), plus 48 residuals and 48 shuffled copies at each of six key positions.</li>
+</ul></div></details>
+<details class="app" id="app-data"><summary>Data and counts</summary><div><ul>
+  <li><b>Existing readouts:</b> 3,453 at 733 switch points (break, token before, first two switch tokens, and 521 earlier breaks).</li>
+  <li><b>New units:</b> 3,946 (4 arms × 733 switch points, 6 arms × 169 contexts). <b>Readouts:</b> 47,607, of which 2 matched the safety filter and were never displayed; 650 synthetic reads.</li>
+  <li><b>Local:</b> <code>results/tulu-think-block-v1/</code> (<code>existing/</code>, <code>run/</code>: readouts, labels, behavior, vectors, summary). <b>Athena:</b> <code>/data/agastyas/tulu-think-block-v1/</code> (units, generations, activations, read batches, logs).</li>
+  <li><b>Scripts:</b> <code>scripts/tulu_think_block/</code>: existing_switch, tulu_tb (build, gen, manifest), run_all.sh, tulu_read, merge, vec_analysis, judge_behavior, analyze, build_site_data.</li>
+</ul></div></details>
+<p class="footer">Working draft. Figures are built from <code>llama-data.js</code>, which is generated from the analysis outputs.</p>
+</main>
+</div>
+<script src="llama-data.js?v=1"></script>
+<script src="llama.js?v=1"></script>
+</body>
+</html>
