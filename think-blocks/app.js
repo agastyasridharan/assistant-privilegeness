@@ -138,7 +138,8 @@ function tables() {
 function examples() {
   for (const [id, list] of Object.entries(DATA.examples)) {
     const el = document.getElementById(id); if (!el) continue;
-    el.innerHTML = list.map(e => `<li><span class="src">${esc(e.src)}</span>${esc(e.text)}</li>`).join("");
+    el.innerHTML = list.map(e => `<li><span class="src">${esc(e.src)}</span>` +
+      (e.ctx ? `<span class="ctx"><b>Context</b>${esc(e.ctx)}</span><span class="lbl">Readout</span>` : "") + `${esc(e.text)}</li>`).join("");
   }
 }
 

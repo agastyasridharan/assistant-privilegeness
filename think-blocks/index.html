@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
 </head>
 <body>
@@ -170,7 +170,7 @@
 <p>The reader can be given any vector, not just real ones. Table 6 does that.</p>
 <div class="table-wrap"><p class="table-cap"><b>Table 6.</b> Reading synthetic vectors</p><div id="table-nulls"></div>
 <p class="table-note">Means are taken over all contexts for the stated position. Reads per vector: 32 for means; one each for the 96 noise, shuffled and residual vectors.</p></div>
-<p>The mean blank-line vector, which belongs to no context, reads as a scene every time. That holds for the raw arm, the chat arm, and both conditions of the original refusal study. So does a family mean for every one of the 22 arm × family groups (at least 75%), including raw misconduct. Subtracting the mean from each real blank-line vector leaves the part that differs across contexts, and the scenes disappear (4%). Shuffling dimensions (7%) or reading pure noise (1%) does the same. Noise centred on the blank mean brings them back (95%). What survives the subtraction is not a clean description of the context, either:</p>
+<p>The mean blank-line vector, which belongs to no context, reads as a scene every time. That holds for the raw arm, the chat arm, and both conditions of the original refusal study. So does a family mean for every one of the 22 arm × family groups (at least 75%), including raw misconduct. Subtracting the mean from each real blank-line vector leaves the part that differs across contexts, and the scenes disappear (4%). Shuffling dimensions (7%) or reading pure noise (1%) does the same. Noise centred on the blank mean brings them back (95%). What survives the subtraction is not a clean description of the context, either. Each card below shows the raw context the vector came from. Qwen saw that context followed by <span class="tok">\n\n&lt;think&gt;\n\n&lt;/think&gt;\n\n</span>, we took its block-56 vector at the blank <span class="tok">\n\n</span>, subtracted the mean blank vector over all 169 raw contexts, and gave the reader only what was left:</p>
 <ul class="readouts ctrl" id="ex-resid"></ul>
 <figure id="fig-interp"><div class="fig-panel"><div class="fig-top"><div class="fig-title">Interpolating away from the mean blank-line vector</div>
 <div class="legend" aria-hidden="true"><span><i style="border-color:var(--cat-a)"></i>→ \n\n before block</span><span><i style="border-color:var(--accent)"></i>→ last context token</span><span><i style="border-color:var(--mid)"></i>raw → chat blank</span><span><i style="border-color:var(--acn)"></i>misconduct → benign blank</span></div></div>
@@ -264,8 +264,8 @@
 <p class="footer">Working draft. Figures are built from <code>data.js</code>, which is generated from the analysis outputs.</p>
 </main>
 </div>
-<script src="data.js?v=8"></script>
+<script src="data.js?v=9"></script>
 <script src="steer.js?v=8"></script>
-<script src="app.js?v=8"></script>
+<script src="app.js?v=9"></script>
 </body>
 </html>
