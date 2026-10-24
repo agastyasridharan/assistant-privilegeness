@@ -131,6 +131,10 @@ table.text td, table.text th { text-align: left; }
 td.em { font-weight: 600; color: var(--ink); }
 td.dim { color: var(--ink-3); }
 .sub { display: block; font-weight: 400; font-size: 12.5px; color: var(--ink-3); }
+table.examples td { vertical-align: top; }
+table.examples .snip { display: block; font-size: 13.5px; color: var(--ink-2); }
+table.examples .described { font-style: italic; color: var(--ink-3); }
+table.examples td:nth-child(2), table.examples td:nth-child(4) { white-space: nowrap; }
 .pill { display: inline-block; font-size: 12.5px; border-radius: 3px; padding: 0 6px; white-space: nowrap; border: 1px solid; }
 .pill.done, .pill.pass { color: #1f6a41; border-color: #9fcbb1; background: #edf6f0; }
 .pill.partial { color: #8a5518; border-color: #e0bb8c; background: var(--warm); }

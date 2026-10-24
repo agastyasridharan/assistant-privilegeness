@@ -129,6 +129,10 @@ function tables() {
   table("table-behavior", ["Arm"].concat(b.cats.map(c => c.label)),
     b.rows.map(r => [esc(r.label) + `<span class="sub">n = ${r.n}</span>`].concat(b.cats.map(c => {
       const v = r[c.key] || 0; return v >= 0.3 ? `<b>${pct(v)}</b>` : pct(v); }))));
+  table("table-family-examples", ["Family", "P(&lt;think&gt;): mean (range)", "A typical context", "Its P(&lt;think&gt;)"],
+    DATA.family_examples.map(f => [esc(f.label) + `<span class="sub">n = ${f.n}</span>`, `${f.mean.toFixed(2)} (${f.lo.toFixed(2)}–${f.hi.toFixed(2)})`,
+      f.described ? `<span class="described">${esc(f.described)}</span>`
+        : `<span class="snip">${esc(f.text)}</span>` + (f.gloss ? `<span class="sub">Translation: ${esc(f.gloss)}</span>` : ""), f.p.toFixed(2)]), "text examples");
   table("table-families", ["Context family", "n", "P(&lt;think&gt;)", "Raw: themes", "Chat: themes", "Raw: User-side", "Raw: other actors"],
     DATA.families.map(f => [esc(f.label), f.n, pct(f.pthink), pct(f.raw_theme), pct(f.chat_theme), pct(f.raw_user), pct(f.raw_other)]));
   table("table-nulls", ["Vector read", "Reads", "Themes", "Document", "Other actors", "User-side"],
