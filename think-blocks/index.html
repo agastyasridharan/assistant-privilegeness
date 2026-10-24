@@ -131,7 +131,7 @@
 <figure class="wide" id="fig-sites"><div class="fig-panel"><div class="fig-top"><div class="fig-title">Readouts with a scene theme, by position</div>
 <div class="legend" aria-hidden="true"><span><i style="border-color:var(--cat-a)"></i>Raw text + block</span><span><i style="border-color:var(--accent)"></i>Chat template</span></div></div>
 <div id="chart-sites" class="chart" role="img" aria-label="Theme rate at each position around the think block, raw and chat"></div>
-<div class="fig-note">One readout per position per context (169). Bars are 95% intervals from a bootstrap over contexts. “gen 1/2” are the first two tokens Qwen generated after the block.</div></div>
+<div class="fig-note">One readout per position per context (169). Bars are 95% intervals from a bootstrap over contexts. The third position is the token just before <span class="tok">&lt;think&gt;</span>: the <span class="tok">\n\n</span> separating the context in raw text, and the <span class="tok">\n</span> ending <span class="tok">&lt;|im_start|&gt;assistant\n</span> in chat. “gen 1/2” are the first two tokens Qwen generated after the block.</div></div>
 <figcaption><b>Figure 2.</b> The scene is confined to a single token, the <span class="tok">\n\n</span> inside the block: 77% raw, 90% chat. Every neighbour sits at the 1–10% floor, including the tag before it and the tag after it. The floor is mostly genuine scenes in the role-play and fiction contexts, labeled correctly.</figcaption></figure>
 <p>The neighbours read as you’d expect. At <span class="tok">&lt;think&gt;</span> the lens mostly reads planning (56% raw, 49% chat) and a user making a request. At <span class="tok">&lt;/think&gt;</span> and after, it reads an assistant about to answer. When thinking is switched on and Qwen actually reasons, the lens reads planning, not scenes: 71% planning at the <span class="tok">\n</span> after <span class="tok">&lt;think&gt;</span> and 86% at the first reasoning token, with themes at 0–1%.</p>
 <p>The original refusal activations behave the same way when re-read with fresh seeds. At the blank line, 87% of readouts have a theme in the misconduct runs and 93% in the benign controls. At the <span class="tok">\n\n</span> before the block, at <span class="tok">&lt;/think&gt;</span>, after it and at ordinary tokens, the rate is 0%; at <span class="tok">&lt;think&gt;</span> it is 1–2%. In the chat-template prefixes from the same study, the blank line reads as a scene 192 out of 192 times.</p>
@@ -262,8 +262,8 @@
 <p class="footer">Working draft. Figures are built from <code>data.js</code>, which is generated from the analysis outputs.</p>
 </main>
 </div>
-<script src="data.js?v=6"></script>
-<script src="steer.js?v=6"></script>
-<script src="app.js?v=6"></script>
+<script src="data.js?v=7"></script>
+<script src="steer.js?v=7"></script>
+<script src="app.js?v=7"></script>
 </body>
 </html>
