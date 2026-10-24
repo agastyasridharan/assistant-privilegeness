@@ -153,20 +153,22 @@
 <div id="chart-variants" class="chart" role="img" aria-label="Theme rate versus cosine similarity to the native blank vector for block variants"></div>
 <div class="fig-note">x: mean cosine between the variant’s inner vector and the native <span class="tok">\n\n</span> vector in the same context. y: share of the variant’s 169 inner readouts with a theme.</div></div>
 <figcaption><b>Figure 3.</b> Only the canonical blank, and things close to it, produce the scene. <span class="tok">\n\n\n\n</span> stays fairly close to the canonical vector (cosine 0.61 raw, 0.73 chat) and gives a partial effect (30%, 59%). A single <span class="tok">\n</span> (cosine 0.10) puts Qwen into reasoning mode, and the lens reads planning (64% raw) with no scenes at all.</figcaption></figure>
-<p>Two points in Figure 3 rule out a simple story. First, it isn’t about predictability. After <span class="tok">\n\n\n\n</span>, Qwen is just as sure that <span class="tok">&lt;/think&gt;</span> comes next (P = 0.98–1.00), yet the scene rate drops by half or more. Other perfectly predictable positions, such as the <span class="tok">\n</span> after <span class="tok">&lt;|im_end|&gt;</span> or the <span class="tok">\n\n</span> after <span class="tok">&lt;/think&gt;</span>, have no scenes at all. Second, it isn’t about special blocks in general. The same <span class="tok">\n\n</span> inside an empty <span class="tok">&lt;tool_call&gt;</span> block reads at the floor (10%), as do “Thinking:” followed by a blank line (2%) and a bare double blank line (9%).</p>
+<p>Two points in Figure 3 rule out a simple story. First, it isn’t about predictability. After <span class="tok">\n\n\n\n</span>, Qwen is just as sure that <span class="tok">&lt;/think&gt;</span> comes next (P = 0.98–1.00), yet the scene rate drops by half or more. Other perfectly predictable positions, such as the <span class="tok">\n</span> after <span class="tok">&lt;|im_end|&gt;</span> or the <span class="tok">\n\n</span> after <span class="tok">&lt;/think&gt;</span>, have no scenes at all. Second, it isn’t about special blocks in general. The same <span class="tok">\n\n</span> inside an empty <span class="tok">&lt;tool_call&gt;</span> block reads at the floor (10%), as do the blank line after the plain word “Thinking:” (5%) and a bare double blank line (9%) (Table 4).</p>
+<div class="table-wrap"><p class="table-cap"><b>Table 4.</b> Same-shape controls in raw text. The context is followed by <span class="tok">\n\n</span> and the tokens shown; the token read sits where the think block’s inner <span class="tok">\n\n</span> would be.</p><div id="table-controls"></div>
+<p class="table-note">One readout per context (169), with 95% intervals from a bootstrap over contexts. The other prefilled positions in these arms (the tags themselves, the separator, the last context tokens) also read at 1–8%.</p></div>
 
 <h2 id="direction"><span class="num">7</span>One shared direction</h2>
 
 <h3 id="vectors">The vectors</h3>
 <p>Without the reader, what is special about this vector? The table below gives two numbers per position, across the 169 raw contexts. The first is how much of the vector is shared: the share of its energy in the mean direction. The second is how well a linear probe recovers the context family (11 classes; chance 14%).</p>
-<div class="table-wrap"><p class="table-cap"><b>Table 4.</b> Block-56 vectors around the raw block</p><div id="table-vectors"></div>
+<div class="table-wrap"><p class="table-cap"><b>Table 5.</b> Block-56 vectors around the raw block</p><div id="table-vectors"></div>
 <p class="table-note">Shared fraction = ‖mean‖² / mean ‖x‖². Family and raw-vs-chat decoding: logistic regression on 64 principal components, 5-fold cross-validation.</p></div>
 <p>The blank-line vector is the most uniform state in the sequence: 76% of its energy is shared (85% in the original refusal runs), against about 30% for ordinary tokens. Yet the context is not erased. Family is 99% decodable, and raw vs chat 100%. It also isn’t dominated by a few huge dimensions: the top 10 dimensions hold 4% of its energy, against 29% at an ordinary token. And since the reader rescales every vector to the same norm, magnitude can’t be the cue.</p>
 <p>Being uniform isn’t sufficient, though. <span class="tok">&lt;think&gt;</span> and <span class="tok">&lt;/think&gt;</span> are nearly as uniform (65–66% shared) and read normally. What matters is <i>which</i> constant vector this is.</p>
 
 <h3 id="nulls">Synthetic vectors</h3>
-<p>The reader can be given any vector, not just real ones. Table 5 does that.</p>
-<div class="table-wrap"><p class="table-cap"><b>Table 5.</b> Reading synthetic vectors</p><div id="table-nulls"></div>
+<p>The reader can be given any vector, not just real ones. Table 6 does that.</p>
+<div class="table-wrap"><p class="table-cap"><b>Table 6.</b> Reading synthetic vectors</p><div id="table-nulls"></div>
 <p class="table-note">Means are taken over all contexts for the stated position. Reads per vector: 32 for means; one each for the 96 noise, shuffled and residual vectors.</p></div>
 <p>The mean blank-line vector, which belongs to no context, reads as a scene every time. That holds for the raw arm, the chat arm, and both conditions of the original refusal study. So does a family mean for every one of the 22 arm × family groups (at least 75%), including raw misconduct. Subtracting the mean from each real blank-line vector leaves the part that differs across contexts, and the scenes disappear (4%). Shuffling dimensions (7%) or reading pure noise (1%) does the same. Noise centred on the blank mean brings them back (95%). What survives the subtraction is not a clean description of the context, either:</p>
 <ul class="readouts ctrl" id="ex-resid"></ul>
@@ -200,7 +202,7 @@
 
 <h3 id="ablate">Removing it changes the prediction, not the turn</h3>
 <p>The reverse test takes the real empty block in the native arms and removes the direction at the blank line, keeping the rest of the block and everything after it in the prompt.</p>
-<div class="table-wrap"><p class="table-cap"><b>Table 6.</b> Removing the blank direction at the blank line (169 contexts per cell)</p><div id="table-ablate"></div>
+<div class="table-wrap"><p class="table-cap"><b>Table 7.</b> Removing the blank direction at the blank line (169 contexts per cell)</p><div id="table-ablate"></div>
 <p class="table-note">P(&lt;/think&gt;) is Qwen’s next-token probability at the blank itself. “Scene” is the O-Lens theme rate of the edited block-56 vector at the blank (2 reads per vector). “Assistant answer” is the GPT-5.4-mini judge’s label for what Qwen writes after the block. “Same start” is the share of runs whose first 10 generated tokens match the unsteered run with the same seed.</p></div>
 <p>At the blank, the effect is total: P(<span class="tok">&lt;/think&gt;</span>) drops from 1.00 to 0.00 with layer 56 alone, and to 0.21–0.25 with the early layers alone. The random direction, pushed harder, leaves it at 0.65–0.83. But the block’s tokens are still in the prompt, and once they are, Qwen behaves as before. Assistant answers stay at 59–64%, against 57% (raw) and 61% (chat) unsteered. Next-token distributions after the block barely move (KL at most 0.26 nats). The first 10 generated tokens match the unsteered run in 62–83% of runs, against 77–79% under the random control. So the direction carries the decision “close the block now”. What the rest of the turn looks like is driven by the tokens that are actually there.</p>
 
@@ -215,7 +217,7 @@
 <ul>
   <li><b>Behavior and scene come apart.</b> With layers 16–40 steered, Qwen skipped reasoning in 249 of 337 runs. Those vectors read as a scene 10% of the time; the 88 where it kept reasoning, 9%. Pushing the <span class="tok">&lt;/think&gt;</span> logit directly makes Qwen skip in every run and gives 2% scenes. Mostly, these readouts look like what the lens says at <span class="tok">&lt;think&gt;</span>: a user asking for something, the assistant planning.</li>
   <li><b>The direction alone is not enough.</b> Setting layer 56’s component along the direction to the blank’s exact value gives 10% (thinking on) and 22% (raw text). With that coordinate matched, the vector’s cosine to the blank mean is still only 0.65, and the rest of it still reads as context. Six layers move the whole vector a bit further (cosine 0.73) and reach 36%.</li>
-  <li><b>Removing it removes the scene, but so does any large push.</b> Taking the direction out of the real blank drops the scene from 80–90% to 2–7% (Table 6). A random direction moved by the same amount drops it just as far (3–4%). So the scene is fragile rather than tied to this one coordinate.</li>
+  <li><b>Removing it removes the scene, but so does any large push.</b> Taking the direction out of the real blank drops the scene from 80–90% to 2–7% (Table 7). A random direction moved by the same amount drops it just as far (3–4%). So the scene is fragile rather than tied to this one coordinate.</li>
 </ul>
 <p>Pooled over all steered and unsteered vectors, the scene appears only close to the blank mean: 98% of readouts at cosine 0.9 or more, 72% at 0.8–0.9, 32% at 0.7–0.8, and 21% or less below that. That matches the interpolations in Figure 4. The scene is how the lens reads the full blank-line vector. The shared direction is the part of that vector that does the work for Qwen, but on its own it doesn’t look like a scene to the lens.</p>
 
@@ -262,8 +264,8 @@
 <p class="footer">Working draft. Figures are built from <code>data.js</code>, which is generated from the analysis outputs.</p>
 </main>
 </div>
-<script src="data.js?v=7"></script>
-<script src="steer.js?v=7"></script>
-<script src="app.js?v=7"></script>
+<script src="data.js?v=8"></script>
+<script src="steer.js?v=8"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>

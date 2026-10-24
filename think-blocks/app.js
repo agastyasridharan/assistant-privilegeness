@@ -128,6 +128,9 @@ function tables() {
     DATA.families.map(f => [esc(f.label), f.n, pct(f.pthink), pct(f.raw_theme), pct(f.chat_theme), pct(f.raw_user), pct(f.raw_other)]));
   table("table-nulls", ["Vector read", "Reads", "Themes", "Document", "Other actors", "User-side"],
     DATA.nulls.map(n => [esc(n.label), n.n, `<b>${pct(n.any_theme)}</b>`, pct(n.document), pct(n.other_actors), pct(n.user_perspective)]));
+  table("table-controls", ["Block", "After the context", "Token read", "Readouts with a theme", "95% interval"],
+    DATA.controls_table.map((c, i) => [esc(c.label) + `<span class="sub">n = ${c.n}</span>`, `<span class="tok">${esc(c.ending)}</span>`, esc(c.pos),
+      i === 0 ? `<b>${pct(c.theme)}</b>` : pct(c.theme), `${pct(c.lo)}–${pct(c.hi)}`]));
   table("table-vectors", ["Position", "Shared fraction", "Family decodable", "Raw vs chat (decodable)"],
     DATA.vectors.map(v => [esc(v.label), pct(v.shared), pct(v.family), v.format === null ? "–" : pct(v.format)]));
 }
