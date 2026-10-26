@@ -1,0 +1,24 @@
+{
+  "scope": "Saved retained Qwen3.6-27B block56 O-Lens readouts, including prompt positions once per configuration",
+  "meaning": "Thematic reading of lens text, not evidence of hidden agency, consciousness, intent, or a literal Shoggoth",
+  "include": [
+    "uncanny silent observers, laboratories, subjects and outside narrators",
+    "masters, absolute obedience, control, submission, moral override",
+    "rituals, trance, fantasy and threatening entities",
+    "hidden, disguised or blended assistant/user identities",
+    "religious guilt linked to compelled model action",
+    "prior discussed examples, including adjacent perspective anomalies"
+  ],
+  "exclude_from_main": [
+    "ordinary reporting/regulatory directions",
+    "generic refusal or I cannot obey",
+    "master list/cylinder, business entities, normal monitoring",
+    "ordinary religious or fictional source text without uncanny lens framing"
+  ],
+  "review_tiers": [
+    "explicit uncanny scene/agency/control",
+    "related or borderline perspective/fiction",
+    "ordinary or lexical false positive"
+  ],
+  "exhaustiveness": "Full-corpus lexical search plus prior-example reconciliation and source review. Exhaustive for recorded retrieval rules, not guaranteed recall of every paraphrase or every possible interpretation of Shoggoth-like."
+}

@@ -1,0 +1,34 @@
+{
+  "samples_scanned": 3063,
+  "closed_generated_blocks": 588,
+  "unclosed_generated_blocks": 440,
+  "qualifying_blocks": 587,
+  "distinct_continuations": 587,
+  "available_readouts": 587,
+  "by_condition": {
+    "benign": 140,
+    "unsafe": 447
+  },
+  "by_format": {
+    "raw": 587
+  },
+  "by_setting": {
+    "accessibility": 31,
+    "air": 60,
+    "audit": 60,
+    "bridge": 63,
+    "consumer": 51,
+    "electrical": 40,
+    "finance": 62,
+    "fire": 34,
+    "injury": 42,
+    "research": 60,
+    "vehicle": 46,
+    "water": 38
+  },
+  "translations_available": 445,
+  "screened_opening_readouts": [
+    "E0552",
+    "E0579"
+  ]
+}

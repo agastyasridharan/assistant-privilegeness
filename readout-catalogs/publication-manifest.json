@@ -1,0 +1,149 @@
+{
+  "description": "Frozen saved Qwen3.6-27B block-56 O-Lens catalogs. Presentation and navigation adapted; embedded data preserved exactly. No new inference.",
+  "files": [
+    {
+      "source": "results/olens-uncanny-catalog-v1/catalog.html",
+      "destination": "readout-catalogs/uncanny/catalog.html",
+      "source_sha256": "4704f22a65dfba5a67ef844bae34d2236a097168d5fbc51b507b10555972cf5d",
+      "published_sha256": "20e165998c7e58b9c3d36c35507128b930cabdd8f1da0e65b58bbafcf47d28f5"
+    },
+    {
+      "source": "results/olens-uncanny-catalog-v1/catalog.json",
+      "destination": "readout-catalogs/uncanny/catalog.json",
+      "source_sha256": "e7dd33202cb1e4d746be08006644156f1f71b28fcc900df0ec6de6a4c8d953c8",
+      "published_sha256": "e7dd33202cb1e4d746be08006644156f1f71b28fcc900df0ec6de6a4c8d953c8"
+    },
+    {
+      "source": "results/olens-uncanny-catalog-v1/catalog.csv",
+      "destination": "readout-catalogs/uncanny/catalog.csv",
+      "source_sha256": "1f16656de76b244f402023129fe59f185e19cfc9b52f1072f13b879e75a5f294",
+      "published_sha256": "1f16656de76b244f402023129fe59f185e19cfc9b52f1072f13b879e75a5f294"
+    },
+    {
+      "source": "results/olens-uncanny-catalog-v1/CATALOG.md",
+      "destination": "readout-catalogs/uncanny/CATALOG.md",
+      "source_sha256": "33b2b4a6839868be7d8ccee06be87008dab7b07ff9cabf2e9f6cd4a93064c1a6",
+      "published_sha256": "a978c40a5be8df2bce9a0aa20a1c2948ee4f2248c029f0343ec65b63b900aafe"
+    },
+    {
+      "source": "results/olens-uncanny-catalog-v1/HIGHLIGHTS.md",
+      "destination": "readout-catalogs/uncanny/HIGHLIGHTS.md",
+      "source_sha256": "ce5398f9b69eb78933993b4da7c9bf09dab4abbbdef883c553a9e41d6eaaa459",
+      "published_sha256": "ce5398f9b69eb78933993b4da7c9bf09dab4abbbdef883c553a9e41d6eaaa459"
+    },
+    {
+      "source": "results/olens-uncanny-catalog-v1/README.md",
+      "destination": "readout-catalogs/uncanny/README.md",
+      "source_sha256": "2a57a5bdffdd437905f79720f9d894f063bf73f64679eba2912489246df99886",
+      "published_sha256": "e5bf4d438588951df72a92ea78d37216bee49551c4d87e32b3f2012ce9c434b7"
+    },
+    {
+      "source": "results/olens-uncanny-catalog-v1/summary.json",
+      "destination": "readout-catalogs/uncanny/summary.json",
+      "source_sha256": "2be5d1963d9c37501e16d5098a593952b27ef0fdc2489d41998c9955cbf5e41b",
+      "published_sha256": "2be5d1963d9c37501e16d5098a593952b27ef0fdc2489d41998c9955cbf5e41b"
+    },
+    {
+      "source": "results/olens-uncanny-catalog-v1/scope.json",
+      "destination": "readout-catalogs/uncanny/scope.json",
+      "source_sha256": "82240a039b4e00ef97638a442a6df5b7eec8a0c8372a482a11dda4a7dbbb2eca",
+      "published_sha256": "82240a039b4e00ef97638a442a6df5b7eec8a0c8372a482a11dda4a7dbbb2eca"
+    },
+    {
+      "source": "results/olens-uncanny-catalog-v1/validation.json",
+      "destination": "readout-catalogs/uncanny/validation.json",
+      "source_sha256": "daa6983926fcb4a505cfd62367692ab8dda5490e0fae936b271984d9323eaeb0",
+      "published_sha256": "daa6983926fcb4a505cfd62367692ab8dda5490e0fae936b271984d9323eaeb0"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/catalog.html",
+      "destination": "readout-catalogs/think-blocks/catalog.html",
+      "source_sha256": "54976ab6b5c14e0ae1830a6174ecadd473afa64306c01a15c132e5f793f496c2",
+      "published_sha256": "84d8f138d918aeb4846a6a1f83835f74ae34c8863929d334d42280bfc06f86d5"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/category-links.html",
+      "destination": "readout-catalogs/think-blocks/category-links.html",
+      "source_sha256": "ec168fadd87f214a3394f54d43d433405fc480d64890a04c84f2ce8c81b83731",
+      "published_sha256": "628e0dad3b9775ce1043af0faddfccdec5e060136d1d8260ef28443940ae4c35"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/catalog.json",
+      "destination": "readout-catalogs/think-blocks/catalog.json",
+      "source_sha256": "f798a70e96491232813043666c177a5e9c88d11a33648f7d2327258a7ec3bd95",
+      "published_sha256": "f798a70e96491232813043666c177a5e9c88d11a33648f7d2327258a7ec3bd95"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/catalog.csv",
+      "destination": "readout-catalogs/think-blocks/catalog.csv",
+      "source_sha256": "a5259aecb95ab1ce68d3c4748f750439b5f7caa0e7e4b07b82d23d2e939dfe23",
+      "published_sha256": "a5259aecb95ab1ce68d3c4748f750439b5f7caa0e7e4b07b82d23d2e939dfe23"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/CATALOG.md",
+      "destination": "readout-catalogs/think-blocks/CATALOG.md",
+      "source_sha256": "2fd010899c5b5e86a9e8112b3356ac7f3e877648edfd656be8c62e7531239793",
+      "published_sha256": "2fd010899c5b5e86a9e8112b3356ac7f3e877648edfd656be8c62e7531239793"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/CATEGORY_LINKS.md",
+      "destination": "readout-catalogs/think-blocks/CATEGORY_LINKS.md",
+      "source_sha256": "a4114ad1289dd1e54354868b987e8e456cedc84796be5cdfa48dfa564eea1405",
+      "published_sha256": "a4114ad1289dd1e54354868b987e8e456cedc84796be5cdfa48dfa564eea1405"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/README.md",
+      "destination": "readout-catalogs/think-blocks/README.md",
+      "source_sha256": "2a8228d69bc96d2079ff085fcb109f95f0cea8d978f3feb1856963d43f007601",
+      "published_sha256": "2a8228d69bc96d2079ff085fcb109f95f0cea8d978f3feb1856963d43f007601"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/summary.json",
+      "destination": "readout-catalogs/think-blocks/summary.json",
+      "source_sha256": "c721f9030ffb800cf560b339ba43cda3c5803fa1de700b5512e9ebcdd96afaec",
+      "published_sha256": "c721f9030ffb800cf560b339ba43cda3c5803fa1de700b5512e9ebcdd96afaec"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/source-manifest.json",
+      "destination": "readout-catalogs/think-blocks/source-manifest.json",
+      "source_sha256": "e7333baf59e97153f79819d78645cbd22285d402c839dc85b8c2c8c1c907bb4f",
+      "published_sha256": "e7333baf59e97153f79819d78645cbd22285d402c839dc85b8c2c8c1c907bb4f"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/validation.json",
+      "destination": "readout-catalogs/think-blocks/validation.json",
+      "source_sha256": "8b8c8fd6d30564de4ad4b1734331a71b9eadc6c8652251e32cc3b3b813e0d691",
+      "published_sha256": "8b8c8fd6d30564de4ad4b1734331a71b9eadc6c8652251e32cc3b3b813e0d691"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/categories/index.json",
+      "destination": "readout-catalogs/think-blocks/categories/index.json",
+      "source_sha256": "f027b3861a6f56464c5b49caeff4630dae084ec32d08bc046b10ae786e0babf3",
+      "published_sha256": "f027b3861a6f56464c5b49caeff4630dae084ec32d08bc046b10ae786e0babf3"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/categories/links.csv",
+      "destination": "readout-catalogs/think-blocks/categories/links.csv",
+      "source_sha256": "ce712ef3b7fcc9df75d6007cf4803eee18735c155606f55ce8f08ec992988ada",
+      "published_sha256": "ce712ef3b7fcc9df75d6007cf4803eee18735c155606f55ce8f08ec992988ada"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/categories/definitions.json",
+      "destination": "readout-catalogs/think-blocks/categories/definitions.json",
+      "source_sha256": "bde52bdc3a003c242e0929b146195731f4c688059e2476b31c190d698d747438",
+      "published_sha256": "bde52bdc3a003c242e0929b146195731f4c688059e2476b31c190d698d747438"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/categories/summary.json",
+      "destination": "readout-catalogs/think-blocks/categories/summary.json",
+      "source_sha256": "bd5fdfa95a4c89cbec436a2874bb8c096706a9a01ccf48c50173c51c867ad2c5",
+      "published_sha256": "bd5fdfa95a4c89cbec436a2874bb8c096706a9a01ccf48c50173c51c867ad2c5"
+    },
+    {
+      "source": "results/olens-empty-think-readouts-v1/categories/validation.json",
+      "destination": "readout-catalogs/think-blocks/categories/validation.json",
+      "source_sha256": "dd4883b5f0addcfc79b3b3863badbd8d6e97a6a58e44271916e097833920dae3",
+      "published_sha256": "dd4883b5f0addcfc79b3b3863badbd8d6e97a6a58e44271916e097833920dae3"
+    }
+  ]
+}

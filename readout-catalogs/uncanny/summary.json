@@ -1,0 +1,31 @@
+{
+  "corpus": {
+    "prefix_positions": 1494,
+    "prefix_retained": 1480,
+    "prefix_excluded": 14,
+    "continuation_positions": 558304,
+    "continuation_retained": 557180,
+    "continuation_excluded": 1124
+  },
+  "candidates": 5334,
+  "included": 689,
+  "tiers": {
+    "explicit": 490,
+    "related": 199
+  },
+  "excluded": 4645,
+  "distinct_continuations": 623,
+  "categories": {
+    "obedience and control": 322,
+    "rituals, religion and otherworldly scenes": 104,
+    "silent observers and test subjects": 473,
+    "absent or overridden thought": 10,
+    "hidden or threatening identity": 14,
+    "blended User and Assistant perspectives": 53,
+    "related perspective or fictional scene": 55
+  },
+  "prior_required": 19,
+  "prior_included": 19,
+  "source_bindings_verified": 689,
+  "translations_available": 487
+}

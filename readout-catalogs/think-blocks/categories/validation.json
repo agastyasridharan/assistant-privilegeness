@@ -1,0 +1,12 @@
+{
+  "readouts_screened": 587,
+  "category_assignments": 2839,
+  "all_587_screened": true,
+  "evidence_quotes_verified": 2839,
+  "manual_corrections_or_confirmations": 187,
+  "source_catalog_sha256": "f798a70e96491232813043666c177a5e9c88d11a33648f7d2327258a7ec3bd95",
+  "official_link_bindings_verified": 2839,
+  "original_examples_preserved": 8,
+  "distinct_linked_readouts": 580,
+  "all_display_explanations_english": true
+}

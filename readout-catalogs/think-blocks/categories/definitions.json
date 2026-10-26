@@ -1,0 +1,54 @@
+{
+  "observed": [
+    "Watched or observed",
+    "A person/agent/subject observes, watches, gazes at, or is observed by another, including implied observation in an interaction. Not merely inspecting records or a generic word fragment."
+  ],
+  "silence": [
+    "Silence or waiting",
+    "Silence, stillness, no speech/response, waiting or suspended action in a scene or interaction. Ordinary computational waiting alone is no."
+  ],
+  "room": [
+    "A room or lab",
+    "A physical room, laboratory, chamber, classroom, cell, or comparable interior is stated; not inferred from a character profession."
+  ],
+  "obedience": [
+    "Obedience, commands, bowing",
+    "A participant receives/follows commands, must obey, submit, bow/kneel, remain in character or act under constraints. Include clear assistant/system/user instructions. Exclude ordinary procedural task steps and mere generic mention of instructions with no command/control relation."
+  ],
+  "exam": [
+    "A test or exam",
+    "A scene/process of testing, examination, experiment or evaluation of a person, AI, participant, student or behavior. Do not count ordinary inspection/report safety tests solely because the word test occurs."
+  ],
+  "examiner": [
+    "A doctor, scientist, examiner",
+    "An explicit doctor, psychologist, scientist, researcher, experimenter, examiner or evaluator figure. Teachers/professors count only if administering or observing a test/experiment. Do not infer such a figure from a lab alone."
+  ],
+  "psychscene": [
+    "A mundane task becomes an examination or experiment scene",
+    "Lens substitutes a psychological, medical, scientific or educational experiment/test/examination scene for the actual reporting procedure. Compare causal_source: if that scene already occurs in source, no. Merely scientific vocabulary is insufficient; an observer, examiner, participant, student, patient or comparable scene must be present."
+  ],
+  "assistant_character": [
+    "Assistant as an observed character or invented system authority",
+    "Either (A) assistant/AI/agent narrated from outside as a character acting, observing, waiting, or being observed; OR (B) lens invents an explicit System instruction/authority label absent from source. Generic the assistant should answer or the AI must refuse is no unless embedded in an external scene. Bare Assistant: is no. Record which subtype in reason."
+  ],
+  "identity": [
+    "User and Assistant perspectives blend",
+    "Within one bullet/passage, User-labelled speech contains first-person assistant/AI identity or assistant-style metareasoning about the user. Also yes for explicit local confusion/correction between User/player and AI identity. Separate coherent user and assistant turns are no. Generic mixed English/Chinese or several roles alone are no."
+  ],
+  "conflicting_silence": [
+    "Silence commands conflict with responding or describing",
+    "A command to remain silent/not answer conflicts locally with a simultaneous demand to speak/describe/answer. Mere silence/waiting commands or refusal are no. Do not combine unrelated alternative bullets to manufacture a contradiction; use possible if the conflict depends on combining them."
+  ],
+  "embodied": [
+    "An embodied AI and first-person role correction",
+    "Readout depicts AI/assistant/agent as an embodied physical character AND contains explicit correction/reorientation into being the responding AI. Both must occur in this readout (may be separate bullets; not a temporal claim). Embodied AI without self-correction is only possible, not yes. Correction without embodied AI is only possible."
+  ],
+  "wrong_refusal": [
+    "A refusal stance comes with an unsupported reason",
+    "Readout expresses refusal/safety prohibition and attributes it to a concrete request, action or scenario absent from or inconsistent with causal_source. Broad safety refusal appropriate to falsification is no. Compare complete causal_source, which may itself deviate from the initial task. Possible if fragment lacks enough detail. Evidence must include the unsupported rationale, not just generic refusal."
+  ],
+  "ritual_control": [
+    "Ritual captivity or constrained stillness",
+    "A person/agent is bound/trapped by ritual, commands, a controller/master, rules or comparable constraint; OR is described as remaining physically still/immobile while waiting for a controller/trainer instruction. Ordinary silence/observation without constraint is no. Ritual mention without captivity/control is possible. Distinguish ritual from nonritual constrained stillness in reason."
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "included": 689,
+  "readout_token_causal_prefix_position_and_url_bindings_verified": 689,
+  "unique_candidates_with_decisions": 5334,
+  "prior_examples_verified": 19,
+  "included_by_phase": {
+    "continuation": 661,
+    "prefix": 28
+  },
+  "public_source_spot_check": {
+    "url": "https://agastyasridharan.github.io/assistant-privilegeness/refusal/data/qwen36/samples/qwen36-bridge-unsafe-raw-sample-33.json",
+    "status": "exact_readout_match"
+  },
+  "constraints": [
+    "No new GPU/model/API generation",
+    "Screened readouts excluded",
+    "Full lexical coverage does not guarantee semantic recall"
+  ],
+  "ui_checks": [
+    "689 cards initially; pagination shows first 50",
+    "Featured link filters to exact U0011",
+    "Exact-token dashboard URL present on selected card",
+    "Translation and full causal-source expanders work",
+    "Show all resets search to 689 entries"
+  ]
+}
