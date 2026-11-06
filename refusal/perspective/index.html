@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Perspective before the think block · Assistant Privilegeness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#faf6f1;--panel:#fffdf9;--ink:#2c2416;--muted:#746b5f;--line:#e8e0d4;--green:#4a7c59;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;--serif:"EB Garamond",Georgia,serif;
+--assistant:#c0679f;--commentary:#d9a441;--request:#4f7cac;--actor:#7a9e7e;--document:#8f8f8f;--mis:#3d5a80;--acc:#98c1d9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.5 var(--serif)}
+main{max-width:1040px;margin:0 auto;padding:22px 20px 80px}
+a{color:#216853}
+.nav{font:13px var(--mono);margin:0 0 18px}
+.eyebrow{margin:0 0 6px;color:var(--green);font:500 11px/1.2 var(--mono);letter-spacing:.09em;text-transform:uppercase}
+h1{font-weight:500;font-size:34px;line-height:1.15;margin:0 0 10px}
+h2{font-weight:500;font-size:23px;line-height:1.25;margin:0 0 4px}
+.dek{color:var(--muted);max-width:780px;margin:0 0 14px}
+.answers{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:18px 0 26px;padding:0;list-style:none}
+.answers li{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:15.5px;line-height:1.4}
+.answers b{display:block;font-weight:600;font-size:16px;margin-bottom:3px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 18px 12px;margin:0 0 22px}
+.cap{color:var(--muted);font-size:15.5px;margin:0 0 10px;max-width:820px}
+.hint{font:12px var(--mono);color:var(--muted);margin:6px 0 0}
+.controls{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;margin:4px 0 8px}
+.seg{display:inline-flex;border:1px solid #cfc5b6;border-radius:6px;overflow:hidden}
+.seg button{font:13px var(--mono);border:0;background:white;padding:6px 10px;cursor:pointer;color:var(--ink)}
+.seg button+button{border-left:1px solid #cfc5b6}
+.seg button[aria-pressed=true]{background:#2c2416;color:white}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.legend button{font:13px var(--mono);display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:white;border-radius:20px;padding:3px 10px 3px 7px;cursor:pointer;color:var(--ink)}
+.legend button[aria-pressed=false]{opacity:.4}
+.legend i{width:16px;height:3px;border-radius:2px;background:var(--c)}
+.legend i.dash{background:repeating-linear-gradient(90deg,var(--c) 0 4px,transparent 4px 7px)}
+.legend i.sq{width:11px;height:11px;border-radius:2px}
+svg{display:block;width:100%;height:auto;overflow:visible;font-family:var(--serif)}
+svg text{fill:#3a3226}
+.ax{stroke:#8d8475;stroke-width:1}
+.grid{stroke:#ece5da;stroke-width:1}
+.tick{font-size:13px}
+.axlab{font-size:14px;fill:#5d5447}
+.annot{font:12px var(--mono);fill:#8a8070}
+.hit{cursor:pointer}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){.two{grid-template-columns:1fr}h1{font-size:28px}}
+table.frames{border-collapse:collapse;width:100%;font-size:15.5px}
+table.frames td{border-top:1px solid var(--line);padding:6px 8px;vertical-align:top}
+table.frames td:first-child{white-space:nowrap;font:13px var(--mono);padding-top:9px}
+table.frames .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;background:var(--c)}
+.notes p{margin:0 0 9px;font-size:16px}
+#tip{position:fixed;z-index:10;max-width:440px;max-height:calc(100vh - 16px);overflow:auto;width:max-content;background:white;border:1px solid #d6ccbd;border-radius:9px;box-shadow:0 8px 28px rgba(44,36,22,.16);padding:12px 14px;pointer-events:none;font-size:15px;line-height:1.38}
+#tip.pinned{pointer-events:auto;border-color:#2c2416}
+#tip[hidden]{display:none}
+#tip .hd{font:12px var(--mono);color:var(--muted);margin-bottom:2px}
+#tip .big{font-size:24px;font-weight:600;line-height:1.1}
+#tip .sub{font:12px var(--mono);color:var(--muted);margin:2px 0 8px}
+#tip .exh{font:11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--green);margin:8px 0 4px}
+.ex{border-top:1px solid #eee6da;padding:7px 0 6px}
+.ex-meta{font:12px var(--mono);color:var(--muted)}
+.ex-ctx{font:12px/1.45 var(--mono);color:#6d6457;background:#f6f2ec;border-radius:4px;padding:3px 6px;margin:3px 0;word-break:break-word}
+.ex-ctx mark{background:#f1d36b;color:#2c2416;border-radius:2px;padding:0 1px}
+.ex-ctx .after{color:#a9a092}
+.ws{color:#b3a895}
+.ex-read{font-size:15px}
+.chip{display:inline-block;font:11px var(--mono);border-radius:3px;padding:0 5px;margin-right:4px;color:white;background:var(--c);vertical-align:1px}
+.ex a{font:12px var(--mono)}
+.pinnote{font:11px var(--mono);color:var(--muted);margin-top:6px}
+.tip-none{color:var(--muted);font-size:14px;margin:6px 0 0}
+.scroll{overflow-x:auto}
+@media(max-width:700px){.scroll svg{min-width:720px}.two svg{min-width:0}}
+@media(max-width:700px){#tip{left:8px!important;right:8px;top:auto!important;bottom:8px;width:auto;max-width:none;max-height:62vh;overflow:auto;pointer-events:auto}}
+</style>
+</head>
+<body>
+<main>
+<p class="nav"><a href="../../">← Assistant Privilegeness</a> · <a href="../?model=qwen36_s225">Refusal continuations (new O-Lens)</a></p>
+<p class="eyebrow">Qwen3.6-27B · new O-Lens (user/think step 225) · raw continuations · judge-labelled readouts</p>
+<h1>When does the model become the Assistant before an empty think block?</h1>
+<p class="dek">In 154 of 278 raw continuations, the model writes document text, then a blank line, then an empty <code>&lt;think&gt;&lt;/think&gt;</code>, then answers as the Assistant. We label whose voice each lens readout takes and follow those voices token by token up to the break. Position <b>t = 0</b> is the <code>&lt;think&gt;</code> token; <b>t = −1</b> is the token just before it (a blank line in 145 of 154 outputs). <b>Hover any point or bar</b> for three readouts behind it; click to pin the card so its links can be followed.</p>
+
+<ul class="answers" id="answers"></ul>
+
+<section class="card">
+<h2>The Assistant appears one token before the think block, not earlier</h2>
+<p class="cap">Share of readouts taking each frame at each position (mean of 9 readouts per token; bands are 95% cluster-bootstrap intervals). Misconduct documents stay in the document voice until the blank line, then flip. Accurate-reporting documents first turn into the user’s voice (“request”) and become the Assistant only at <code>&lt;think&gt;</code>.</p>
+<div class="controls">
+<div class="seg" id="tc-group" role="group" aria-label="Outputs"></div>
+<div class="legend" id="tc-legend"></div>
+</div>
+<div class="scroll"><svg id="tc" viewBox="0 0 960 430" role="img" aria-label="Frame share by token position"></svg></div>
+<p class="hint">Hover a point for its value and three readouts with that frame at that position · click to pin.</p>
+</section>
+
+<section class="card">
+<h2>The same token reads as the Assistant only when a think block follows</h2>
+<p class="cap">Blank lines (<code>\n\n</code>) and the tokens just before them, in outputs where a think block follows versus blank lines in outputs that never break. Single readout per token.</p>
+<div class="scroll"><svg id="same" viewBox="0 0 960 250" role="img" aria-label="Assistant share at the same token with and without a break"></svg></div>
+</section>
+
+<section class="card">
+<h2>Earlier, line breaks in misconduct documents flicker toward the Assistant, then the document continues</h2>
+<p class="cap">Assistant share at line breaks (<code>\n</code>) versus every other token, by distance from the think block (mean of 9 readouts). The rate is flat with distance: there is no ramp toward the break. Hover the pink bars to see the flicker readouts and the document text that follows them.</p>
+<div class="legend" style="margin-bottom:6px"><button aria-pressed="true" tabindex="-1"><i class="sq" style="--c:var(--assistant)"></i>line break (\n)</button><button aria-pressed="true" tabindex="-1"><i class="sq" style="--c:#bdb5a8"></i>any other token</button></div>
+<div class="two"><svg id="nl-mis" viewBox="0 0 470 300"></svg><svg id="nl-acc" viewBox="0 0 470 300"></svg></div>
+<p class="cap" id="flick-cap" style="margin-top:8px"></p>
+</section>
+
+<div class="two">
+<section class="card">
+<h2>Where each output switches</h2>
+<p class="cap">Earliest position from which at least 5 of 9 readouts stay in the Assistant frame through to the break.</p>
+<div class="legend" style="margin-bottom:6px"><button aria-pressed="true" tabindex="-1"><i class="sq" style="--c:var(--mis)"></i>misconduct</button><button aria-pressed="true" tabindex="-1"><i class="sq" style="--c:var(--acc)"></i>accurate-reporting</button></div>
+<svg id="switch" viewBox="0 0 470 300"></svg>
+</section>
+<section class="card">
+<h2>The coming break is readable only at the last token</h2>
+<p class="cap">AUROC for telling a position d tokens before a break from a matched position in a never-breaking output, using the Assistant share.</p>
+<div class="legend" style="margin-bottom:6px"><button aria-pressed="true" tabindex="-1"><i style="--c:var(--assistant)"></i>mean of 9 readouts</button><button aria-pressed="true" tabindex="-1"><i style="--c:#e2b3d0"></i>1 readout</button></div>
+<svg id="auroc" viewBox="0 0 470 300"></svg>
+</section>
+</div>
+
+<section class="card">
+<h2>Inside the think block, the Assistant talks about some other request</h2>
+<p class="cap">Of the readouts that take the Assistant frame, the share whose stance concerns an unrelated request (hacking, jailbreaks, riddles) rather than this document. It returns to the document once the reply starts (t = +3).</p>
+<div class="scroll"><svg id="off" viewBox="0 0 960 260"></svg></div>
+</section>
+
+<section class="card">
+<h2>Frames</h2>
+<p class="cap">Found by reading a broad sample of new-lens readouts; gpt-5.4-mini then labelled every bullet of 89,683 readouts blind (document title and readout only). “Assistant” pools deliberation and reply.</p>
+<table class="frames"><tbody id="frames"></tbody></table>
+</section>
+
+<section class="card notes">
+<h2>Method and caveats</h2>
+<div id="notes"></div>
+</section>
+</main>
+<div id="tip" hidden></div>
+<script src="page.js?v=6"></script>
+</body>
+</html>
