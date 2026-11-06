@@ -1,0 +1,47 @@
+{
+ "description": "New inference: block-56 activations at the 587 catalog blocks and 192 chat-template empty blocks, re-read with olens_s3d_rl600 and a continued-trained variant. Grader: the themes index's prompt.",
+ "subject": {
+  "repo": "Qwen/Qwen3.6-27B",
+  "revision": "6a9e13bd6fc8f0983b9b99948120bc37f49c13e9",
+  "block": 56
+ },
+ "lenses": {
+  "rl600": {
+   "repo": "agu18dec/olens_and_ar",
+   "revision": "c95215d5d2f6250f20c305ae55c6e4d7569f92dc",
+   "adapter": "olens_s3d_rl600"
+  },
+  "new": {
+   "repo": "agastyasridharan/olens-qwen3.6-27b-userthink-s225",
+   "revision": "16e77aef7049d69fe8e92c6909cdcc065029a6a5",
+   "adapter": "root (GRPO step 225)"
+  }
+ },
+ "reader": {
+  "carriers": {
+   "study": 4,
+   "training_one_line": 2
+  },
+  "temperature": 0.8,
+  "top_p": 0.95,
+  "max_new_tokens": 256,
+  "injection": "16000*h/||h|| at marker 158983",
+  "code": "scripts/think_block_olens/tb_common.py (paths only)"
+ },
+ "grader": {
+  "model": "gpt-5.4-mini-2026-03-17",
+  "prompt": "olens_empty_think_categories.py v2, unchanged",
+  "rows": "one study-carrier readout per block per lens (1172 graded; 2 withheld by guard)",
+  "blind": true
+ },
+ "fit_score": "joint bullet FVE, frozen ar_ptag_pooled + rebuilt pooled whitener (ridge 0.1), layer 56",
+ "data_sha256": {
+  "items.json": "d13d974d82f09b867a989d4939585d6f1594758a3111131743090c57e2656f02",
+  "reads_rl600.json": "5c75c61993954be0740abb5b24e6680c0cf8e89bcf763a4a5943981fa13aba9f",
+  "reads_s225.json": "b12a54431249ee336349c2f848aab87f37f0414d12cbb767d26cd59b6599d7e6",
+  "fve.json": "cb818cd7923ec36e21f7ec8682be35a70043cdeec514374fdfaccdb30e44e0b5",
+  "api-labels-v2.json": "b0388bcf3030f1d3bad8cbee9b407b9c0dff2c820f6803c3b619783e04dd2370",
+  "rows_key.json": "58edf69390fa98fc33cadc756f4d1f6e27cdf62411a6e645c0f3e0aa02d8db96"
+ },
+ "page_sha256": "af0f99a7ca54a62dff1b8e737364d1459d27f5dab7722f9dad28370e39f6051a"
+}
