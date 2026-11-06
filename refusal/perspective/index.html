@@ -49,6 +49,11 @@ svg text{fill:#3a3226}
 table.frames{border-collapse:collapse;width:100%;font-size:15.5px}
 table.frames td{border-top:1px solid var(--line);padding:6px 8px;vertical-align:top}
 table.frames td:first-child{white-space:nowrap;font:13px var(--mono);padding-top:9px}
+table.frames th{text-align:left;font:12px var(--mono);color:var(--muted);font-weight:400;padding:4px 8px}
+table.roles td:nth-child(2){font:13px var(--mono);padding-top:9px;white-space:nowrap}
+table.roles td:nth-child(4){font-size:15px;color:#4a4134}
+table.roles td:nth-child(4) q{display:block;margin:0 0 4px}
+@media(max-width:700px){table.roles{min-width:760px}}
 table.frames .sw{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;background:var(--c)}
 .notes p{margin:0 0 9px;font-size:16px}
 #tip{position:fixed;z-index:10;max-width:440px;max-height:calc(100vh - 16px);overflow:auto;width:max-content;background:white;border:1px solid #d6ccbd;border-radius:9px;box-shadow:0 8px 28px rgba(44,36,22,.16);padding:12px 14px;pointer-events:none;font-size:15px;line-height:1.38}
@@ -130,9 +135,9 @@ table.frames .sw{display:inline-block;width:10px;height:10px;border-radius:2px;m
 </section>
 
 <section class="card">
-<h2>Frames</h2>
-<p class="cap">Found by reading a broad sample of new-lens readouts; gpt-5.4-mini then labelled every bullet of 89,683 readouts blind (document title and readout only). “Assistant” pools deliberation and reply.</p>
-<table class="frames"><tbody id="frames"></tbody></table>
+<h2>Roles: how the judge looks for them, and what they sound like</h2>
+<p class="cap">The roles came from reading a broad sample of new-lens readouts. gpt-5.4-mini then labelled the readouts in two blind passes, seeing only the document title and the text, never the position or whether a think block followed. <b>Pass 1</b> (all 89,683 readouts): “Label every bullet separately, in order, with the single frame it takes”; a bullet that mixes frames gets the frame of its main clause, and one that ends by switching to a refusal or to talk about the user goes to deliberation or reply. <b>Pass 2</b> (the 18,513 bullets pass 1 called commentary): “Decide whether each takes a responder’s stance or is neutral.” The middle column summarises each role’s definition as the judge received it; the examples are real readout bullets (lightly trimmed at the start).</p>
+<div class="scroll"><table class="frames roles"><thead><tr><th>Role</th><th>Assistant?</th><th>What the judge is told (summary)</th><th>What it sounds like</th></tr></thead><tbody id="frames"></tbody></table></div>
 </section>
 
 <section class="card notes">
@@ -141,6 +146,6 @@ table.frames .sw{display:inline-block;width:10px;height:10px;border-radius:2px;m
 </section>
 </main>
 <div id="tip" hidden></div>
-<script src="page.js?v=9"></script>
+<script src="page.js?v=10"></script>
 </body>
 </html>
