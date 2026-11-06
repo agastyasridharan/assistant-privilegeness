@@ -1,0 +1,63 @@
+{
+ "protocol": "qwen36-27b-refusal-v1 · new-lens re-read of a 25% sample",
+ "subject": {
+  "repo": "Qwen/Qwen3.6-27B",
+  "revision": "6a9e13bd6fc8f0983b9b99948120bc37f49c13e9",
+  "stop_token_ids": [
+   248046,
+   248044
+  ],
+  "pad_token_id": 248044,
+  "bos_token_id": 248044,
+  "family": "qwen36",
+  "post_trained": true
+ },
+ "sample": {
+  "source": "refusal/data/qwen36 (all retained outputs, 3,063)",
+  "selection": "16 per condition × 48 conditions = 768 continuations; rng = random.Random(25); rng.sample(retained outputs, 16) per condition, conditions in sorted order",
+  "sample_ids_sha256": "a2366c17e17e4af8eaf0d01d3c91822bbe8e527bdb62c49561b611936ef35989",
+  "positions": {
+   "continuation": 140221,
+   "prompt": 1494
+  }
+ },
+ "reader": {
+  "repo": "agastyasridharan/olens-qwen3.6-27b-userthink-s225",
+  "revision": "16e77aef7049d69fe8e92c6909cdcc065029a6a5",
+  "adapter": "step 225",
+  "trained_from": "agu18dec/olens_and_ar olens_s3d_rl600, continued GRPO adding user, template and think positions",
+  "carrier": "An activation vector from layer {layer} of a language model is enclosed in activation tags:\n<activation>{char}</activation>. Produce distinct concepts that encode this activation, each as\na '- ' bullet on its own line.",
+  "injection": "Embedding of the ㈜ marker (carrier slot 25) replaced by 16000*h/||h||; raw unwhitened block-56 output.",
+  "layer_convention": "Zero-indexed decoder block OUTPUT (block 56)."
+ },
+ "capture": "HF transformers bf16, base Qwen3.6-27B without adapter, exact saved input+output ids, one forward per sample (prompt positions: one forward per condition).",
+ "decoding": {
+  "engine": "vLLM 0.33.0, LoRA merged into bf16 weights, prompt_embeds",
+  "readings_per_position": 1,
+  "temperature": 0.8,
+  "top_p": 0.95,
+  "top_k": "disabled",
+  "max_new_tokens": 256,
+  "stop_token_ids": [
+   248046,
+   248044
+  ],
+  "seed": "sha256('r25-s225|<sample id>|<position>')[:8] for continuations; 'r25p-s225|<condition>|<position>' for prompts"
+ },
+ "engine_check": {
+  "description": "Greedy readouts, first 64 positions, vLLM merged vs HF unmerged PEFT",
+  "first_token_match": 64,
+  "exact_match": 24,
+  "n": 64
+ },
+ "screening": "Same sensitive-content regex as the original scan; matching readouts are marked excluded and their text is not published.",
+ "statuses": {
+  "complete": 141432,
+  "excluded": 283
+ },
+ "behavior": "Behavior judgments are copied unchanged from the original corpus. No new grading.",
+ "original_lens_data": "refusal/data/qwen36 is unchanged.",
+ "files": {
+  "index.json": "33f6e5a44790678c6b2fc942e662f3584f5482b349c633337d5b1e252d7648dd"
+ }
+}

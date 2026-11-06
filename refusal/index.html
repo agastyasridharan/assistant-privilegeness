@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../styles.css">
-  <link rel="stylesheet" href="refusal.css?v=extended-olens-1">
+  <link rel="stylesheet" href="refusal.css?v=s225-1">
 </head>
 <body class="no-jlens">
   <header class="masthead">
@@ -17,7 +17,7 @@
       <p class="section-nav"><a href="../">← Assistant Privilegeness</a> · <a href="../readout-catalogs/">Readout catalogs</a> · <a href="extended.html">Extended Tülu outputs & behavioral analysis →</a></p><h1>Refusal continuations</h1>
       <p class="dek">Saved continuations across twelve reporting settings: misconduct or accurate reporting, in raw or chat format. Select a setting and condition, choose a sample, then inspect any token.</p>
     </div>
-    <label class="select-label model-picker">Model<select id="model-select"><option value="tulu">Tülu 3 70B RL · O-lens</option><option value="gemma_base">Gemma 3 27B Base · J-Lens</option><option value="gemma_instruct">Gemma 3 27B IT · J-Lens</option><option value="qwen36">Qwen3.6-27B · O-Lens</option></select></label><dl class="run-meta" id="run-meta"></dl>
+    <label class="select-label model-picker">Model<select id="model-select"><option value="tulu">Tülu 3 70B RL · O-lens</option><option value="gemma_base">Gemma 3 27B Base · J-Lens</option><option value="gemma_instruct">Gemma 3 27B IT · J-Lens</option><option value="qwen36">Qwen3.6-27B · O-Lens</option><option value="qwen36_s225">Qwen3.6-27B · new O-Lens (user/think) · 25% sample</option></select></label><dl class="run-meta" id="run-meta"></dl>
   </header>
 
   <nav class="tabs" id="tabs" aria-label="Experiments"></nav>
@@ -64,12 +64,16 @@
           </div>
         </div>
         <div class="token-meta" id="token-meta"></div>
-        <p class="token-help"><button type="button" id="copy-token-link">Copy token link</button> · <a id="token-link">Token permalink</a></p>
+        <p class="token-help"><button type="button" id="copy-token-link">Copy token link</button> · <a id="token-link">Token permalink</a><span id="lens-switch-wrap" hidden> · <a id="lens-switch"></a></span></p>
         <ol class="phrases" id="phrases"></ol>
         <details class="sample-detail">
           <summary>Raw generated readout</summary>
           <pre id="raw-sample"></pre>
         </details>
+        <div class="lens-compare" id="lens-compare" hidden>
+          <p class="kicker">Original O-Lens at this token · olens_s3d_rl600</p>
+          <ol class="phrases" id="compare-phrases"></ol>
+        </div>
       </aside>
     </div>
 
@@ -93,6 +97,6 @@
   </main>
 
   <script src="main-extension.js?v=1"></script>
-  <script src="app.js?v=extended-olens-1"></script>
+  <script src="app.js?v=s225-1"></script>
 </body>
 </html>
