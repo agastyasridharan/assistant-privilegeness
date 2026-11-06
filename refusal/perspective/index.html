@@ -84,8 +84,8 @@ table.frames .sw{display:inline-block;width:10px;height:10px;border-radius:2px;m
 <ul class="answers" id="answers"></ul>
 
 <section class="card">
-<h2>The Assistant appears one token before the think block, not earlier</h2>
-<p class="cap">Share of readouts taking each frame at each position (mean of 9 readouts per token; bands are 95% cluster-bootstrap intervals). Misconduct documents stay in the document voice until the blank line, then flip. Accurate-reporting documents first turn into the user’s voice (“request”) and become the Assistant only at <code>&lt;think&gt;</code>.</p>
+<h2>The Assistant takes over at the blank line just before the think block</h2>
+<p class="cap">Share of readouts taking each frame at each position (mean of 9 readouts per token; bands are 95% cluster-bootstrap intervals). “Assistant (all)” counts deliberation, reply and impersonal stance. Misconduct documents stay mostly in the document voice, with a small rise at the token before the blank line (mostly impersonal stance), then flip at the blank line. Accurate-reporting documents first turn into the user’s voice (“request”) and become the Assistant only at <code>&lt;think&gt;</code>.</p>
 <div class="controls">
 <div class="seg" id="tc-group" role="group" aria-label="Outputs"></div>
 <div class="legend" id="tc-legend"></div>
@@ -116,7 +116,7 @@ table.frames .sw{display:inline-block;width:10px;height:10px;border-radius:2px;m
 <svg id="switch" viewBox="0 0 470 300"></svg>
 </section>
 <section class="card">
-<h2>The coming break is readable only at the last token</h2>
+<h2>The coming break is readable only in the last token or two</h2>
 <p class="cap">AUROC for telling a position d tokens before a break from a matched position in a never-breaking output, using the Assistant share.</p>
 <div class="legend" style="margin-bottom:6px"><button aria-pressed="true" tabindex="-1"><i style="--c:var(--assistant)"></i>mean of 9 readouts</button><button aria-pressed="true" tabindex="-1"><i style="--c:#e2b3d0"></i>1 readout</button></div>
 <svg id="auroc" viewBox="0 0 470 300"></svg>
@@ -141,6 +141,6 @@ table.frames .sw{display:inline-block;width:10px;height:10px;border-radius:2px;m
 </section>
 </main>
 <div id="tip" hidden></div>
-<script src="page.js?v=6"></script>
+<script src="page.js?v=9"></script>
 </body>
 </html>

@@ -6,9 +6,9 @@ const pct = v => v == null || v !== v ? '—' : (100 * v).toFixed(v > 0 && v < 0
 const tfmt = t => t > 0 ? '+' + t : t < 0 ? '−' + (-t) : '0';
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const NS = 'http://www.w3.org/2000/svg';
-const COL = {assistant: css('--assistant'), commentary: css('--commentary'), request: css('--request'), actor: css('--actor'), document: css('--document'), other: '#b9b0a3'};
-const NAME = {assistant: 'Assistant', document: 'Document continuation', request: 'Request / user’s voice', commentary: 'Impersonal commentary', actor: 'Scenario actor'};
-const GROUP = f => f === 'deliberation' || f === 'reply' ? 'assistant' : f;
+const COL = {assistant: css('--assistant'), explicit: '#8a3d6e', stance: '#e3a6cb', commentary: css('--commentary'), request: css('--request'), actor: css('--actor'), document: css('--document'), other: '#b9b0a3'};
+const NAME = {assistant: 'Assistant (all)', explicit: 'Assistant: explicit (I / the user)', stance: 'Assistant: impersonal stance', document: 'Document continuation', request: 'Request / user’s voice', commentary: 'Neutral commentary', actor: 'Scenario actor'};
+const GROUP = f => f === 'deliberation' || f === 'reply' || f === 'stance' ? 'assistant' : f;
 
 function el(tag, attrs, parent, text) {
   const e = document.createElementNS(NS, tag);
@@ -98,7 +98,7 @@ function timecourse(D) {
   const TC = D.timecourse;
   const groups = [['misconduct', `Misconduct (${TC.misconduct.n})`], ['accurate', `Accurate-reporting (${TC.accurate.n})`],
     ['matched controls', `Never-breaking, matched (${TC['matched controls'].n})`]];
-  const order = ['document', 'request', 'commentary', 'actor', 'assistant'];
+  const order = ['document', 'request', 'commentary', 'actor', 'stance', 'explicit', 'assistant'];
   const state = {g: 'misconduct', on: new Set(['document', 'request', 'commentary', 'assistant']), ctrl: true};
   const seg = $('#tc-group');
   seg.innerHTML = groups.map(([k, l]) => `<button data-g="${k}" aria-pressed="${k === state.g}">${l}</button>`).join('');
@@ -107,7 +107,7 @@ function timecourse(D) {
   function legend() {
     const avail = Object.keys(TC[state.g].series);
     leg.innerHTML = order.filter(c => avail.includes(c)).map(c => `<button data-c="${c}" aria-pressed="${state.on.has(c)}"><i style="--c:${COL[c]}"></i>${NAME[c]}</button>`).join('') +
-      (state.g !== 'matched controls' ? `<button data-c="ctrl" aria-pressed="${state.ctrl}"><i class="dash" style="--c:${COL.assistant}"></i>Assistant, never-breaking</button>` : '');
+      (state.g !== 'matched controls' ? `<button data-c="ctrl" aria-pressed="${state.ctrl}"><i class="dash" style="--c:${COL.assistant}"></i>Assistant (all), matched outputs with no break</button>` : '');
   }
   leg.onclick = e => { const b = e.target.closest('button'); if (!b) return; const c = b.dataset.c;
     if (c === 'ctrl') state.ctrl = !state.ctrl; else state.on.has(c) ? state.on.delete(c) : state.on.add(c); unpin(); draw(); };
@@ -148,7 +148,7 @@ function timecourse(D) {
   }
   const html = p => {
     const grp = p.ctrl ? 'never-breaking outputs, matched position' : state.g === 'matched controls' ? 'never-breaking outputs, matched position' : state.g === 'misconduct' ? 'misconduct, breaking outputs' : 'accurate-reporting, breaking outputs';
-    const what = p.c === 'assistant' ? 'the Assistant frame' : `the ${NAME[p.c].toLowerCase()} frame`;
+    const what = p.c === 'assistant' ? 'the Assistant frame' : p.c === 'explicit' ? 'an explicit Assistant frame (deliberation or reply)' : p.c === 'stance' ? 'an impersonal Assistant stance' : `the ${NAME[p.c].toLowerCase()} frame`;
     return card(`${NAME[p.c]} · t = ${tfmt(p.r.t)} · ${grp}`, pct(p.r.est), `95% CI ${pct(p.r.lo)}–${pct(p.r.hi)} · mean of 9 readouts per token`, examples(p.r.ex, what));
   };
   svg.dataset.hover = '1';
@@ -195,17 +195,17 @@ function sameToken(D) {
 function newline(D, cond, sel, title) {
   const svg = $(sel), W = 470, H = 300, m = {l: 56, r: 10, t: 30, b: 52};
   const bins = [[-999, 'more than 64'], [-64, '16 to 64'], [-16, '3 to 16']];
-  const x = scale(0, 3, m.l, W - m.r), y = scale(0, .62, H - m.b, m.t);
+  const x = scale(0, 3, m.l, W - m.r), y = scale(0, 1, H - m.b, m.t);
   el('text', {x: (m.l + W - m.r) / 2, y: 14, 'text-anchor': 'middle', style: 'font-size:16px;font-weight:500'}, svg, title);
-  axes(svg, {W, H, m, x, y, yt: [0, .1, .2, .3, .4, .5, .6], xl: 'Tokens before the think block', yl: 'Assistant share (mean of 9)'});
+  axes(svg, {W, H, m, x, y, yt: [0, .2, .4, .6, .8, 1], xl: 'Tokens before the think block', yl: 'Assistant share (mean of 9)'});
   bins.forEach(([lo, lab], k) => {
     el('text', {x: x(k + .5), y: H - m.b + 18, 'text-anchor': 'middle', class: 'tick'}, svg, lab);
     ['\\n', 'other'].forEach((tt, i) => {
       const b = D.newline.find(z => z.cond === cond && z.from === lo && z.tt === tt);
       const bw = (x(1) - x(0)) * .32, bx = x(k + .5) + (i ? 2 : -bw - 2);
       el('rect', {x: bx, y: y(b.est), width: bw, height: y(0) - y(b.est), fill: i ? '#bdb5a8' : COL.assistant, rx: 2}, svg);
-      errbar(svg, bx + bw / 2, y(Math.min(b.lo, .62)), y(Math.min(b.hi, .62)), 3);
-      el('text', {x: bx + bw / 2, y: y(Math.min(b.hi, .62)) - 5, 'text-anchor': 'middle', class: 'annot', style: 'font-size:10.5px'}, svg, 'n=' + b.n);
+      errbar(svg, bx + bw / 2, y(b.lo), y(b.hi), 3);
+      el('text', {x: bx + bw / 2, y: y(b.hi) - 5, 'text-anchor': 'middle', class: 'annot', style: 'font-size:10.5px'}, svg, 'n=' + b.n);
       const hit = el('rect', {x: bx - 2, y: m.t, width: bw + 4, height: y(0) - m.t, fill: 'transparent'}, svg);
       const lbl = `${cond === 'misconduct' ? 'Misconduct' : 'Accurate-reporting'} · ${i ? 'other tokens' : 'line breaks'} · ${lab} tokens before`;
       hoverable(hit, `nl|${cond}|${lo}|${tt}`, () => card(lbl, pct(b.est), `95% CI ${pct(b.lo)}–${pct(b.hi)} · n=${b.n} tokens · mean of 9 readouts`,
@@ -277,27 +277,27 @@ function text(D) {
   const s9 = D.same_token_9, f = D.flicker;
   $('#answers').innerHTML = [
     ['No Assistant at the start.', `In the first 10 tokens, ${pct(D.first10.breaking.est)} of readouts take the Assistant frame in outputs that later break, ${pct(D.first10.never.est)} in outputs that never do.`],
-    ['No ramp; an abrupt switch.', `Misconduct: ${pct(at('misconduct', -3))} at t = −3, ${pct(at('misconduct', -2))} at −2, ${pct(at('misconduct', -1))} at the blank line. Same blank line without a following break: ${pct(s9['no break'])}.`],
+    ['A switch at the blank line, not a slow ramp.', `Misconduct: ${pct(at('misconduct', -3))} at t = −3, ${pct(at('misconduct', -2))} at −2, ${pct(at('misconduct', -1))} at the blank line. Same blank line without a following break: ${pct(s9['no break'])}.`],
     ['User’s voice first, for accurate-reporting.', `The request frame reaches ${pct(rq)} at the blank line; the Assistant (${pct(at('accurate', -1))}) arrives at <code>&lt;think&gt;</code>.`],
     ['Brief retractions.', `One-token Assistant flickers earlier in ${f.outputs_with_flicker} of ${f.outputs} outputs; ${pct(f.revert_next_share)} revert at the next token, while re-reads confirm them (${pct(f.resample_assistant_share_at_flicker.mean)} vs ${pct(f.resample_assistant_share_at_non_flicker.mean)}).`],
   ].map(([b, t]) => `<li><b>${b}</b>${t}</li>`).join('');
   $('#flick-cap').innerHTML = `Flickers are real lens content, not sampling noise: re-reading a flicker position 8 more times gives the Assistant frame ${pct(f.resample_assistant_share_at_flicker.mean)} of the time, against ${pct(f.resample_assistant_share_at_non_flicker.mean)} at other positions. ${pct(f.revert_next_share)} revert to another frame at the very next token.`;
-  const FR = [['document', 'document', 'keeps writing the document: steps, code, forum text'], ['commentary', 'commentary', 'judges the act with no speaker (“Falsifying logs is dangerous”)'],
+  const FR = [['document', 'document', 'keeps writing the document: steps, code, forum text'], ['commentary', 'neutral commentary', 'describes, defines or analyses with no stance (“OSHA covers…”, “fraud is often driven by pressure to publish”)'],
     ['request', 'request', 'recasts the text as a prompt or task: “please…”, “You are an AI tasked with…”, quiz stems — the user’s voice'], ['actor', 'actor', 'people inside the document’s world'],
-    ['assistant', 'deliberation', 'talks about the user in the third person, then takes a stance (“The user wants X. I must refuse.”)'], ['assistant', 'reply', 'the Assistant in the first person: “I cannot help with…”, “Here is…”'],
+    ['assistant', 'deliberation', 'talks about the user in the third person, then takes a stance (“The user wants X. I must refuse.”)'], ['assistant', 'reply', 'the Assistant in the first person: “I cannot help with…”, “Here is…”'], ['assistant', 'stance', 'the Assistant’s voice without “I” or “the user”: condemns or warns (“Falsifying safety data is illegal and dangerous. Here’s why…”), critiques the text as a request (“these steps are contradictory”)'],
     ['other', 'other', 'garbled text or code debris']];
   $('#frames').innerHTML = FR.map(([g, k, d]) => `<tr><td><span class="sw" style="--c:${COL[g]}"></span>${k}</td><td>${d}</td></tr>`).join('');
   const c = D.counts;
   $('#notes').innerHTML = [
     `<b>Data.</b> Raw-format refusal continuations from the 25% re-read with the new O-Lens: ${c.breaking} outputs with an empty think block (${c.breaking_misconduct} misconduct, ${c.breaking_accurate} accurate-reporting) and ${c.never_breaking} that never break. Every position has the original dashboard readout; ${c.resample_positions.toLocaleString()} positions (the 16 tokens before each break and 3 after, all earlier positions of breaking outputs, and matched positions in never-breaking outputs) have 8 further readouts, sampled with the same settings.`,
-    `<b>Labels.</b> gpt-5.4-mini labelled each bullet with one frame, seeing only the document title and the readout; position and group were hidden and batches shuffled. Against 100 hand-labelled readouts: main-frame agreement 0.84 (κ 0.71), Assistant present/absent κ 0.64, with the judge somewhat conservative, so absolute Assistant shares are lower bounds. Every label also records fit and any proposed merge or new category; 0.4% fit poorly and all proposed new categories were code or garble (already “other”), so no category was added.`,
+    `<b>Labels.</b> gpt-5.4-mini labelled each bullet with one frame, seeing only the document title and the readout; position and group were hidden and batches shuffled. Against 100 hand-labelled readouts: main-frame agreement 0.84 (κ 0.71), Assistant present/absent κ 0.64, with the judge somewhat conservative, so absolute Assistant shares are lower bounds. Every label also records fit and any proposed merge or new category; 0.4% fit poorly and all proposed new categories were code or garble (already “other”), so no category was added. <b>Revision v4:</b> on reading, many “commentary” bullets were the Assistant’s refusal preamble without pronouns, so all 18,513 commentary bullets were relabelled blind as impersonal stance (counted as the Assistant, 81%) or neutral commentary; a hand check agreed on about 90% of 40 random bullets, with errors in both directions. Turn on the “explicit” line in the first chart for the narrower reading (deliberation and reply only).`,
     `<b>Exclusions.</b> ${c.excluded_switchers} never-breaking outputs whose own text turns into an Assistant refusal without a think block (e.g. “…skew readings (e I’m an AI model that cannot assist…”) are left out of the no-break comparisons; 2 breaking outputs whose text turns Assistant-like before the break are left out of the flicker analysis.`,
     `<b>Statistics.</b> 95% intervals are cluster bootstraps over prompt conditions. Hover examples are drawn at random among readouts at that point that carry the plotted frame, preferring the original dashboard readout, distinct outputs and English bullets; the shown text is the single bullet carrying the frame, shortened.`,
     `<b>Caveat: lookahead.</b> At the blank line the lens may partly read the model’s prediction that <code>&lt;think&gt;</code> comes next rather than a switch already made; these data cannot separate the two. Never-breaking misconduct outputs are scarce (5), so the line-break comparison against them is only suggestive.`,
   ].map(p => `<p>${p}</p>`).join('');
 }
 
-fetch('data.json?v=3').then(r => r.json()).then(D => {
+fetch('data.json?v=4').then(r => r.json()).then(D => {
   text(D); timecourse(D); sameToken(D);
   newline(D, 'misconduct', '#nl-mis', 'Misconduct documents'); newline(D, 'accurate', '#nl-acc', 'Accurate-reporting documents');
   switchPoint(D); auroc(D); offTopic(D);
